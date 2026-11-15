@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FBFBF9;
+    color: #111C2D;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom scrollbars for clean academic tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F3EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #C2B092;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1E3F30;
+}
+
