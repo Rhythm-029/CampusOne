@@ -16,7 +16,7 @@ export default function LandingPage({ onEnterPortal }) {
   return (
     <div className="min-h-screen bg-white text-[#111C2D] flex flex-col font-sans selection:bg-[#1E3F30] selection:text-white">
       {/* =========================================================================
-          TOP NAVBAR: LOGO, ATLAS DIVIDER, NAV LINKS, & ENTER PORTAL
+          TOP NAVBAR: MATCHING MOCKUP WITH LOGO, DIVIDER, NAV LINKS, & ENTER PORTAL
           ========================================================================= */}
       <header className="w-full bg-white border-b border-[#EBEAE5] sticky top-0 z-40 px-6 sm:px-10 lg:px-14 py-4 flex items-center justify-between">
         {/* Brand Left: Graduation Cap + CampusOne | ATLAS SkillTech University */}
@@ -85,15 +85,33 @@ export default function LandingPage({ onEnterPortal }) {
       </header>
 
       {/* =========================================================================
-          HERO MAIN SECTION: REAL ATLAS PHOTO WITH SOFT LEFT BLUR & FADE
+          HERO MAIN SECTION: FULL-BLEED BACKGROUND BLEND (NOT IN A GRID BOX)
           ========================================================================= */}
-      <section id="home" className="relative flex-1 bg-white overflow-hidden flex flex-col justify-between">
-        <div className="max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-14 pt-10 pb-14 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+      <section id="home" className="relative w-full bg-white overflow-hidden flex flex-col justify-between min-h-[580px] lg:min-h-[640px]">
+        {/* Real Campus Photograph Spanning Entire Right Background */}
+        <div className="absolute inset-y-0 right-0 w-full md:w-[65%] lg:w-[62%] h-full pointer-events-none overflow-hidden select-none z-0">
+          <img
+            src="/assets/real-campus.jpg"
+            alt="ATLAS SkillTech University Campus"
+            className="w-full h-full object-cover object-[72%_center]"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.08) 12%, rgba(0, 0, 0, 0.55) 32%, black 58%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.08) 12%, rgba(0, 0, 0, 0.55) 32%, black 58%)',
+            }}
+          />
+
+          {/* Seamless Feathered Dissolve Overlay into White on the Left Edge */}
+          <div className="absolute inset-y-0 left-0 w-44 sm:w-64 lg:w-80 bg-gradient-to-r from-white via-white/85 to-transparent" />
           
-          {/* Left Column: Headlines, Subtitle & Action Buttons */}
-          <div className="lg:col-span-6 space-y-7 z-20">
-            {/* Main Headline */}
-            <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-[66px] text-[#111C2D] leading-[1.08] tracking-[-0.03em]">
+          {/* Subtle natural lighting enhancement */}
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white/10 to-transparent" />
+        </div>
+
+        {/* Hero Foreground Content Overlaid on Left */}
+        <div className="relative z-10 max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-14 py-16 sm:py-20 lg:py-24 flex-1 flex flex-col justify-center">
+          <div className="max-w-xl space-y-7">
+            {/* Main Headline (Exact Typography & Colors) */}
+            <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-[68px] text-[#111C2D] leading-[1.08] tracking-[-0.03em]">
               Your Campus,<br />
               <span className="text-[#1E3F30]">Connected</span>
             </h1>
@@ -103,7 +121,7 @@ export default function LandingPage({ onEnterPortal }) {
               Book academic spaces, manage campus resources, and report or recover lost belongings — all in one place.
             </p>
 
-            {/* Action Buttons (Matching Inspo) */}
+            {/* Action Buttons (Matching Mockup) */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               {/* Primary Button: Book a Space */}
               <button
@@ -126,35 +144,12 @@ export default function LandingPage({ onEnterPortal }) {
               </button>
             </div>
           </div>
-
-          {/* Right Column: Real College Photo with Soft Blur Fade */}
-          <div className="lg:col-span-6 relative w-full h-[380px] sm:h-[440px] lg:h-[500px] flex items-center justify-end">
-            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-sm">
-              {/* Real College Photograph */}
-              <img
-                src="/assets/real-campus.jpg"
-                alt="ATLAS SkillTech University Campus Real Photo"
-                className="w-full h-full object-cover object-[70%_center] scale-100"
-                style={{
-                  maskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.75) 35%, black 55%)',
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.75) 35%, black 55%)',
-                }}
-              />
-
-              {/* Multi-stage Feathered Blur & Gradient Overlay on the Left Edge */}
-              <div className="absolute inset-y-0 left-0 w-36 sm:w-48 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none" />
-              <div className="absolute inset-y-0 left-0 w-24 sm:w-32 backdrop-blur-[6px] mask-gradient pointer-events-none" />
-
-              {/* Soft bottom vignette for rich depth */}
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-            </div>
-          </div>
         </div>
 
         {/* =========================================================================
             BOTTOM STRIP: 3 PILLARS WITH DIVIDERS & BOTTOM ACCENT BAR
             ========================================================================= */}
-        <div className="w-full bg-[#FAF9F6] border-t border-[#EBEAE5]">
+        <div className="relative z-10 w-full bg-[#FAF9F6] border-t border-[#EBEAE5]">
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-7 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-center">
             
             {/* Pillar 1: Reserve & Manage */}
