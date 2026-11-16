@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   GraduationCap,
   Calendar,
@@ -8,15 +8,19 @@ import {
   Landmark,
   Search,
   Users,
-  Building2,
   PackageSearch,
-  Clock,
-  ShieldCheck,
   ChevronRight,
-  CheckCircle2,
 } from 'lucide-react';
 
 export default function LandingPage({ onEnterPortal }) {
+  // Clear any hash from the URL on load so the page always starts smoothly at the top
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) {
@@ -52,7 +56,9 @@ export default function LandingPage({ onEnterPortal }) {
         {/* Center Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm">
           <button
-            onClick={() => scrollToSection('home')}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="font-bold text-[#111C2D] border-b-2 border-[#1E3F30] pb-1 cursor-pointer"
           >
             Home
@@ -96,24 +102,29 @@ export default function LandingPage({ onEnterPortal }) {
       </header>
 
       {/* =========================================================================
-          HERO SECTION: SEAMLESS CAMPUS PHOTO BLEND ACROSS RIGHT BACKGROUND
+          HERO SECTION: 100% FULL-WIDTH SEAMLESS PHOTOGRAPHIC BLEND (ZERO CUTOFF LINES)
           ========================================================================= */}
-      <section id="home" className="relative w-full bg-white overflow-hidden flex flex-col justify-between border-b border-[#EBEAE5]">
-        {/* Full-height campus photograph positioned on the right */}
-        <div className="absolute inset-y-0 right-0 w-full md:w-[62%] lg:w-[58%] h-full pointer-events-none select-none z-0">
+      <section className="relative w-full bg-white overflow-hidden flex flex-col justify-between border-b border-[#EBEAE5]">
+        {/* Full-width image covering 100% of the container */}
+        <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-0">
           <img
             src="/assets/real-campus.jpg"
             alt="ATLAS SkillTech University Campus Building"
-            className="w-full h-full object-cover object-[75%_center]"
+            className="w-full h-full object-cover object-[80%_center]"
+          />
+
+          {/* Smooth, continuous white gradient from left to right (eliminated all mask lines) */}
+          <div
+            className="absolute inset-0 w-full h-full"
             style={{
-              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.4) 32%, rgba(0, 0, 0, 0.85) 50%, black 65%)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.05) 15%, rgba(0, 0, 0, 0.4) 32%, rgba(0, 0, 0, 0.85) 50%, black 65%)',
+              background:
+                'linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 38%, rgba(255,255,255,0.92) 48%, rgba(255,255,255,0.65) 60%, rgba(255,255,255,0.2) 75%, transparent 100%)',
             }}
           />
         </div>
 
         {/* Foreground Content on Left */}
-        <div className="relative z-10 max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-14 py-16 sm:py-20 lg:py-24">
+        <div className="relative z-10 max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-14 py-16 sm:py-24 lg:py-28">
           <div className="max-w-xl space-y-7">
             {/* Main Headline */}
             <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-[68px] text-[#111C2D] leading-[1.06] tracking-[-0.03em]">
@@ -150,9 +161,9 @@ export default function LandingPage({ onEnterPortal }) {
         </div>
 
         {/* =========================================================================
-            BOTTOM STRIP: 3 PILLARS WITH DIVIDERS & BOTTOM ACCENT BAR
+            BOTTOM STRIP: 3 PILLARS WITH SUBTLE INTEGRATION (NO HARSH LINE)
             ========================================================================= */}
-        <div className="relative z-10 w-full bg-[#FAF9F6] border-t border-[#EBEAE5]">
+        <div className="relative z-10 w-full bg-[#FAF9F6]/95 backdrop-blur-sm border-t border-[#EBEAE5]">
           <div className="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-7 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-center">
             
             {/* Pillar 1: Reserve & Manage */}
@@ -200,9 +211,6 @@ export default function LandingPage({ onEnterPortal }) {
               </div>
             </div>
           </div>
-
-          {/* Bottom Accent Line */}
-          <div className="h-2 bg-[#1E3F30] w-full" />
         </div>
       </section>
 
