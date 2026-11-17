@@ -78,3 +78,4 @@ public class GreedyBaselineMatcher {
         return new GreedyResult(assignments.size(), assignments, unallocated, duration);
     }
 }
+
