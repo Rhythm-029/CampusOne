@@ -294,7 +294,7 @@ export default function LostFoundBrowsePage() {
 
       if (res.ok) {
         const created = await res.json();
-        setFormSuccessMessage(`Report ${created.reportId} submitted successfully! Indexed in Trie & Bloom Filter.`);
+        setFormSuccessMessage(`Report ${created.reportId} submitted successfully! Verified and saved to database.`);
         setTimeout(() => {
           setIsReportModalOpen(false);
           setFormSuccessMessage('');
@@ -378,7 +378,7 @@ export default function LostFoundBrowsePage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EAF2EC] text-[#1E3F30]">
-              MongoDB Atlas • Unit 4 Trie & Unit 6 Bloom Filter
+              Campus Operations • University Student Desk
             </span>
           </div>
           <h1 className="text-3xl font-display font-extrabold text-[#111C2D] tracking-tight">
@@ -414,19 +414,19 @@ export default function LostFoundBrowsePage() {
         </div>
       </div>
 
-      {/* Algorithmic Engine Explanatory Ribbon */}
+      {/* Campus Guidelines Ribbon */}
       <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
         <div className="flex items-start gap-2.5">
           <Sparkles className="w-4 h-4 text-[#1E3F30] shrink-0 mt-0.5" />
           <div>
-            <strong className="text-[#111C2D]">Unit 4 Trie Autocomplete:</strong> Keystroke queries traverse a pure Java in-memory Trie populated from MongoDB Atlas item vocabulary, returning frequency-ranked suggestions in $O(L)$ time without hitting database on every keypress.
+            <strong className="text-[#111C2D]">Smart Item Suggestions:</strong> Instant suggestions help standardize item titles so matching reports can be identified quickly across campus records.
           </div>
         </div>
 
         <div className="flex items-start gap-2.5">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
           <div>
-            <strong className="text-[#111C2D]">Unit 6 Bloom Filter Screening:</strong> Report lookups pass through a Murmur3/FNV-1a double-hashing Bloom Filter. Negative queries guarantee non-existence and skip database calls; uncertain sync gracefully falls back to MongoDB Atlas.
+            <strong className="text-[#111C2D]">Confidential Verification:</strong> Private serial numbers, engravings, and identifying marks are kept strictly private and verified before handover.
           </div>
         </div>
       </div>
@@ -444,16 +444,16 @@ export default function LostFoundBrowsePage() {
               onFocus={() => {
                 if (autocompleteSuggestions.length > 0) setShowTrieDropdown(true);
               }}
-              placeholder="Search by item name, location, or keywords (Trie autocomplete)..."
+              placeholder="Search by item name, category, or campus location..."
               className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
             />
 
             {/* Trie Live Autocomplete Dropdown */}
             {showTrieDropdown && autocompleteSuggestions.length > 0 && (
               <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-[#EBEAE5] z-30 overflow-hidden divide-y divide-gray-100">
-                <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-                  <span>Trie Autocomplete Suggestions</span>
-                  <span className="text-[#1E3F30]">Unit 4 Engine</span>
+                <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                  <span>Suggested Items</span>
+                  <span className="text-[#1E3F30]">Quick Select</span>
                 </div>
                 {autocompleteSuggestions.map((term, i) => (
                   <div
@@ -655,17 +655,11 @@ export default function LostFoundBrowsePage() {
                 </div>
               </div>
 
-              {/* Item Title / Model Name with Unit 4 Trie Live Autocomplete */}
+              {/* Item Title / Model Name with Live Autocomplete */}
               <div className="relative">
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block font-bold text-gray-700 uppercase">
-                    Item Title / Model Name
-                  </label>
-                  <span className="text-[10px] text-[#1E3F30] font-semibold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-emerald-600" />
-                    <span>Unit 4 Trie Live Engine</span>
-                  </span>
-                </div>
+                <label className="block font-bold text-gray-700 uppercase mb-1">
+                  Item Title / Model Name
+                </label>
                 <div className="relative">
                   <input
                     type="text"
@@ -696,20 +690,19 @@ export default function LostFoundBrowsePage() {
                   )}
                 </div>
 
-                {/* Floating Trie Autocomplete Suggestions Dropdown */}
+                {/* Floating Autocomplete Suggestions Dropdown */}
                 {showFormTrieDropdown && formSuggestions.length > 0 && (
                   <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-[#EBEAE5] z-50 overflow-hidden divide-y divide-gray-100 max-h-56 overflow-y-auto">
                     <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
                       <span className="flex items-center gap-1 text-[#1E3F30]">
                         <Sparkles className="w-3 h-3 text-emerald-600" />
-                        <span>Trie Autocomplete Suggestions ({formSuggestions.length})</span>
+                        <span>Suggested Items ({formSuggestions.length})</span>
                       </span>
-                      <span className="text-[10px] text-gray-400 font-mono">O(P + K log K)</span>
+                      <span className="text-[10px] text-gray-400">Select ↵</span>
                     </div>
                     {formSuggestions.map((item, idx) => {
                       const term = typeof item === 'string' ? item : item.term;
                       const cat = typeof item === 'object' ? item.category : null;
-                      const freq = typeof item === 'object' ? item.freq : null;
                       return (
                         <div
                           key={idx}
@@ -727,11 +720,6 @@ export default function LostFoundBrowsePage() {
                             {cat && (
                               <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 group-hover:bg-white group-hover:text-[#1E3F30]">
                                 {cat}
-                              </span>
-                            )}
-                            {freq && (
-                              <span className="text-[10px] text-gray-400 font-mono">
-                                freq: {freq}
                               </span>
                             )}
                             <span className="text-[10px] text-emerald-700 font-semibold">Select ↵</span>

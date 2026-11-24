@@ -50,7 +50,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       floor: 'Floor 2',
       date: '2026-02-24',
       slots: 'Slot 3 & 4 (10:45 AM – 12:45 PM)',
-      purpose: 'Advanced Algorithms CIA 3 Project Presentation',
+      purpose: 'Advanced Algorithms Capstone Project Presentation',
       capacity: 60,
       status: 'APPROVED',
       statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -85,7 +85,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       course: 'CS501: Advanced Algorithms',
       date: '2026-02-25',
       time: '02:30 PM – 03:30 PM',
-      topic: 'Bipartite Matching Augmenting Path Complexity Clarification',
+      topic: 'Algorithm Optimization & Project Guidance Clarification',
       status: 'CONFIRMED',
       office: 'Cabin 701, Floor 7 Academic Block',
     },
@@ -210,7 +210,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       status: 'PENDING_APPROVAL',
       statusColor: 'bg-amber-50 text-amber-700 border-amber-200',
       approver: 'Space Admin Review Queue',
-      notes: `Optimal room matched via Maximum Bipartite Matching algorithm satisfying capacity (${smartCapacity}) and equipment (${smartEquipment.join(', ')}).`,
+      notes: `Optimal room matched satisfying capacity (${smartCapacity}) and equipment (${smartEquipment.join(', ')}).`,
     };
 
     setBookings([newBooking, ...bookings]);
@@ -521,7 +521,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   Reserve Academic Spaces
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Choose between automatic optimal room matching (Bipartite Matching) or selecting an exact room from the 74-room inventory.
+                  Choose between automatic optimal room matching or selecting an exact room from the campus inventory.
                 </p>
               </div>
 
@@ -535,7 +535,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                       : 'text-gray-600 hover:text-[#111C2D]'
                   }`}
                 >
-                  Automatic Room Allocation (Bipartite)
+                  Smart Room Allocation
                 </button>
                 <button
                   type="button"
@@ -546,7 +546,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                       : 'text-gray-600 hover:text-[#111C2D]'
                   }`}
                 >
-                  Browse Exact Rooms (Floors 1–6)
+                  Browse Exact Rooms (Floors 1–7)
                 </button>
               </div>
             </div>
@@ -565,7 +565,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                         Smart Room Allocation Engine
                       </h3>
                       <p className="text-xs text-gray-500">
-                        Powered by Syllabus Unit 5 Maximum Bipartite Matching
+                        Automated matching by room capacity, floor, and equipment
                       </p>
                     </div>
                   </div>
@@ -680,7 +680,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                         type="text"
                         value={smartPurpose}
                         onChange={(e) => setSmartPurpose(e.target.value)}
-                        placeholder="e.g. CIA 3 Algorithm Presentation or INC - The corporate club Meet"
+                        placeholder="e.g. Capstone Presentation or INC - The corporate club Meet"
                         required
                         className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
                       />
@@ -696,29 +696,29 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   </form>
                 </div>
 
-                {/* Algorithm Explanation Card */}
+                {/* Allocation Guidelines Card */}
                 <div className="space-y-6">
                   <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
                     <h3 className="font-display font-bold text-base text-[#111C2D] flex items-center gap-2">
                       <GraduationCap className="w-5 h-5 text-[#1E3F30]" />
-                      <span>Unit 5 Bipartite Matching</span>
+                      <span>Automated Space Allocation</span>
                     </h3>
                     <p className="text-xs text-gray-600 leading-relaxed">
-                      Instead of a greedy heuristic that causes artificial capacity fragmentation, CampusOne runs an <strong>Augmenting Path Maximum Bipartite Matching algorithm</strong> ($O(V \cdot E)$) in pure Java.
+                      CampusOne automatically balances room capacity and equipment criteria to provide conflict-free reservations without capacity waste.
                     </p>
 
                     <div className="space-y-2 pt-2 border-t border-[#EBEAE5] text-xs">
                       <div className="flex justify-between py-1">
-                        <span className="text-gray-500">Left Set (U):</span>
-                        <span className="font-bold text-[#111C2D]">Pending Student Requests</span>
+                        <span className="text-gray-500">Allocation Criteria:</span>
+                        <span className="font-bold text-[#111C2D]">Capacity & Equipment Fit</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-gray-500">Right Set (V):</span>
-                        <span className="font-bold text-[#111C2D]">Compatible Available Rooms</span>
+                        <span className="text-gray-500">Inventory Scope:</span>
+                        <span className="font-bold text-[#111C2D]">Floors 1 through 7</span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-gray-500">Multi-Slot Checker:</span>
-                        <span className="font-bold text-[#111C2D]">Segment Tree (Unit 3)</span>
+                        <span className="text-gray-500">Overlap Prevention:</span>
+                        <span className="font-bold text-[#111C2D]">Multi-Slot Unique Lock</span>
                       </div>
                     </div>
                   </div>
@@ -1010,7 +1010,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                       rows={3}
                       value={consultationTopic}
                       onChange={(e) => setConsultationTopic(e.target.value)}
-                      placeholder="e.g. Unit 3 Segment Tree lazy propagation and time complexity proofs for CIA 3"
+                      placeholder="e.g. Coursework clarification, concept discussion, or capstone guidance"
                       required
                       className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
                     />

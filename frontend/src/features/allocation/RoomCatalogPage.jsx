@@ -108,12 +108,12 @@ export default function RoomCatalogPage() {
         </div>
       </div>
 
-      {/* Algorithmic Batch Explanation Callout */}
+      {/* Automated Allocation Callout */}
       <div className="p-4 rounded-xl bg-canvas-alt border border-border flex items-start gap-3">
         <Info className="w-5 h-5 text-forest shrink-0 mt-0.5" />
         <div className="text-xs text-navy-700 leading-relaxed">
-          <span className="font-semibold text-navy-900">Bipartite Matching Allocation Engine: </span>
-          Booking requests sharing the same target timeslot are batched and matched against physically available rooms satisfying capacity and equipment constraints using an augmenting-path Maximum Bipartite Matching algorithm. Confirmed allocations enforce database-level unique constraints to eliminate overlapping bookings.
+          <span className="font-semibold text-navy-900">Automated Room Allocation: </span>
+          Booking requests sharing the same target timeslot are automatically matched against physically available rooms satisfying capacity and equipment constraints. Confirmed allocations enforce database-level unique locks to eliminate overlapping bookings.
         </div>
       </div>
 
@@ -206,7 +206,7 @@ export default function RoomCatalogPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Allocation request submitted for server-side Bipartite Matching evaluation.');
+                alert('Allocation request submitted for automated room matching.');
                 setIsModalOpen(false);
               }}
               className="space-y-4 text-xs"
@@ -266,7 +266,7 @@ export default function RoomCatalogPage() {
               </div>
 
               <div className="p-3 bg-canvas-alt rounded-lg border border-border text-[11px] text-navy-500">
-                Requests are processed by the batch Bipartite Matching engine. You will be notified once matching achieves Pareto-efficient room assignments.
+                Requests are evaluated by the automated allocation system. You will receive confirmation on your dashboard once room assignment is approved.
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">

@@ -390,7 +390,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
 
         {/* Footer info */}
         <div className="px-6 py-3 bg-[#FAF9F6] border-t border-border flex items-center justify-between text-[11px] text-navy-400">
-          <span>ATLAS SkillTech University • CIA 3</span>
+          <span>ATLAS SkillTech University • Campus Portal</span>
           <span>B.Tech CS AI & ML</span>
         </div>
       </div>

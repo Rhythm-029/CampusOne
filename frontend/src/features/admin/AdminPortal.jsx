@@ -38,7 +38,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       id: 'REQ-802',
       requester: 'Ananya Sharma (Student)',
       department: 'Computer Science Sem V',
-      purpose: 'Advanced Algorithms CIA 3 Project Presentation',
+      purpose: 'Advanced Algorithms Capstone Presentation',
       preferredRoom: 'Room 205 (Smart Classroom)',
       capacityNeeded: 50,
       date: '2026-02-24',
@@ -178,7 +178,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     try {
       const res = await fetch('/api/v1/lost-found/admin/sync/rebuild', { method: 'POST' });
       if (res.ok) {
-        setCacheSyncMessage('Trie Vocabulary and Bloom Filter successfully synchronized with MongoDB Atlas!');
+        setCacheSyncMessage('Search vocabulary and verification cache successfully synchronized with MongoDB Atlas!');
         setTimeout(() => setCacheSyncMessage(''), 3000);
       }
     } catch {
@@ -242,8 +242,8 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         greedyMatched: 19,
         bipartiteEfficiency: '95.8%',
         greedyEfficiency: '79.2%',
-        bipartiteRuntime: '0.42 ms (Augmenting Path O(V·E))',
-        greedyRuntime: '0.04 ms (Greedy First-Fit)',
+        bipartiteRuntime: '0.42 ms (Optimal Path)',
+        greedyRuntime: '0.04 ms (Standard Model)',
         assignments: [
           { request: 'REQ-802 (Cap 50, AV+Smartboard)', allocatedRoom: 'Room 205 (Cap 60)', status: 'Optimal' },
           { request: 'REQ-805 (Cap 180, Auditorium)', allocatedRoom: 'Room 213 (Cap 200)', status: 'Optimal' },
@@ -345,8 +345,8 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
           {[
             { id: 'approvals', label: 'Space Approvals Queue', icon: Clock, badge: pendingRequests.length },
             { id: 'lostfound', label: 'Lost & Found Desk (Admin)', icon: Tag, badge: lfClaims.filter(c => c.status === 'SUBMITTED').length },
-            { id: 'bipartite', label: 'Bipartite Matching Engine (Unit 5)', icon: Zap },
-            { id: 'segment-tree', label: 'Segment Tree Multi-Slot Inspector (Unit 3)', icon: Layers },
+            { id: 'bipartite', label: 'Automated Allocation Engine', icon: Zap },
+            { id: 'segment-tree', label: 'Multi-Slot Availability Inspector', icon: Layers },
             { id: 'inventory', label: 'Campus Room Inventory (74 Rooms)', icon: Building2 },
             { id: 'timetable', label: 'Timetable Import & Conflicts', icon: FileSpreadsheet },
           ].map((tab) => {
@@ -538,7 +538,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   Lost & Found Operations & Claims Console
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Moderate student submissions, verify ownership claim evidence, record physical handovers, and manage Unit 4 Trie and Unit 6 Bloom Filter synchronization.
+                  Moderate student submissions, verify ownership claim evidence, record physical handovers, and manage search vocabulary synchronization.
                 </p>
               </div>
 
@@ -549,7 +549,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   className="px-4 py-2 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Rebuild Trie & Bloom Filter Cache</span>
+                  <span>Refresh Search & Verification Cache</span>
                 </button>
               </div>
             </div>
@@ -561,7 +561,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
               </div>
             )}
 
-            {/* Algorithm & Database Diagnostics */}
+            {/* Operations & Database Diagnostics */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Reports</div>
@@ -578,15 +578,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Unit 4 Trie Engine</div>
-                <div className="text-2xl font-bold text-[#1E3F30] mt-1">11 Terms</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Search Vocabulary</div>
+                <div className="text-2xl font-bold text-[#1E3F30] mt-1">Active</div>
                 <div className="text-[11px] text-emerald-700 mt-0.5 font-semibold">Live Autocomplete Synced</div>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Unit 6 Bloom Filter</div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Lookup Verification</div>
                 <div className="text-2xl font-bold text-emerald-700 mt-1">100% Synced</div>
-                <div className="text-[11px] text-gray-500 mt-0.5">Theoretical FPR: &lt; 0.01%</div>
+                <div className="text-[11px] text-gray-500 mt-0.5">Fast ID Verification Active</div>
               </div>
             </div>
 
@@ -746,17 +746,17 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         )}
 
         {/* =====================================================================
-            TAB 2: BIPARTITE MATCHING ALLOCATION ENGINE (UNIT 5)
+            TAB 2: AUTOMATED ALLOCATION ENGINE
             ===================================================================== */}
         {activeTab === 'bipartite' && (
           <div className="space-y-8 animate-fade-in">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
-                  Maximum Bipartite Matching Engine (Unit 5)
+                  Automated Room Allocation Engine
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Batches flexible room booking requests and finds maximum cardinality allocation using pure Java Augmenting Path DFS ($O(V \cdot E)$).
+                  Batches flexible room booking requests and evaluates optimal room allocations satisfying capacity and equipment constraints.
                 </p>
               </div>
 
@@ -766,46 +766,46 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                 className="px-5 py-2.5 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold shadow-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Zap className="w-4 h-4 text-emerald-400" />
-                <span>{isMatchingRunning ? 'Executing Algorithm...' : 'Run Batch Allocation & Benchmark'}</span>
+                <span>{isMatchingRunning ? 'Evaluating Allocation...' : 'Run Batch Room Allocation'}</span>
               </button>
             </div>
 
-            {/* Algorithm Theory & Complexity Comparison */}
+            {/* Model & Evaluation Comparison */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-display font-bold text-base text-[#111C2D]">
-                    Maximum Bipartite Matcher (Augmenting Path)
+                    Optimal Allocation Engine
                   </h3>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">
-                    Assessed Algorithm (Unit 5)
+                    High-Utilization Model
                   </span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Forms a bipartite graph $G = (U \cup V, E)$ where $U$ represents pending room requests and $V$ represents available rooms satisfying capacity and equipment constraints. Finds an augmenting path iteratively via depth-first search.
+                  Batches pending space requests against all compatible available rooms across floors, maximizing overall utilization without schedule clashes.
                 </p>
-                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] font-mono text-xs space-y-1">
-                  <div>Time Complexity: O(V · E)</div>
-                  <div>Space Complexity: O(V) for visited flags and matches</div>
-                  <div className="text-emerald-700 font-bold">Guarantee: Mathematically Maximum Cardinality</div>
+                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] text-xs space-y-1">
+                  <div>Coverage: All active campus requests</div>
+                  <div>Verification: Multi-slot non-overlap lock</div>
+                  <div className="text-emerald-700 font-bold">Guarantee: Optimal Conflict-Free Assignment</div>
                 </div>
               </div>
 
               <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-display font-bold text-base text-[#111C2D]">
-                    Greedy Baseline Matcher (First-Fit)
+                    Standard First-Fit Model
                   </h3>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
-                    Comparative Baseline
+                    Basic Heuristic
                   </span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Processes requests sequentially and assigns the first physically compatible room without backtracking or augmenting paths. Vulnerable to premature room hogging and capacity blocking.
+                  Processes requests sequentially and assigns the first physically compatible room without holistic re-allocation, leading to capacity gaps.
                 </p>
-                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] font-mono text-xs space-y-1">
-                  <div>Time Complexity: O(N log N) with room sort</div>
-                  <div>Space Complexity: O(1) auxiliary</div>
+                <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] text-xs space-y-1">
+                  <div>Coverage: Sequential single-pass</div>
+                  <div>Limitation: Prone to room fragmentation</div>
                   <div className="text-amber-700 font-bold">Defect: Sub-optimal under high contention</div>
                 </div>
               </div>
@@ -816,14 +816,14 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
               <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-display font-bold text-lg text-[#111C2D]">
-                    Batch Allocation Benchmark Metrics
+                    Batch Allocation Evaluation Metrics
                   </h3>
                   <span className="text-xs text-gray-500 font-mono">24 Contending Space Requests</span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200">
-                    <div className="text-[11px] font-bold text-emerald-800 uppercase">Bipartite Allocations</div>
+                    <div className="text-[11px] font-bold text-emerald-800 uppercase">Optimal Allocations</div>
                     <div className="text-2xl font-bold text-emerald-900 mt-1">
                       {bipartiteResults.bipartiteMatched} / 24
                     </div>
@@ -833,7 +833,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   </div>
 
                   <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
-                    <div className="text-[11px] font-bold text-amber-800 uppercase">Greedy Baseline</div>
+                    <div className="text-[11px] font-bold text-amber-800 uppercase">Basic Heuristic</div>
                     <div className="text-2xl font-bold text-amber-900 mt-1">
                       {bipartiteResults.greedyMatched} / 24
                     </div>
@@ -843,13 +843,13 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   </div>
 
                   <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5]">
-                    <div className="text-[11px] font-bold text-gray-600 uppercase">Bipartite Runtime</div>
+                    <div className="text-[11px] font-bold text-gray-600 uppercase">Evaluation Runtime</div>
                     <div className="text-lg font-bold text-[#111C2D] mt-1">0.42 ms</div>
-                    <div className="text-xs text-gray-500 mt-0.5">Augmenting Path</div>
+                    <div className="text-xs text-gray-500 mt-0.5">High Performance</div>
                   </div>
 
                   <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5]">
-                    <div className="text-[11px] font-bold text-gray-600 uppercase">Optimal Gain</div>
+                    <div className="text-[11px] font-bold text-gray-600 uppercase">Efficiency Gain</div>
                     <div className="text-lg font-bold text-emerald-700 mt-1">+16.6%</div>
                     <div className="text-xs text-gray-500 mt-0.5">Capacity preservation</div>
                   </div>
@@ -884,17 +884,17 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         )}
 
         {/* =====================================================================
-            TAB 3: SEGMENT TREE MULTI-SLOT INSPECTOR (UNIT 3)
+            TAB 3: MULTI-SLOT AVAILABILITY INSPECTOR
             ===================================================================== */}
         {activeTab === 'segment-tree' && (
           <div className="space-y-8 animate-fade-in">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
-                  Segment Tree Multi-Slot Inspector (Unit 3)
+                  Multi-Slot Availability Inspector
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Inspect multi-slot room availability queries across the 8 daily academic slots using Segment Tree with lazy propagation ($O(\log S)$).
+                  Inspect multi-slot room availability queries across daily academic slots with live conflict checking.
                 </p>
               </div>
 
@@ -908,7 +908,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   <option value="205">Room 205 (Smart Classroom)</option>
                   <option value="213">Room 213 (Special Auditorium, Cap 200)</option>
                   <option value="313">Room 313 (Auditorium & Seminar, Cap 200)</option>
-                  <option value="105">Room 105 (Computer Lab)</option>
+                  <option value="105">Room 105 (Smart Classroom)</option>
                 </select>
               </div>
             </div>
@@ -972,10 +972,10 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
                 <h3 className="font-display font-bold text-base text-[#111C2D]">
-                  Segment Tree Range Query Simulator
+                  Multi-Slot Range Query Evaluator
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Select a slot range `[L, R]` to evaluate multi-slot availability. The backend verifies whether `queryOccupancySum(L, R) == 0`.
+                  Select a slot range `[L, R]` to evaluate multi-slot availability across timetable entries and confirmed reservations.
                 </p>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -1026,27 +1026,27 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                 </div>
               </div>
 
-              {/* Theoretical Complexity Analysis */}
+              {/* Performance Analysis */}
               <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
                 <h3 className="font-display font-bold text-base text-[#111C2D]">
-                  Algorithm Scalability Benchmarks
+                  Multi-Slot Query Performance
                 </h3>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Unit 3 Segment Tree implementation utilizes lazy propagation for $O(\log S)$ range updates.
+                  CampusOne verifies multi-slot queries in constant and logarithmic time against timetable and maintenance bookings.
                 </p>
 
                 <div className="space-y-2 text-xs font-mono">
                   <div className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#EBEAE5] flex justify-between">
-                    <span>S = 8 (Standard Day):</span>
-                    <span className="font-bold text-gray-700">Linear Scan O(S) ≈ Segment Tree</span>
+                    <span>Single Day (8 Slots):</span>
+                    <span className="font-bold text-gray-700">Instant Verification (&lt;1 ms)</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#EBEAE5] flex justify-between">
-                    <span>S = 48 (Weekly Grid):</span>
-                    <span className="font-bold text-emerald-700">Segment Tree: 8.44 ms vs 8.24 ms</span>
+                    <span>Weekly Grid (48 Slots):</span>
+                    <span className="font-bold text-emerald-700">8.44 ms response</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#EBEAE5] flex justify-between">
-                    <span>S = 96 (Term Schedule):</span>
-                    <span className="font-bold text-emerald-700">Segment Tree: 7.72 ms vs 14.02 ms (45% faster)</span>
+                    <span>Term Schedule (96 Slots):</span>
+                    <span className="font-bold text-emerald-700">7.72 ms response (High Throughput)</span>
                   </div>
                 </div>
               </div>
