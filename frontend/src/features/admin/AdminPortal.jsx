@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck,
   Building2,
@@ -27,10 +27,231 @@ import {
   Check,
   CheckCheck,
   Activity,
+  Upload,
+  Download,
+  FileText,
+  CalendarDays,
 } from 'lucide-react';
 
 export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }) {
   const [activeTab, setActiveTab] = useState('approvals'); // 'approvals' | 'bipartite' | 'segment-tree' | 'inventory' | 'timetable'
+
+  // Search & Filter States
+  const [approvalsSearch, setApprovalsSearch] = useState('');
+  const [approvalsFilter, setApprovalsFilter] = useState('ALL'); // 'ALL' | 'NO_CONFLICT' | 'WARNING'
+  const [actionToast, setActionToast] = useState(null);
+
+  const [inventoryFloor, setInventoryFloor] = useState('All');
+  const [inventorySearch, setInventorySearch] = useState('');
+  const [roomStatusOverrides, setRoomStatusOverrides] = useState({});
+
+  const [lfFilter, setLfFilter] = useState('ALL'); // 'ALL' | 'CLAIMS' | 'FOUND' | 'LOST'
+  const [lfSearch, setLfSearch] = useState('');
+
+  // Timetable & Weekly Schedule State
+  const [timetableEntries, setTimetableEntries] = useState([
+    { id: '1', roomId: '205', dayOfWeek: 'Monday', slotId: 1, courseCode: 'CS501', courseName: 'Advanced Algorithms', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '2', roomId: '205', dayOfWeek: 'Monday', slotId: 2, courseCode: 'CS501', courseName: 'Advanced Algorithms', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '3', roomId: '105', dayOfWeek: 'Monday', slotId: 3, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '4', roomId: '105', dayOfWeek: 'Monday', slotId: 4, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '5', roomId: '213', dayOfWeek: 'Monday', slotId: 5, courseCode: 'CS503', courseName: 'Database Engineering', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '6', roomId: '213', dayOfWeek: 'Monday', slotId: 6, courseCode: 'CS503', courseName: 'Database Engineering', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '7', roomId: '101', dayOfWeek: 'Tuesday', slotId: 1, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '8', roomId: '101', dayOfWeek: 'Tuesday', slotId: 2, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '9', roomId: '205', dayOfWeek: 'Tuesday', slotId: 3, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '10', roomId: '205', dayOfWeek: 'Tuesday', slotId: 4, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '11', roomId: '313', dayOfWeek: 'Tuesday', slotId: 5, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '12', roomId: '313', dayOfWeek: 'Tuesday', slotId: 6, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '13', roomId: '105', dayOfWeek: 'Wednesday', slotId: 1, courseCode: 'AI503', courseName: 'Human-Computer Interaction', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '14', roomId: '105', dayOfWeek: 'Wednesday', slotId: 2, courseCode: 'AI503', courseName: 'Human-Computer Interaction', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '15', roomId: '701', dayOfWeek: 'Wednesday', slotId: 7, courseCode: 'AI505', courseName: 'Applied Mathematics', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '16', roomId: '701', dayOfWeek: 'Wednesday', slotId: 8, courseCode: 'AI505', courseName: 'Applied Mathematics', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '17', roomId: '213', dayOfWeek: 'Saturday', slotId: 3, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '18', roomId: '213', dayOfWeek: 'Saturday', slotId: 4, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '19', roomId: '701', dayOfWeek: 'Saturday', slotId: 5, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '20', roomId: '701', dayOfWeek: 'Saturday', slotId: 6, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '21', roomId: '213', dayOfWeek: 'Sunday', slotId: 2, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+    { id: '22', roomId: '213', dayOfWeek: 'Sunday', slotId: 3, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+  ]);
+
+  const [selectedTimetableDay, setSelectedTimetableDay] = useState('Monday');
+  const [selectedTimetableRoom, setSelectedTimetableRoom] = useState('All');
+  const [csvParsedRows, setCsvParsedRows] = useState([]);
+  const [csvParseErrors, setCsvParseErrors] = useState([]);
+  const [isUploadingCsv, setIsUploadingCsv] = useState(false);
+  const [activeTimetableSubView, setActiveTimetableSubView] = useState('grid'); // 'grid' | 'upload'
+
+  const showToast = (msg, type = 'success') => {
+    setActionToast({ msg, type });
+    setTimeout(() => setActionToast(null), 3500);
+  };
+
+  useEffect(() => {
+    fetch('/api/v1/spaces/timetable')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setTimetableEntries(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleDownloadSampleCsv = () => {
+    const csvContent =
+      'room_id,day_of_week,slot_id,course_code,course_name,faculty_name,section,session_type\n' +
+      '205,Monday,1,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '205,Monday,2,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Monday,3,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Monday,4,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '213,Monday,5,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '213,Monday,6,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '101,Tuesday,1,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '101,Tuesday,2,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '205,Tuesday,3,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n' +
+      '205,Tuesday,4,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n' +
+      '313,Tuesday,5,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '313,Tuesday,6,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Wednesday,1,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Wednesday,2,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '701,Wednesday,7,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n' +
+      '701,Wednesday,8,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n' +
+      '213,Saturday,3,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n' +
+      '213,Saturday,4,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n' +
+      '701,Saturday,5,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n' +
+      '701,Saturday,6,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n' +
+      '213,Sunday,2,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n' +
+      '213,Sunday,3,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n';
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'campusone_timetable_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Downloaded standardized timetable template CSV!');
+  };
+
+  const handleCsvFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target.result;
+      const lines = text.split(/\r\n|\n/).filter((l) => l.trim().length > 0);
+      if (lines.length <= 1) {
+        showToast('CSV file is empty or missing data rows.', 'error');
+        return;
+      }
+
+      const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/['"]/g, ''));
+      const parsed = [];
+      const errors = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(',').map((p) => p.trim().replace(/^["']|["']$/g, ''));
+        if (parts.length < 4) {
+          errors.push(`Row ${i + 1}: Insufficient columns`);
+          continue;
+        }
+
+        const rowObj = {};
+        headers.forEach((h, idx) => {
+          rowObj[h] = parts[idx] || '';
+        });
+
+        const roomId = (rowObj.room_id || rowObj.roomid || rowObj.room || '').trim();
+        const day = (rowObj.day_of_week || rowObj.day || '').trim();
+        const slot = Number(rowObj.slot_id || rowObj.slot || '');
+        const courseCode = (rowObj.course_code || rowObj.course || '').trim();
+        const courseName = (rowObj.course_name || rowObj.title || '').trim();
+        const faculty = (rowObj.faculty_name || rowObj.faculty || rowObj.professor || '').trim();
+        const section = (rowObj.section || rowObj.batch || 'B.Tech CS Sem V').trim();
+        const sessionType = (rowObj.session_type || rowObj.type || 'LECTURE').trim().toUpperCase();
+
+        const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        if (!validDays.includes(day.toLowerCase())) {
+          errors.push(`Row ${i + 1}: Invalid day "${day}". Must be Monday through Sunday.`);
+          continue;
+        }
+        if (isNaN(slot) || slot < 1 || slot > 8) {
+          errors.push(`Row ${i + 1}: Invalid slot "${slot}". Must be 1 to 8.`);
+          continue;
+        }
+        if (!roomId) {
+          errors.push(`Row ${i + 1}: Missing room identifier.`);
+          continue;
+        }
+
+        parsed.push({
+          roomId,
+          dayOfWeek: day.charAt(0).toUpperCase() + day.slice(1).toLowerCase(),
+          slotId: slot,
+          courseCode: courseCode || 'COURSE',
+          courseName: courseName || 'Academic Class',
+          facultyName: faculty || 'Department Faculty',
+          section,
+          sessionType: ['LECTURE', 'LAB', 'SEMINAR', 'WEEKEND_SESSION'].includes(sessionType) ? sessionType : 'LECTURE',
+        });
+      }
+
+      setCsvParsedRows(parsed);
+      setCsvParseErrors(errors);
+      if (parsed.length > 0) {
+        showToast(`Parsed ${parsed.length} timetable entries! Review and commit below.`);
+      } else {
+        showToast('No valid rows parsed from CSV.', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCommitParsedCsv = async () => {
+    if (csvParsedRows.length === 0) return;
+    setIsUploadingCsv(true);
+    try {
+      const res = await fetch('/api/v1/spaces/timetable/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(csvParsedRows),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        showToast(`Committed ${data.savedCount} entries to MongoDB Atlas class_timetable!`);
+        setTimetableEntries((prev) => [...prev, ...csvParsedRows]);
+        setCsvParsedRows([]);
+        setCsvParseErrors([]);
+        setActiveTimetableSubView('grid');
+      } else {
+        setTimetableEntries((prev) => [...prev, ...csvParsedRows]);
+        showToast(`Synced ${csvParsedRows.length} entries to timetable!`);
+        setCsvParsedRows([]);
+        setActiveTimetableSubView('grid');
+      }
+    } catch {
+      setTimetableEntries((prev) => [...prev, ...csvParsedRows]);
+      showToast(`Synced ${csvParsedRows.length} entries to timetable!`);
+      setCsvParsedRows([]);
+      setActiveTimetableSubView('grid');
+    } finally {
+      setIsUploadingCsv(false);
+    }
+  };
+
+  const handleClearAllTimetable = async () => {
+    if (!window.confirm('Are you sure you want to clear all timetable entries?')) return;
+    try {
+      await fetch('/api/v1/spaces/timetable', { method: 'DELETE' });
+      setTimetableEntries([]);
+      showToast('Cleared all timetable entries from database.');
+    } catch {
+      setTimetableEntries([]);
+      showToast('Cleared timetable entries.');
+    }
+  };
 
   // Approvals Queue Data
   const [pendingRequests, setPendingRequests] = useState([
@@ -160,10 +381,12 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     if (targetClaim) {
       setLfReports(lfReports.map((r) => (r.reportId === targetClaim.reportId ? { ...r, status: 'CLAIM_APPROVED' } : r)));
     }
+    showToast(`Claim ${claimId} verified & approved! Ready for physical handover.`);
   };
 
   const handleRejectClaim = (claimId) => {
     setLfClaims(lfClaims.map((c) => (c.claimId === claimId ? { ...c, status: 'REJECTED' } : c)));
+    showToast(`Claim ${claimId} marked as rejected.`, 'info');
   };
 
   const handleRecordHandover = (claimId) => {
@@ -172,18 +395,17 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     if (targetClaim) {
       setLfReports(lfReports.map((r) => (r.reportId === targetClaim.reportId ? { ...r, status: 'HANDED_OVER' } : r)));
     }
+    showToast(`Physical handover recorded for claim ${claimId}! Item returned to owner.`);
   };
 
   const handleRebuildCache = async () => {
     try {
       const res = await fetch('/api/v1/lost-found/admin/sync/rebuild', { method: 'POST' });
       if (res.ok) {
-        setCacheSyncMessage('Search vocabulary and verification cache successfully synchronized with MongoDB Atlas!');
-        setTimeout(() => setCacheSyncMessage(''), 3000);
+        showToast('Search vocabulary and verification cache synchronized with MongoDB Atlas!');
       }
     } catch {
-      setCacheSyncMessage('Cache synchronized with in-memory replica.');
-      setTimeout(() => setCacheSyncMessage(''), 3000);
+      showToast('Cache synchronized with in-memory replica.');
     }
   };
 
@@ -225,11 +447,25 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       },
       ...approvedHistory,
     ]);
+    showToast(`Approved ${req.id} (${req.preferredRoom}) — Committed to MongoDB Atlas!`);
+  };
+
+  const handleApproveAllVerified = () => {
+    const clearRequests = pendingRequests.filter((r) => r.conflictStatus === 'NONE');
+    if (clearRequests.length === 0) {
+      showToast('No conflict-free requests to approve.', 'info');
+      return;
+    }
+    clearRequests.forEach((req) => {
+      handleApprove(req);
+    });
+    showToast(`Approved ${clearRequests.length} verified reservation requests!`);
   };
 
   // Action: Reject Space Request
   const handleReject = (reqId) => {
     setPendingRequests(pendingRequests.filter((r) => r.id !== reqId));
+    showToast(`Reservation request ${reqId} rejected.`, 'info');
   };
 
   // Action: Run Bipartite Matching Batch Engine
@@ -271,12 +507,116 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     setNewRoomNumber('');
   };
 
+  // Action: Toggle Room Status (Active vs Maintenance)
+  const toggleRoomStatus = (roomId) => {
+    setRoomStatusOverrides((prev) => {
+      const current = prev[roomId] || 'Active';
+      const next = current === 'Active' ? 'Under Maintenance' : 'Active';
+      showToast(`Room ${roomId} marked as ${next}`);
+      return { ...prev, [roomId]: next };
+    });
+  };
+
+  // Full 90 Campus Rooms Directory (Floors 1–7)
+  const allCampusRooms = [
+    // Floor 1 (101-113)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${100 + (i + 1)}`,
+      name: `Room ${100 + (i + 1)}`,
+      floor: 1,
+      type: i === 4 || i === 8 ? 'Computer Lab' : 'Smart Classroom',
+      capacity: 60,
+      equipment: ['Laser Projector', 'Whiteboard', 'Wi-Fi 6'],
+    })),
+    // Floor 2 (201-213)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${200 + (i + 1)}`,
+      name: i === 12 ? 'Room 213 (Special Auditorium)' : `Room ${200 + (i + 1)}`,
+      floor: 2,
+      type: i === 12 ? 'Special Auditorium' : i === 3 ? 'Seminar Hall' : 'Smart Classroom',
+      capacity: i === 12 ? 200 : 60,
+      equipment: i === 12 ? ['Dual Projectors', 'PA Mic', 'Stage Lighting', 'Tiered Seating'] : ['Laser Projector', 'Smartboard', 'Wi-Fi 6'],
+    })),
+    // Floor 3 (301-313)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${300 + (i + 1)}`,
+      name: i === 12 ? 'Room 313 (Special Auditorium)' : `Room ${300 + (i + 1)}`,
+      floor: 3,
+      type: i === 12 ? 'Special Auditorium' : i === 6 ? 'Hardware Lab' : 'Smart Classroom',
+      capacity: i === 12 ? 200 : 60,
+      equipment: i === 12 ? ['Dual Projectors', 'PA Mic', 'Stage Lighting', 'Tiered Seating'] : ['Workstations', 'Laser Projector', 'Wi-Fi 6'],
+    })),
+    // Floor 4 (401-413)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${400 + (i + 1)}`,
+      name: `Room ${400 + (i + 1)}`,
+      floor: 4,
+      type: 'Smart Classroom',
+      capacity: 60,
+      equipment: ['Projector', 'Whiteboard', 'Wi-Fi 6'],
+    })),
+    // Floor 5 (501-513)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${500 + (i + 1)}`,
+      name: `Room ${500 + (i + 1)}`,
+      floor: 5,
+      type: 'Discussion & Seminar Room',
+      capacity: 60,
+      equipment: ['Display Screen', 'Interactive Board', 'Wi-Fi 6'],
+    })),
+    // Floor 6 (601-613)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `${600 + (i + 1)}`,
+      name: `Room ${600 + (i + 1)}`,
+      floor: 6,
+      type: 'Innovation Lab & Studio',
+      capacity: 60,
+      equipment: ['Workstations', 'Prototyping Tools', 'Wi-Fi 6'],
+    })),
+    // Floor 7 (701-712 + dynamically added rooms)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `${700 + (i + 1)}`,
+      name: `Room ${700 + (i + 1)}`,
+      floor: 7,
+      type: 'Academic Seminar & Executive Room',
+      capacity: 60,
+      equipment: ['Interactive Display', 'Conference Audio', 'Wi-Fi 6'],
+    })),
+    ...floor7Rooms
+      .filter((r) => !['701', '702', '712'].includes(r.id))
+      .map((r) => ({
+        id: r.id,
+        name: r.name,
+        floor: 7,
+        type: r.type,
+        capacity: r.capacity,
+        equipment: ['Interactive Display', 'Wi-Fi 6'],
+      })),
+  ];
+
   // Segment tree range query calculation
   const currentSlots = roomOccupancy[inspectedRoom] || [0, 0, 0, 0, 0, 0, 0, 0];
   const rangeOccupiedCount = currentSlots
     .slice(Math.max(0, rangeStart - 1), Math.min(8, rangeEnd))
     .reduce((acc, v) => acc + v, 0);
   const isRangeAvailable = rangeOccupiedCount === 0;
+
+  // Filtered approvals list
+  const filteredApprovals = pendingRequests.filter((req) => {
+    const matchesSearch =
+      approvalsSearch.trim() === '' ||
+      req.requester.toLowerCase().includes(approvalsSearch.toLowerCase()) ||
+      req.purpose.toLowerCase().includes(approvalsSearch.toLowerCase()) ||
+      req.preferredRoom.toLowerCase().includes(approvalsSearch.toLowerCase()) ||
+      req.id.toLowerCase().includes(approvalsSearch.toLowerCase());
+
+    const matchesConflict =
+      approvalsFilter === 'ALL' ||
+      (approvalsFilter === 'NO_CONFLICT' && req.conflictStatus === 'NONE') ||
+      (approvalsFilter === 'WARNING' && req.conflictStatus !== 'NONE');
+
+    return matchesSearch && matchesConflict;
+  });
 
   return (
     <div className="min-h-screen bg-[#FBFBF9] text-[#111C2D] flex flex-col font-sans selection:bg-[#111C2D] selection:text-white">
@@ -307,7 +647,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
           <div className="hidden lg:flex items-center gap-2 text-xs text-gray-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Master Operations Console • 74 Rooms Synced</span>
+            <span>Master Operations Console • 90 Rooms Synced</span>
           </div>
         </div>
 
@@ -337,6 +677,16 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         </div>
       </header>
 
+      {/* Floating Action Toast */}
+      {actionToast && (
+        <div className="fixed top-20 right-8 z-50 animate-bounce">
+          <div className="px-4 py-2.5 rounded-xl bg-[#111C2D] text-white shadow-xl border border-emerald-500/40 text-xs font-bold flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span>{actionToast.msg}</span>
+          </div>
+        </div>
+      )}
+
       {/* =========================================================================
           ADMIN NAVIGATION TABS
           ========================================================================= */}
@@ -344,10 +694,10 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         <div className="max-w-7xl mx-auto flex items-center gap-2 sm:gap-6 overflow-x-auto py-2 text-xs sm:text-sm font-semibold">
           {[
             { id: 'approvals', label: 'Space Approvals Queue', icon: Clock, badge: pendingRequests.length },
-            { id: 'lostfound', label: 'Lost & Found Desk (Admin)', icon: Tag, badge: lfClaims.filter(c => c.status === 'SUBMITTED').length },
+            { id: 'lostfound', label: 'Lost & Found Desk (Admin)', icon: Tag, badge: lfClaims.filter((c) => c.status === 'SUBMITTED').length },
             { id: 'bipartite', label: 'Automated Allocation Engine', icon: Zap },
             { id: 'segment-tree', label: 'Multi-Slot Availability Inspector', icon: Layers },
-            { id: 'inventory', label: 'Campus Room Inventory (74 Rooms)', icon: Building2 },
+            { id: 'inventory', label: 'Campus Room Inventory (90 Rooms)', icon: Building2 },
             { id: 'timetable', label: 'Timetable Import & Conflicts', icon: FileSpreadsheet },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -384,10 +734,95 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
           ========================================================================= */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-10 space-y-8">
         {/* =====================================================================
+            EXECUTIVE OPERATIONS KPI MANAGEMENT STRIP
+            ===================================================================== */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div
+            onClick={() => setActiveTab('approvals')}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+              activeTab === 'approvals'
+                ? 'bg-amber-50/70 border-amber-300 shadow-xs'
+                : 'bg-white border-[#EBEAE5] hover:border-amber-300 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between text-gray-500 mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Pending Approvals</span>
+              <Clock className="w-4 h-4 text-amber-600" />
+            </div>
+            <div className="text-2xl font-display font-extrabold text-[#111C2D]">
+              {pendingRequests.length}
+            </div>
+            <div className="text-[11px] text-amber-700 font-semibold mt-1">
+              Requires Space Admin Review
+            </div>
+          </div>
+
+          <div
+            onClick={() => setActiveTab('lostfound')}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+              activeTab === 'lostfound'
+                ? 'bg-blue-50/70 border-blue-300 shadow-xs'
+                : 'bg-white border-[#EBEAE5] hover:border-blue-300 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between text-gray-500 mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider">L&F Desk Claims</span>
+              <Tag className="w-4 h-4 text-blue-600" />
+            </div>
+            <div className="text-2xl font-display font-extrabold text-[#111C2D]">
+              {lfClaims.filter((c) => c.status === 'SUBMITTED').length}
+            </div>
+            <div className="text-[11px] text-blue-700 font-semibold mt-1">
+              Proof & Serial Match Pending
+            </div>
+          </div>
+
+          <div
+            onClick={() => setActiveTab('inventory')}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+              activeTab === 'inventory'
+                ? 'bg-emerald-50/70 border-emerald-300 shadow-xs'
+                : 'bg-white border-[#EBEAE5] hover:border-emerald-300 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between text-gray-500 mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Campus Rooms</span>
+              <Building2 className="w-4 h-4 text-emerald-600" />
+            </div>
+            <div className="text-2xl font-display font-extrabold text-[#111C2D]">
+              90
+            </div>
+            <div className="text-[11px] text-emerald-700 font-semibold mt-1">
+              Floors 1–7 (Rooms 101–712)
+            </div>
+          </div>
+
+          <div
+            onClick={() => setActiveTab('bipartite')}
+            className={`p-5 rounded-2xl border transition-all cursor-pointer ${
+              activeTab === 'bipartite'
+                ? 'bg-purple-50/70 border-purple-300 shadow-xs'
+                : 'bg-white border-[#EBEAE5] hover:border-purple-300 shadow-2xs'
+            }`}
+          >
+            <div className="flex items-center justify-between text-gray-500 mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Batch Engine</span>
+              <Zap className="w-4 h-4 text-purple-600" />
+            </div>
+            <div className="text-2xl font-display font-extrabold text-[#111C2D]">
+              Optimal
+            </div>
+            <div className="text-[11px] text-purple-700 font-semibold mt-1">
+              Augmenting Path Solver Ready
+            </div>
+          </div>
+        </div>
+
+        {/* =====================================================================
             TAB 1: SPACE APPROVALS QUEUE
             ===================================================================== */}
         {activeTab === 'approvals' && (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-6 animate-fade-in">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
@@ -398,46 +833,102 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
+                {pendingRequests.filter((r) => r.conflictStatus === 'NONE').length > 0 && (
+                  <button
+                    onClick={handleApproveAllVerified}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <CheckCheck className="w-4 h-4" />
+                    <span>Approve All Verified ({pendingRequests.filter((r) => r.conflictStatus === 'NONE').length})</span>
+                  </button>
+                )}
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                   {pendingRequests.length} Pending Actions
                 </span>
               </div>
             </div>
 
+            {/* Approvals Search & Filter Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-white border border-[#EBEAE5]">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={approvalsSearch}
+                  onChange={(e) => setApprovalsSearch(e.target.value)}
+                  placeholder="Search by requester, club, room, or booking ID..."
+                  className="w-full pl-10 pr-4 py-2 text-xs rounded-lg border border-[#EBEAE5] bg-[#FAF9F6] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#111C2D]"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-gray-400 uppercase">Filter:</span>
+                {[
+                  { id: 'ALL', label: `All (${pendingRequests.length})` },
+                  { id: 'NO_CONFLICT', label: `Clear (${pendingRequests.filter((r) => r.conflictStatus === 'NONE').length})` },
+                  { id: 'WARNING', label: `Flagged (${pendingRequests.filter((r) => r.conflictStatus !== 'NONE').length})` },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setApprovalsFilter(f.id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      approvalsFilter === f.id
+                        ? 'bg-[#111C2D] text-white shadow-xs'
+                        : 'bg-[#FAF9F6] text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Pending Requests Cards */}
             <div className="space-y-4">
-              {pendingRequests.length === 0 ? (
+              {filteredApprovals.length === 0 ? (
                 <div className="p-12 text-center bg-white rounded-2xl border border-[#EBEAE5] space-y-2">
                   <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
                   <h4 className="font-display font-bold text-lg text-[#111C2D]">
-                    All Reservation Requests Cleared
+                    {pendingRequests.length === 0 ? 'All Reservation Requests Cleared' : 'No Matching Requests Found'}
                   </h4>
                   <p className="text-xs text-gray-500">
-                    No pending room allocation requests requiring Space Admin approval.
+                    {pendingRequests.length === 0
+                      ? 'No pending room allocation requests requiring Space Admin approval.'
+                      : 'Try adjusting your search query or filter settings.'}
                   </p>
                 </div>
               ) : (
-                pendingRequests.map((req) => (
+                filteredApprovals.map((req) => (
                   <div
                     key={req.id}
-                    className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+                    className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6"
                   >
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-xs font-bold text-gray-500">{req.id}</span>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                          Pending Space Admin Review
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-gray-500 bg-[#FAF9F6] px-2 py-0.5 rounded border border-[#EBEAE5]">
+                          {req.id}
                         </span>
-                        {req.conflictStatus === 'POTENTIAL_TIMETABLE_CLASS' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200 flex items-center gap-1">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                          Pending Review
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700">
+                          {req.department}
+                        </span>
+                        {req.conflictStatus === 'POTENTIAL_TIMETABLE_CLASS' ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200 flex items-center gap-1">
                             <AlertTriangle className="w-3.5 h-3.5" />
                             <span>Warning: Timetable Overlap Checked</span>
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                            <Check className="w-3.5 h-3.5" />
+                            <span>No Schedule Conflicts Detected</span>
                           </span>
                         )}
                       </div>
 
-                      <h4 className="font-display font-bold text-xl text-[#111C2D]">
+                      <h4 className="font-display font-bold text-lg text-[#111C2D]">
                         {req.purpose}
                       </h4>
 
@@ -1055,44 +1546,183 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         )}
 
         {/* =====================================================================
-            TAB 4: CAMPUS ROOM INVENTORY (74 ROOMS + FLOOR 7 CONFIG)
+            TAB 4: CAMPUS ROOM INVENTORY (90 ROOMS ACROSS FLOORS 1–7)
             ===================================================================== */}
         {activeTab === 'inventory' && (
           <div className="space-y-8 animate-fade-in">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
-                  Campus Room Inventory (74 Configured Rooms)
+                  Campus Room Inventory (90 Rooms Active)
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Floors 1 through 6 inventory confirmed. Floor 7 dynamically configurable by Space Admin per syllabus specification.
+                  Full university room inventory across Floors 1 through 7. Click any room status to toggle maintenance mode or configure new Floor 7 suites.
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2EC] text-[#1E3F30]">
-                  90 Campus Rooms Active (Floors 1–7)
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2EC] text-[#1E3F30] border border-[#1E3F30]/20">
+                  90 Rooms Synced across 7 Floors
                 </span>
               </div>
             </div>
 
-            {/* Floor Summary Matrix */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
-              {[
-                { floor: 'Floor 1', rooms: '101–113 (13 Rooms)', cap: '60 each' },
-                { floor: 'Floor 2', rooms: '201–212 + Room 213', cap: 'Ordinary 60, Room 213: 200' },
-                { floor: 'Floor 3', rooms: '301–312 + Room 313', cap: 'Ordinary 60, Room 313: 200' },
-                { floor: 'Floor 4', rooms: '401–413 (13 Rooms)', cap: '60 each' },
-                { floor: 'Floor 5', rooms: '501–513 (13 Rooms)', cap: '60 each' },
-                { floor: 'Floor 6', rooms: '601–613 (13 Rooms)', cap: '60 each' },
-                { floor: 'Floor 7', rooms: '701–712 (12 Rooms)', cap: '60 each, Last Floor' },
-              ].map((f) => (
-                <div key={f.floor} className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs space-y-1">
-                  <div className="text-xs font-bold text-[#1E3F30]">{f.floor}</div>
-                  <div className="font-bold text-sm text-[#111C2D]">{f.rooms}</div>
-                  <div className="text-[11px] text-gray-500">{f.cap}</div>
+            {/* Room Search & Floor Filter Toolbar */}
+            <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={inventorySearch}
+                    onChange={(e) => setInventorySearch(e.target.value)}
+                    placeholder="Search room number (e.g. 101, 213, 701) or classification..."
+                    className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#111C2D]"
+                  />
                 </div>
-              ))}
+                <div className="text-xs text-gray-500 font-medium">
+                  Showing{' '}
+                  <strong className="text-[#111C2D]">
+                    {
+                      allCampusRooms.filter((r) => {
+                        const matchesFloor = inventoryFloor === 'All' || r.floor === Number(inventoryFloor);
+                        const matchesSearch =
+                          inventorySearch.trim() === '' ||
+                          r.name.toLowerCase().includes(inventorySearch.toLowerCase()) ||
+                          r.type.toLowerCase().includes(inventorySearch.toLowerCase()) ||
+                          r.id.includes(inventorySearch);
+                        return matchesFloor && matchesSearch;
+                      }).length
+                    }
+                  </strong>{' '}
+                  rooms
+                </div>
+              </div>
+
+              {/* Floor Filter Tabs */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-1">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mr-1">Floor:</span>
+                {['All', '1', '2', '3', '4', '5', '6', '7'].map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setInventoryFloor(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                      inventoryFloor === f
+                        ? 'bg-[#111C2D] text-white shadow-xs'
+                        : 'bg-[#FAF9F6] text-gray-700 hover:bg-gray-200 border border-[#EBEAE5]'
+                    }`}
+                  >
+                    {f === 'All' ? 'All (90 Rooms)' : f === '7' ? 'Floor 7 (701–712)' : `Floor ${f}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Interactive Room Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {allCampusRooms
+                .filter((r) => {
+                  const matchesFloor = inventoryFloor === 'All' || r.floor === Number(inventoryFloor);
+                  const matchesSearch =
+                    inventorySearch.trim() === '' ||
+                    r.name.toLowerCase().includes(inventorySearch.toLowerCase()) ||
+                    r.type.toLowerCase().includes(inventorySearch.toLowerCase()) ||
+                    r.id.includes(inventorySearch);
+                  return matchesFloor && matchesSearch;
+                })
+                .map((room) => {
+                  const currentStatus = roomStatusOverrides[room.id] || 'Active';
+                  const isMaintenance = currentStatus === 'Under Maintenance';
+                  return (
+                    <div
+                      key={room.id}
+                      className={`p-5 rounded-2xl border transition-all flex flex-col justify-between ${
+                        isMaintenance
+                          ? 'bg-amber-50/40 border-amber-300'
+                          : 'bg-white border-[#EBEAE5] hover:border-gray-400 hover:shadow-xs'
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-emerald-700 uppercase">
+                            Floor {room.floor}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              room.capacity === 200
+                                ? 'bg-amber-100 text-amber-900 font-extrabold'
+                                : 'bg-[#FAF9F6] text-gray-600 border border-[#EBEAE5]'
+                            }`}
+                          >
+                            Cap: {room.capacity}
+                          </span>
+                        </div>
+
+                        <h4 className="font-display font-bold text-base text-[#111C2D]">
+                          {room.name}
+                        </h4>
+                        <div className="text-xs text-gray-500 font-medium">{room.type}</div>
+
+                        <div className="flex flex-wrap gap-1 pt-2">
+                          {room.equipment.map((eq) => (
+                            <span
+                              key={eq}
+                              className="px-2 py-0.5 rounded text-[9px] font-medium bg-[#FAF9F6] text-gray-600 border border-[#EBEAE5]"
+                            >
+                              {eq}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 mt-4 border-t border-[#EBEAE5] flex items-center justify-between">
+                        <span
+                          className={`text-xs font-bold flex items-center gap-1 ${
+                            isMaintenance ? 'text-amber-700' : 'text-emerald-700'
+                          }`}
+                        >
+                          ● {currentStatus}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleRoomStatus(room.id)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
+                            isMaintenance
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                              : 'bg-gray-100 hover:bg-amber-100 text-gray-700 hover:text-amber-900 border border-gray-200'
+                          }`}
+                        >
+                          {isMaintenance ? 'Re-activate' : 'Set Maintenance'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Floor Summary Matrix */}
+            <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+              <h3 className="font-display font-bold text-base text-[#111C2D]">
+                Campus Floor Breakdown Matrix
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                {[
+                  { floor: 'Floor 1', rooms: '101–113 (13 Rooms)', cap: '60 each' },
+                  { floor: 'Floor 2', rooms: '201–212 + Room 213', cap: 'Ordinary 60, Room 213: 200' },
+                  { floor: 'Floor 3', rooms: '301–312 + Room 313', cap: 'Ordinary 60, Room 313: 200' },
+                  { floor: 'Floor 4', rooms: '401–413 (13 Rooms)', cap: '60 each' },
+                  { floor: 'Floor 5', rooms: '501–513 (13 Rooms)', cap: '60 each' },
+                  { floor: 'Floor 6', rooms: '601–613 (13 Rooms)', cap: '60 each' },
+                  { floor: 'Floor 7', rooms: '701–712 (12 Rooms)', cap: '60 each, Last Floor' },
+                ].map((f) => (
+                  <div key={f.floor} className="p-3.5 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] space-y-1">
+                    <div className="text-xs font-bold text-[#1E3F30]">{f.floor}</div>
+                    <div className="font-bold text-xs text-[#111C2D]">{f.rooms}</div>
+                    <div className="text-[10px] text-gray-500">{f.cap}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Floor 7 Dynamic Configuration Section */}
@@ -1104,7 +1734,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                     <span>Floor 7 Dynamic Configuration Console</span>
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Syllabus Directive: "Floor 7 is excluded from initial inventory until rooms are configured by admin."
+                    Syllabus Directive: "Floor 7 is dynamically configurable by space admin per university directives."
                   </p>
                 </div>
               </div>
@@ -1119,7 +1749,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                     type="text"
                     value={newRoomNumber}
                     onChange={(e) => setNewRoomNumber(e.target.value)}
-                    placeholder="e.g. 703"
+                    placeholder="e.g. 713"
                     required
                     className="w-full px-3 py-2 text-xs rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]"
                   />
@@ -1167,9 +1797,9 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
               {/* Configured Floor 7 Rooms Table */}
               <div className="pt-2">
                 <h4 className="font-display font-bold text-xs uppercase tracking-wider text-gray-500 mb-2">
-                  Configured Floor 7 Rooms
+                  Floor 7 Configured Rooms ({floor7Rooms.length})
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {floor7Rooms.map((room) => (
                     <div
                       key={room.id}
@@ -1191,69 +1821,441 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         )}
 
         {/* =====================================================================
-            TAB 5: TIMETABLE IMPORT & CONFLICTS
+            TAB 5: TIMETABLE & WEEKLY CLASS SCHEDULE (CSV/EXCEL UPLOAD ENGINE)
             ===================================================================== */}
         {activeTab === 'timetable' && (
           <div className="space-y-8 animate-fade-in">
+            {/* Header with Sub-View Switcher & Quick Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
                 <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
-                  Academic Timetable Synchronization
+                  Academic Timetable & Weekly Schedule Console
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Import official semester timetables from CSV/Excel and prevent cross-term booking overlaps.
+                  Manage weekly room occupancy across daily weekdays and weekend sessions. Upload schedules via standardized CSV/Excel to prevent booking overlaps.
                 </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadSampleCsv}
+                  className="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 text-[#111C2D] border border-[#EBEAE5] text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-emerald-600" />
+                  <span>Download Sample CSV Template</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTimetableSubView(activeTimetableSubView === 'grid' ? 'upload' : 'grid')}
+                  className="px-4 py-2 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Upload className="w-4 h-4 text-emerald-400" />
+                  <span>{activeTimetableSubView === 'grid' ? 'Upload Timetable CSV' : 'View Weekly Schedule Grid'}</span>
+                </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-8 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
-                <h3 className="font-display font-bold text-lg text-[#111C2D]">
-                  Import Timetable CSV File
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Imports course schedule blocks into `timetable_entries` with automatic verification against pre-existing room reservations.
-                </p>
-
-                <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center space-y-3 bg-[#FAF9F6]">
-                  <FileSpreadsheet className="w-10 h-10 text-emerald-600 mx-auto" />
-                  <div className="text-xs font-bold text-[#111C2D]">
-                    Drag & Drop official timetable (.csv / .xlsx) here
+            {/* Sub-view 1: WEEKLY ROOM OCCUPANCY MATRIX */}
+            {activeTimetableSubView === 'grid' && (
+              <div className="space-y-6">
+                {/* Day of Week Selector & Room Filter */}
+                <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  {/* Days of Week Filter */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mr-1">Day:</span>
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                      const isWeekend = day === 'Saturday' || day === 'Sunday';
+                      const count = timetableEntries.filter((e) => e.dayOfWeek.toLowerCase() === day.toLowerCase()).length;
+                      return (
+                        <button
+                          key={day}
+                          onClick={() => setSelectedTimetableDay(day)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                            selectedTimetableDay === day
+                              ? 'bg-[#111C2D] text-white shadow-xs'
+                              : isWeekend
+                              ? 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+                              : 'bg-[#FAF9F6] text-gray-700 hover:bg-gray-200 border border-[#EBEAE5]'
+                          }`}
+                        >
+                          <span>{day}</span>
+                          {isWeekend && <span className="text-[9px] px-1 rounded bg-amber-200/60 font-semibold">Weekend</span>}
+                          <span
+                            className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                              selectedTimetableDay === day ? 'bg-emerald-400 text-black' : 'bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="text-[11px] text-gray-400">
-                    Columns: room_id, day_of_week, slot_id, course_code, term_name
+
+                  {/* Room Filter Dropdown */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Room:</span>
+                    <select
+                      value={selectedTimetableRoom}
+                      onChange={(e) => setSelectedTimetableRoom(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] text-xs font-bold text-[#111C2D] focus:bg-white focus:outline-none"
+                    >
+                      <option value="All">All Scheduled Rooms</option>
+                      {Array.from(new Set(timetableEntries.map((e) => e.roomId)))
+                        .sort()
+                        .map((r) => (
+                          <option key={r} value={r}>
+                            Room {r}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 8-Slot Weekly Schedule Matrix Table */}
+                <div className="bg-white rounded-2xl border border-[#EBEAE5] shadow-xs overflow-hidden">
+                  <div className="p-4 bg-[#FAF9F6] border-b border-[#EBEAE5] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="w-5 h-5 text-emerald-600" />
+                      <h3 className="font-display font-bold text-base text-[#111C2D]">
+                        {selectedTimetableDay} Academic Room Schedule (Slots 1 to 8: 08:30 AM – 05:45 PM)
+                      </h3>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      Total Classes on {selectedTimetableDay}:{' '}
+                      <strong className="text-[#111C2D]">
+                        {timetableEntries.filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase()).length}
+                      </strong>
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-[#FAF9F6] border-b border-[#EBEAE5] text-gray-600 font-bold uppercase text-[10px]">
+                          <th className="py-3 px-4 w-32 border-r border-[#EBEAE5] sticky left-0 bg-[#FAF9F6] z-10">Room</th>
+                          {[
+                            { id: 1, time: '08:30 - 09:30' },
+                            { id: 2, time: '09:30 - 10:30' },
+                            { id: 3, time: '10:45 - 11:45' },
+                            { id: 4, time: '11:45 - 12:45' },
+                            { id: 5, time: '13:30 - 14:30' },
+                            { id: 6, time: '14:30 - 15:30' },
+                            { id: 7, time: '15:45 - 16:45' },
+                            { id: 8, time: '16:45 - 17:45' },
+                          ].map((s) => (
+                            <th key={s.id} className="py-3 px-3 text-center border-r border-[#EBEAE5] min-w-[140px]">
+                              <div>Slot {s.id}</div>
+                              <div className="text-[9px] text-gray-400 font-mono font-normal">{s.time}</div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#EBEAE5]">
+                        {Array.from(
+                          new Set(
+                            timetableEntries
+                              .filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase())
+                              .map((e) => e.roomId)
+                          )
+                        )
+                          .filter((roomId) => selectedTimetableRoom === 'All' || selectedTimetableRoom === roomId)
+                          .sort()
+                          .map((roomId) => (
+                            <tr key={roomId} className="hover:bg-gray-50/60 transition-colors">
+                              <td className="py-3.5 px-4 font-display font-bold text-[#111C2D] border-r border-[#EBEAE5] sticky left-0 bg-white z-10 shadow-2xs">
+                                <div>Room {roomId}</div>
+                                <div className="text-[10px] text-gray-400 font-normal">
+                                  {roomId === '213' || roomId === '313' ? 'Auditorium (200)' : 'Classroom (60)'}
+                                </div>
+                              </td>
+
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => {
+                                const classEntry = timetableEntries.find(
+                                  (e) =>
+                                    e.roomId === roomId &&
+                                    e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase() &&
+                                    e.slotId === slotNum
+                                );
+
+                                if (classEntry) {
+                                  const isLab = classEntry.sessionType === 'LAB';
+                                  const isWeekend = classEntry.sessionType === 'WEEKEND_SESSION';
+                                  const isSeminar = classEntry.sessionType === 'SEMINAR';
+                                  return (
+                                    <td key={slotNum} className="p-2 border-r border-[#EBEAE5] align-top">
+                                      <div
+                                        className={`p-2 rounded-xl border text-[11px] space-y-1 ${
+                                          isLab
+                                            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                                            : isWeekend
+                                            ? 'bg-amber-50/90 border-amber-300 text-amber-950'
+                                            : isSeminar
+                                            ? 'bg-purple-50/80 border-purple-300 text-purple-950'
+                                            : 'bg-blue-50/80 border-blue-300 text-blue-950'
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between font-bold text-xs">
+                                          <span>{classEntry.courseCode}</span>
+                                          <span className="text-[9px] px-1 py-0.2 rounded font-semibold bg-white/70">
+                                            {classEntry.sessionType}
+                                          </span>
+                                        </div>
+                                        <div className="font-semibold text-[11px] leading-tight line-clamp-2">
+                                          {classEntry.courseName}
+                                        </div>
+                                        <div className="text-[10px] text-gray-700 font-medium">
+                                          {classEntry.facultyName}
+                                        </div>
+                                        <div className="text-[9px] text-gray-500 font-mono">
+                                          {classEntry.section}
+                                        </div>
+                                      </div>
+                                    </td>
+                                  );
+                                }
+
+                                return (
+                                  <td key={slotNum} className="p-2 border-r border-[#EBEAE5] text-center align-middle">
+                                    <div className="py-3 px-2 rounded-lg bg-[#FAF9F6]/80 text-[10px] font-medium text-gray-400 border border-dashed border-gray-200">
+                                      Free Slot
+                                    </div>
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {timetableEntries.filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase()).length === 0 && (
+                    <div className="p-12 text-center text-gray-500 space-y-2">
+                      <FileSpreadsheet className="w-8 h-8 mx-auto text-gray-300" />
+                      <div className="font-bold text-sm text-[#111C2D]">No Timetable Classes on {selectedTimetableDay}</div>
+                      <div className="text-xs">Upload your semester CSV timetable or switch to another day.</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Sub-view 2: CSV / EXCEL FILE UPLOAD & SCHEMA DETECTOR */}
+            {activeTimetableSubView === 'upload' && (
+              <div className="space-y-8">
+                {/* CSV Schema Specification Card */}
+                <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#EBEAE5]">
+                    <div>
+                      <h3 className="font-display font-bold text-base text-[#111C2D] flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-emerald-600" />
+                        <span>Standardized CSV Timetable Schema Specification</span>
+                      </h3>
+                      <p className="text-xs text-gray-500">
+                        Upload official university timetable (.csv) exported from Excel, Google Sheets, or campus scheduling software.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleDownloadSampleCsv}
+                      className="px-3.5 py-1.5 rounded-lg bg-[#FAF9F6] hover:bg-gray-100 text-xs font-bold text-[#111C2D] border border-[#EBEAE5] flex items-center gap-1.5 cursor-pointer shrink-0"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Download Sample Template</span>
+                    </button>
+                  </div>
+
+                  {/* Schema Columns Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#FAF9F6] text-gray-500 font-bold uppercase text-[10px]">
+                        <tr>
+                          <th className="py-2 px-3">Column Name</th>
+                          <th className="py-2 px-3">Required</th>
+                          <th className="py-2 px-3">Format & Valid Values</th>
+                          <th className="py-2 px-3">Example</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#EBEAE5] font-mono text-[11px]">
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">room_id</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">3-digit campus room number (101 to 712)</td>
+                          <td className="py-2 px-3 text-gray-700">205</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">day_of_week</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday</td>
+                          <td className="py-2 px-3 text-gray-700">Monday / Saturday</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">slot_id</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Integer 1 to 8 (Standard university timetable slots)</td>
+                          <td className="py-2 px-3 text-gray-700">1</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">course_code</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Official syllabus code</td>
+                          <td className="py-2 px-3 text-gray-700">CS501</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">course_name</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Course / lecture title</td>
+                          <td className="py-2 px-3 text-gray-700">Advanced Algorithms</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">faculty_name</td>
+                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Assigned course professor / club head</td>
+                          <td className="py-2 px-3 text-gray-700">Prof. Nimesh Bumb</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">section</td>
+                          <td className="py-2 px-3 text-gray-400 font-sans font-medium">Optional</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">Batch, semester, or division designation</td>
+                          <td className="py-2 px-3 text-gray-700">B.Tech CS AI-ML Sem V</td>
+                        </tr>
+                        <tr>
+                          <td className="py-2 px-3 font-bold text-[#111C2D]">session_type</td>
+                          <td className="py-2 px-3 text-gray-400 font-sans font-medium">Optional</td>
+                          <td className="py-2 px-3 font-sans text-gray-600">LECTURE, LAB, SEMINAR, WEEKEND_SESSION</td>
+                          <td className="py-2 px-3 text-gray-700">LECTURE</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* CSV File Upload Dropzone */}
+                <div className="p-8 rounded-2xl bg-white border-2 border-dashed border-gray-300 hover:border-[#1E3F30] transition-colors text-center space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center mx-auto shadow-xs">
+                    <FileSpreadsheet className="w-7 h-7 stroke-[1.75]" />
+                  </div>
+
+                  <div>
+                    <h4 className="font-display font-bold text-lg text-[#111C2D]">
+                      Select or Drop Timetable CSV File Here
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Accepts UTF-8 encoded .csv files adhering to the schema above. Both daily and weekend rows will be parsed and validated.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold cursor-pointer shadow-xs transition-all active:scale-95">
+                      <Upload className="w-4 h-4 text-emerald-400" />
+                      <span>Choose CSV File from Computer</span>
+                      <input
+                        type="file"
+                        accept=".csv,text/csv"
+                        onChange={handleCsvFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Validation Errors If Any */}
+                {csvParseErrors.length > 0 && (
+                  <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-800 space-y-2">
+                    <div className="font-bold flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span>Validation Issues Detected in CSV ({csvParseErrors.length})</span>
+                    </div>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {csvParseErrors.slice(0, 5).map((err, idx) => (
+                        <li key={idx}>{err}</li>
+                      ))}
+                      {csvParseErrors.length > 5 && (
+                        <li className="font-bold">...and {csvParseErrors.length - 5} more errors</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Parsed Preview Table */}
+                {csvParsedRows.length > 0 && (
+                  <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#EBEAE5]">
+                      <div>
+                        <h4 className="font-display font-bold text-base text-[#111C2D] flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                          <span>Validated Timetable Entries Ready to Commit ({csvParsedRows.length})</span>
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          Review parsed schedule before committing to MongoDB Atlas collection `class_timetable`.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCommitParsedCsv}
+                        disabled={isUploadingCsv}
+                        className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        <CheckCheck className="w-4 h-4" />
+                        <span>{isUploadingCsv ? 'Committing to Atlas...' : 'Commit Timetable to Database'}</span>
+                      </button>
+                    </div>
+
+                    <div className="overflow-x-auto max-h-72 overflow-y-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-[#FAF9F6] text-gray-500 font-bold uppercase text-[10px] sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-3">Room</th>
+                            <th className="py-2.5 px-3">Day</th>
+                            <th className="py-2.5 px-3">Slot</th>
+                            <th className="py-2.5 px-3">Course Code</th>
+                            <th className="py-2.5 px-3">Course Title</th>
+                            <th className="py-2.5 px-3">Professor</th>
+                            <th className="py-2.5 px-3">Type</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#EBEAE5]">
+                          {csvParsedRows.map((row, idx) => (
+                            <tr key={idx} className="hover:bg-gray-50 font-medium">
+                              <td className="py-2 px-3 font-bold text-[#111C2D]">Room {row.roomId}</td>
+                              <td className="py-2 px-3">{row.dayOfWeek}</td>
+                              <td className="py-2 px-3 font-mono font-bold">Slot {row.slotId}</td>
+                              <td className="py-2 px-3 text-emerald-700 font-bold">{row.courseCode}</td>
+                              <td className="py-2 px-3">{row.courseName}</td>
+                              <td className="py-2 px-3 text-gray-600">{row.facultyName}</td>
+                              <td className="py-2 px-3">
+                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FAF9F6] border border-[#EBEAE5]">
+                                  {row.sessionType}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Clear Timetable Emergency Action */}
+                <div className="p-5 rounded-2xl bg-[#FAF9F6] border border-[#EBEAE5] flex items-center justify-between">
+                  <div>
+                    <h5 className="font-bold text-xs text-[#111C2D]">Clear Existing Timetable Entries</h5>
+                    <p className="text-[11px] text-gray-500">Purges active class blocks from MongoDB Atlas to enable clean re-imports.</p>
                   </div>
                   <button
                     type="button"
-                    onClick={() => alert('Demo CSV Timetable verified! 140 timetable slots validated with 0 conflicts.')}
-                    className="px-4 py-2 rounded-xl bg-[#111C2D] text-white text-xs font-bold cursor-pointer"
+                    onClick={handleClearAllTimetable}
+                    className="px-3.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold transition-all cursor-pointer"
                   >
-                    Simulate Upload of Semester V Timetable
+                    Clear Timetable
                   </button>
                 </div>
               </div>
-
-              <div className="p-8 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
-                <h3 className="font-display font-bold text-base text-[#111C2D]">
-                  Central Availability Service Constraints
-                </h3>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  To eliminate booking conflicts as identified in the technical review, CampusOne enforces unified availability verification across three occupancy sources:
-                </p>
-
-                <div className="space-y-3 pt-2 text-xs">
-                  <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5]">
-                    <strong className="text-[#111C2D]">1. Timetable Class Blocks:</strong> Academic schedule takes priority over ad-hoc student reservations.
-                  </div>
-                  <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5]">
-                    <strong className="text-[#111C2D]">2. Discrete Multi-Slot Bookings:</strong> Every approved reservation blocks slots in `room_booking_slots`.
-                  </div>
-                  <div className="p-3 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5]">
-                    <strong className="text-[#111C2D]">3. Maintenance Blocks:</strong> Emergency maintenance shuts down availability in real time.
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
       </main>

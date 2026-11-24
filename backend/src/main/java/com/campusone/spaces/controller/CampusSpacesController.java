@@ -2,12 +2,16 @@ package com.campusone.spaces.controller;
 
 import com.campusone.algorithm.matching.BipartiteMatcher;
 import com.campusone.algorithm.matching.GreedyBaselineMatcher;
+import com.campusone.model.ClassTimetableDocument;
 import com.campusone.model.RoomBookingSlotDocument;
 import com.campusone.model.RoomDocument;
+import com.campusone.repository.ClassTimetableMongoRepository;
 import com.campusone.repository.RoomBookingSlotMongoRepository;
 import com.campusone.repository.RoomMongoRepository;
 import com.campusone.spaces.service.CentralAvailabilityService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,13 +26,16 @@ public class CampusSpacesController {
     private final RoomMongoRepository roomRepository;
     private final RoomBookingSlotMongoRepository bookingSlotRepository;
     private final CentralAvailabilityService availabilityService;
+    private final ClassTimetableMongoRepository timetableRepository;
 
     public CampusSpacesController(RoomMongoRepository roomRepository,
                                   RoomBookingSlotMongoRepository bookingSlotRepository,
-                                  CentralAvailabilityService availabilityService) {
+                                  CentralAvailabilityService availabilityService,
+                                  ClassTimetableMongoRepository timetableRepository) {
         this.roomRepository = roomRepository;
         this.bookingSlotRepository = bookingSlotRepository;
         this.availabilityService = availabilityService;
+        this.timetableRepository = timetableRepository;
     }
 
     /**
@@ -144,5 +151,115 @@ public class CampusSpacesController {
         results.put("theoreticalComplexity", "Bipartite: O(V * E) vs Greedy: O(N log N)");
 
         return ResponseEntity.ok(results);
+    }
+
+    /**
+     * Get all weekly timetable entries, optionally filtered by room and day.
+     */
+    @GetMapping("/timetable")
+    public ResponseEntity<List<ClassTimetableDocument>> getTimetable(
+            @RequestParam(value = "roomId", required = false) String roomId,
+            @RequestParam(value = "dayOfWeek", required = false) String dayOfWeek) {
+        if (roomId != null && !roomId.isBlank() && dayOfWeek != null && !dayOfWeek.isBlank()) {
+            return ResponseEntity.ok(timetableRepository.findByRoomIdAndDayOfWeekIgnoreCase(roomId, dayOfWeek));
+        } else if (roomId != null && !roomId.isBlank()) {
+            return ResponseEntity.ok(timetableRepository.findByRoomId(roomId));
+        } else if (dayOfWeek != null && !dayOfWeek.isBlank()) {
+            return ResponseEntity.ok(timetableRepository.findByDayOfWeekIgnoreCase(dayOfWeek));
+        }
+        return ResponseEntity.ok(timetableRepository.findAll());
+    }
+
+    /**
+     * Bulk upload / sync parsed CSV timetable entries into MongoDB Atlas.
+     */
+    @PostMapping("/timetable/bulk")
+    public ResponseEntity<?> bulkImportTimetable(@RequestBody List<ClassTimetableDocument> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "No timetable entries provided"));
+        }
+
+        String batchId = "BATCH-" + System.currentTimeMillis();
+        List<ClassTimetableDocument> toSave = new ArrayList<>();
+        List<Map<String, Object>> conflicts = new ArrayList<>();
+
+        for (ClassTimetableDocument entry : entries) {
+            if (entry.getRoomId() == null || entry.getDayOfWeek() == null || entry.getSlotId() == null) {
+                continue;
+            }
+            entry.setImportBatchId(batchId);
+            // Check if slot already occupied in timetable
+            boolean exists = timetableRepository.existsByRoomIdAndDayOfWeekIgnoreCaseAndSlotId(
+                    entry.getRoomId(), entry.getDayOfWeek(), entry.getSlotId()
+            );
+            if (exists) {
+                conflicts.add(Map.of(
+                        "roomId", entry.getRoomId(),
+                        "dayOfWeek", entry.getDayOfWeek(),
+                        "slotId", entry.getSlotId(),
+                        "courseCode", entry.getCourseCode() != null ? entry.getCourseCode() : "",
+                        "reason", "Room is already scheduled for this day and slot"
+                ));
+            } else {
+                toSave.add(entry);
+            }
+        }
+
+        if (!toSave.isEmpty()) {
+            timetableRepository.saveAll(toSave);
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "status", "SUCCESS",
+                "batchId", batchId,
+                "savedCount", toSave.size(),
+                "conflictCount", conflicts.size(),
+                "conflicts", conflicts,
+                "totalSubmitted", entries.size()
+        ));
+    }
+
+    /**
+     * Clear all timetable entries.
+     */
+    @DeleteMapping("/timetable")
+    public ResponseEntity<?> clearTimetable() {
+        timetableRepository.deleteAll();
+        return ResponseEntity.ok(Map.of("message", "All timetable entries cleared from MongoDB Atlas"));
+    }
+
+    /**
+     * Download the standardized CSV template.
+     */
+    @GetMapping(value = "/timetable/template.csv", produces = "text/csv")
+    public ResponseEntity<String> getCsvTemplate() {
+        String csv = "room_id,day_of_week,slot_id,course_code,course_name,faculty_name,section,session_type\n" +
+                "205,Monday,1,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "205,Monday,2,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "105,Monday,3,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "105,Monday,4,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "213,Monday,5,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "213,Monday,6,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "101,Tuesday,1,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "101,Tuesday,2,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "205,Tuesday,3,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n" +
+                "205,Tuesday,4,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n" +
+                "313,Tuesday,5,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "313,Tuesday,6,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "105,Wednesday,1,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "105,Wednesday,2,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n" +
+                "701,Wednesday,7,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n" +
+                "701,Wednesday,8,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n" +
+                "213,Saturday,3,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n" +
+                "213,Saturday,4,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n" +
+                "701,Saturday,5,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n" +
+                "701,Saturday,6,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n" +
+                "213,Sunday,2,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n" +
+                "213,Sunday,3,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", "campusone_timetable_template.csv");
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        return new ResponseEntity<>(csv, headers, HttpStatus.OK);
     }
 }

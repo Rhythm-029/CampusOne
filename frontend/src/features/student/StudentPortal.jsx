@@ -34,13 +34,28 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'spaces' | 'my-bookings' | 'faculty' | 'clubs'
 
   // Spaces Booking State
-  const [bookingMode, setBookingMode] = useState('smart'); // 'smart' | 'catalog'
+  const [bookingMode, setBookingMode] = useState('smart'); // 'smart' | 'catalog' | 'timetable'
   const [selectedFloor, setSelectedFloor] = useState('All');
   const [smartCapacity, setSmartCapacity] = useState(45);
   const [smartSlot, setSmartSlot] = useState(3);
   const [smartEquipment, setSmartEquipment] = useState(['Projector']);
   const [smartPurpose, setSmartPurpose] = useState('AI & ML Project Group Discussion');
   const [allocationSuccess, setAllocationSuccess] = useState(null);
+
+  // Weekly Timetable & Room Occupancy State
+  const [studentTimetableDay, setStudentTimetableDay] = useState('Monday');
+  const [studentTimetableEntries, setStudentTimetableEntries] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/v1/spaces/timetable')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStudentTimetableEntries(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // My Bookings Data
   const [bookings, setBookings] = useState([
@@ -113,8 +128,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
   const campusRooms = [
     // Floor 1 (101-113)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${100 + (i + 1)}`,
+      name: `Room ${100 + (i + 1)}`,
       floor: 1,
       type: i === 4 || i === 8 ? 'Computer Lab' : 'Smart Classroom',
       capacity: 60,
@@ -123,8 +138,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 2 (201-213, with 213 cap 200)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `20${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 20${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${200 + (i + 1)}`,
+      name: i === 12 ? 'Room 213 (Special Auditorium)' : `Room ${200 + (i + 1)}`,
       floor: 2,
       type: i === 12 ? 'Special Auditorium' : i === 3 ? 'Seminar Hall' : 'Smart Classroom',
       capacity: i === 12 ? 200 : 60,
@@ -136,8 +151,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 3 (301-313, with 313 cap 200)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `30${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 30${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${300 + (i + 1)}`,
+      name: i === 12 ? 'Room 313 (Special Auditorium)' : `Room ${300 + (i + 1)}`,
       floor: 3,
       type: i === 12 ? 'Special Auditorium' : i === 6 ? 'Hardware Lab' : 'Smart Classroom',
       capacity: i === 12 ? 200 : 60,
@@ -149,8 +164,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 4 (401-413)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${400 + (i + 1)}`,
+      name: `Room ${400 + (i + 1)}`,
       floor: 4,
       type: 'Smart Classroom',
       capacity: 60,
@@ -159,8 +174,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 5 (501-513)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${500 + (i + 1)}`,
+      name: `Room ${500 + (i + 1)}`,
       floor: 5,
       type: 'Discussion & Seminar Room',
       capacity: 60,
@@ -169,8 +184,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 6 (601-613)
     ...Array.from({ length: 13 }, (_, i) => ({
-      id: `60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${600 + (i + 1)}`,
+      name: `Room ${600 + (i + 1)}`,
       floor: 6,
       type: 'Innovation Lab & Studio',
       capacity: 60,
@@ -179,8 +194,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     })),
     // Floor 7 (701-712, 7th floor is the last floor)
     ...Array.from({ length: 12 }, (_, i) => ({
-      id: `70${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
-      name: `Room 70${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      id: `${700 + (i + 1)}`,
+      name: `Room ${700 + (i + 1)}`,
       floor: 7,
       type: 'Academic Seminar & Executive Room',
       capacity: 60,
@@ -409,8 +424,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   <span className="text-xs font-bold uppercase tracking-wider">Campus Rooms</span>
                   <Building className="w-5 h-5 text-[#1E3F30]" />
                 </div>
-                <div className="text-3xl font-display font-extrabold text-[#111C2D]">74</div>
-                <div className="text-xs text-gray-500 font-medium mt-1">Floors 1–6 Configured</div>
+                <div className="text-3xl font-display font-extrabold text-[#111C2D]">90</div>
+                <div className="text-xs text-gray-500 font-medium mt-1">Floors 1–7 (Rooms 101–712)</div>
               </div>
 
               <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs">
@@ -525,11 +540,11 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                 </p>
               </div>
 
-              <div className="p-1 bg-[#FAF9F6] border border-[#EBEAE5] rounded-xl flex items-center gap-1">
+              <div className="p-1 bg-[#FAF9F6] border border-[#EBEAE5] rounded-xl flex items-center gap-1 overflow-x-auto">
                 <button
                   type="button"
                   onClick={() => setBookingMode('smart')}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                     bookingMode === 'smart'
                       ? 'bg-[#1E3F30] text-white shadow-xs'
                       : 'text-gray-600 hover:text-[#111C2D]'
@@ -540,13 +555,24 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                 <button
                   type="button"
                   onClick={() => setBookingMode('catalog')}
-                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                     bookingMode === 'catalog'
                       ? 'bg-[#1E3F30] text-white shadow-xs'
                       : 'text-gray-600 hover:text-[#111C2D]'
                   }`}
                 >
                   Browse Exact Rooms (Floors 1–7)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBookingMode('timetable')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    bookingMode === 'timetable'
+                      ? 'bg-[#1E3F30] text-white shadow-xs'
+                      : 'text-gray-600 hover:text-[#111C2D]'
+                  }`}
+                >
+                  Weekly Class Timetable
                 </button>
               </div>
             </div>
@@ -733,8 +759,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   </div>
                 </div>
               </div>
-            ) : (
-              /* EXACT ROOM CATALOG (74 ROOMS) */
+            ) : bookingMode === 'catalog' ? (
+              /* EXACT ROOM CATALOG (90 ROOMS ACROSS FLOORS 1–7) */
               <div className="space-y-6">
                 {/* Floor filter bar */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2">
@@ -821,6 +847,161 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                         </div>
                       </div>
                     ))}
+                </div>
+              </div>
+            ) : (
+              /* WEEKLY CLASS TIMETABLE GRID (DAILY & WEEKEND SESSIONS) */
+              <div className="space-y-6">
+                {/* Day selector */}
+                <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex items-center justify-between gap-4 overflow-x-auto">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mr-1">Day:</span>
+                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                      const isWeekend = day === 'Saturday' || day === 'Sunday';
+                      const count = studentTimetableEntries.filter((e) => e.dayOfWeek?.toLowerCase() === day.toLowerCase()).length;
+                      return (
+                        <button
+                          key={day}
+                          onClick={() => setStudentTimetableDay(day)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                            studentTimetableDay === day
+                              ? 'bg-[#1E3F30] text-white shadow-xs'
+                              : isWeekend
+                              ? 'bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100'
+                              : 'bg-[#FAF9F6] text-gray-700 hover:bg-gray-200 border border-[#EBEAE5]'
+                          }`}
+                        >
+                          <span>{day}</span>
+                          {isWeekend && <span className="text-[9px] px-1 rounded bg-amber-200/70 text-amber-900 font-semibold">Weekend</span>}
+                          <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${studentTimetableDay === day ? 'bg-emerald-300 text-black font-bold' : 'bg-gray-200 text-gray-700'}`}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Timetable Matrix */}
+                <div className="bg-white rounded-2xl border border-[#EBEAE5] shadow-xs overflow-hidden">
+                  <div className="p-4 bg-[#FAF9F6] border-b border-[#EBEAE5] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-[#1E3F30]" />
+                      <h3 className="font-display font-bold text-base text-[#111C2D]">
+                        {studentTimetableDay} Academic Room Schedule & Class Bookings
+                      </h3>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      Total Classes:{' '}
+                      <strong className="text-[#111C2D]">
+                        {studentTimetableEntries.filter((e) => e.dayOfWeek?.toLowerCase() === studentTimetableDay.toLowerCase()).length}
+                      </strong>
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="bg-[#FAF9F6] border-b border-[#EBEAE5] text-gray-600 font-bold uppercase text-[10px]">
+                          <th className="py-3 px-4 w-32 border-r border-[#EBEAE5] sticky left-0 bg-[#FAF9F6] z-10">Room</th>
+                          {[
+                            { id: 1, time: '08:30 - 09:30' },
+                            { id: 2, time: '09:30 - 10:30' },
+                            { id: 3, time: '10:45 - 11:45' },
+                            { id: 4, time: '11:45 - 12:45' },
+                            { id: 5, time: '13:30 - 14:30' },
+                            { id: 6, time: '14:30 - 15:30' },
+                            { id: 7, time: '15:45 - 16:45' },
+                            { id: 8, time: '16:45 - 17:45' },
+                          ].map((s) => (
+                            <th key={s.id} className="py-3 px-3 text-center border-r border-[#EBEAE5] min-w-[135px]">
+                              <div>Slot {s.id}</div>
+                              <div className="text-[9px] text-gray-400 font-mono font-normal">{s.time}</div>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#EBEAE5]">
+                        {Array.from(
+                          new Set(
+                            studentTimetableEntries
+                              .filter((e) => e.dayOfWeek?.toLowerCase() === studentTimetableDay.toLowerCase())
+                              .map((e) => e.roomId)
+                          )
+                        )
+                          .sort()
+                          .map((roomId) => (
+                            <tr key={roomId} className="hover:bg-gray-50/60 transition-colors">
+                              <td className="py-3 px-4 font-display font-bold text-[#111C2D] border-r border-[#EBEAE5] sticky left-0 bg-white z-10 shadow-2xs">
+                                <div>Room {roomId}</div>
+                                <div className="text-[10px] text-gray-400 font-normal">
+                                  {roomId === '213' || roomId === '313' ? 'Auditorium (200)' : 'Classroom (60)'}
+                                </div>
+                              </td>
+
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map((slotNum) => {
+                                const classEntry = studentTimetableEntries.find(
+                                  (e) =>
+                                    e.roomId === roomId &&
+                                    e.dayOfWeek?.toLowerCase() === studentTimetableDay.toLowerCase() &&
+                                    e.slotId === slotNum
+                                );
+
+                                if (classEntry) {
+                                  const isLab = classEntry.sessionType === 'LAB';
+                                  const isWeekend = classEntry.sessionType === 'WEEKEND_SESSION';
+                                  const isSeminar = classEntry.sessionType === 'SEMINAR';
+                                  return (
+                                    <td key={slotNum} className="p-2 border-r border-[#EBEAE5] align-top">
+                                      <div
+                                        className={`p-2 rounded-xl border text-[11px] space-y-1 ${
+                                          isLab
+                                            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                                            : isWeekend
+                                            ? 'bg-amber-50/90 border-amber-300 text-amber-950'
+                                            : isSeminar
+                                            ? 'bg-purple-50/80 border-purple-300 text-purple-950'
+                                            : 'bg-blue-50/80 border-blue-300 text-blue-950'
+                                        }`}
+                                      >
+                                        <div className="flex items-center justify-between font-bold text-xs">
+                                          <span>{classEntry.courseCode}</span>
+                                          <span className="text-[9px] px-1 py-0.2 rounded font-semibold bg-white/70">
+                                            {classEntry.sessionType}
+                                          </span>
+                                        </div>
+                                        <div className="font-semibold text-[11px] leading-tight line-clamp-2">
+                                          {classEntry.courseName}
+                                        </div>
+                                        <div className="text-[10px] text-gray-700 font-medium">
+                                          {classEntry.facultyName}
+                                        </div>
+                                      </div>
+                                    </td>
+                                  );
+                                }
+
+                                return (
+                                  <td key={slotNum} className="p-2 border-r border-[#EBEAE5] text-center align-middle">
+                                    <div className="py-2.5 px-2 rounded-lg bg-[#FAF9F6]/80 text-[10px] font-medium text-emerald-700 border border-dashed border-emerald-200">
+                                      Available
+                                    </div>
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {studentTimetableEntries.filter((e) => e.dayOfWeek?.toLowerCase() === studentTimetableDay.toLowerCase()).length === 0 && (
+                    <div className="p-12 text-center text-gray-500 space-y-2">
+                      <Calendar className="w-8 h-8 mx-auto text-gray-300" />
+                      <div className="font-bold text-sm text-[#111C2D]">No Timetable Classes on {studentTimetableDay}</div>
+                      <div className="text-xs">All rooms are available for student reservation on this day.</div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

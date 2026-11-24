@@ -5,8 +5,10 @@ import com.campusone.lostfound.model.ItemVocabulary;
 import com.campusone.lostfound.repository.ItemVocabularyRepository;
 import com.campusone.lostfound.repository.LostFoundReportRepository;
 import com.campusone.lostfound.service.LostFoundAutocompleteService;
+import com.campusone.model.ClassTimetableDocument;
 import com.campusone.model.RoomDocument;
 import com.campusone.model.UserDocument;
+import com.campusone.repository.ClassTimetableMongoRepository;
 import com.campusone.repository.RoomMongoRepository;
 import com.campusone.repository.UserMongoRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -17,10 +19,6 @@ import java.util.*;
 
 /**
  * Initializes verified ground truth data into MongoDB Atlas on startup if collections are empty.
- * Strictly adheres to requirement:
- * 1. Zero fake verified lost & found reports.
- * 2. Ground truth 74 rooms across Floors 1-6 (Floors 1, 4, 5, 6: 12 rooms cap ~60; Floors 2, 3: 12 ordinary + 1 large room 213/313 cap ~200).
- * 3. Verified university accounts.
  */
 @Component
 public class MongoDataSeeder implements CommandLineRunner {
@@ -28,17 +26,20 @@ public class MongoDataSeeder implements CommandLineRunner {
     private final UserMongoRepository userRepository;
     private final RoomMongoRepository roomRepository;
     private final ItemVocabularyRepository itemVocabularyRepository;
+    private final ClassTimetableMongoRepository timetableRepository;
     private final PasswordEncoder passwordEncoder;
     private final LostFoundAutocompleteService autocompleteService;
 
     public MongoDataSeeder(UserMongoRepository userRepository,
                            RoomMongoRepository roomRepository,
                            ItemVocabularyRepository itemVocabularyRepository,
+                           ClassTimetableMongoRepository timetableRepository,
                            PasswordEncoder passwordEncoder,
                            LostFoundAutocompleteService autocompleteService) {
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.itemVocabularyRepository = itemVocabularyRepository;
+        this.timetableRepository = timetableRepository;
         this.passwordEncoder = passwordEncoder;
         this.autocompleteService = autocompleteService;
     }
@@ -48,6 +49,7 @@ public class MongoDataSeeder implements CommandLineRunner {
         seedUsersIfEmpty();
         seedRoomsIfEmpty();
         seedItemVocabularyIfEmpty();
+        seedTimetableIfEmpty();
         autocompleteService.rebuildTrie();
     }
 
@@ -174,6 +176,61 @@ public class MongoDataSeeder implements CommandLineRunner {
             );
             itemVocabularyRepository.saveAll(vocab);
             System.out.println(">>> [MongoDB Atlas] Seeded comprehensive item vocabulary for Unit 4 Trie Autocomplete.");
+        }
+    }
+
+    private void seedTimetableIfEmpty() {
+        if (timetableRepository.count() == 0) {
+            String batch = "SEED-SEMESTER-V-2026";
+            List<ClassTimetableDocument> schedule = List.of(
+                    // Monday Schedule
+                    new ClassTimetableDocument("205", "Monday", 1, "CS501", "Advanced Algorithms", "Prof. Nimesh Bumb", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("205", "Monday", 2, "CS501", "Advanced Algorithms", "Prof. Nimesh Bumb", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("105", "Monday", 3, "CS502", "Distributed Operating Systems", "Prof. Yogesh Jadhav", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("105", "Monday", 4, "CS502", "Distributed Operating Systems", "Prof. Yogesh Jadhav", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("213", "Monday", 5, "CS503", "Database Engineering & Scalability", "Prof. Kunal Meher", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("213", "Monday", 6, "CS503", "Database Engineering & Scalability", "Prof. Kunal Meher", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+
+                    // Tuesday Schedule
+                    new ClassTimetableDocument("101", "Tuesday", 1, "CS504", "Computer Networks & Security", "Prof. Rabindra Henry", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("101", "Tuesday", 2, "CS504", "Computer Networks & Security", "Prof. Rabindra Henry", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("205", "Tuesday", 3, "AI501", "Machine Learning & Deep Learning", "Prof. Lipika Majumdar", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("205", "Tuesday", 4, "AI501", "Machine Learning & Deep Learning", "Prof. Lipika Majumdar", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("313", "Tuesday", 5, "AI502", "Data Structures & System Design", "Prof. Mayank Srivastava", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("313", "Tuesday", 6, "AI502", "Data Structures & System Design", "Prof. Mayank Srivastava", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+
+                    // Wednesday Schedule
+                    new ClassTimetableDocument("105", "Wednesday", 1, "AI503", "Human-Computer Interaction & Design", "Prof. Maria Acharya", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("105", "Wednesday", 2, "AI503", "Human-Computer Interaction & Design", "Prof. Maria Acharya", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("205", "Wednesday", 3, "CS501", "Advanced Algorithms Tutorial", "Prof. Nimesh Bumb", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("701", "Wednesday", 7, "AI505", "Applied Mathematics & Optimization", "Prof. Amrita Banerjee", "B.Tech CS AI-ML Sem V", "SEMINAR", batch),
+                    new ClassTimetableDocument("701", "Wednesday", 8, "AI505", "Applied Mathematics & Optimization", "Prof. Amrita Banerjee", "B.Tech CS AI-ML Sem V", "SEMINAR", batch),
+
+                    // Thursday Schedule
+                    new ClassTimetableDocument("101", "Thursday", 2, "CS502", "Distributed Systems Lab", "Prof. Yogesh Jadhav", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("101", "Thursday", 3, "CS502", "Distributed Systems Lab", "Prof. Yogesh Jadhav", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("213", "Thursday", 5, "AI501", "Deep Learning Research Seminar", "Prof. Lipika Majumdar", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+                    new ClassTimetableDocument("213", "Thursday", 6, "AI501", "Deep Learning Research Seminar", "Prof. Lipika Majumdar", "B.Tech CS AI-ML Sem V", "LECTURE", batch),
+
+                    // Friday Schedule
+                    new ClassTimetableDocument("313", "Friday", 1, "CS503", "Database Engineering Capstone", "Prof. Kunal Meher", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("313", "Friday", 2, "CS503", "Database Engineering Capstone", "Prof. Kunal Meher", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("205", "Friday", 5, "CS504", "Network Defense & Pentesting", "Prof. Rabindra Henry", "B.Tech CS AI-ML Sem V", "LAB", batch),
+                    new ClassTimetableDocument("205", "Friday", 6, "CS504", "Network Defense & Pentesting", "Prof. Rabindra Henry", "B.Tech CS AI-ML Sem V", "LAB", batch),
+
+                    // Weekend Schedule: Saturday
+                    new ClassTimetableDocument("213", "Saturday", 3, "CS590", "Weekend Industry Masterclass & Hackathon", "Prof. Nimesh Bumb", "All CS AI-ML", "WEEKEND_SESSION", batch),
+                    new ClassTimetableDocument("213", "Saturday", 4, "CS590", "Weekend Industry Masterclass & Hackathon", "Prof. Nimesh Bumb", "All CS AI-ML", "WEEKEND_SESSION", batch),
+                    new ClassTimetableDocument("701", "Saturday", 5, "AI591", "Weekend AI Research Colloquium", "Prof. Amrita Banerjee", "Capstone Teams", "WEEKEND_SESSION", batch),
+                    new ClassTimetableDocument("701", "Saturday", 6, "AI591", "Weekend AI Research Colloquium", "Prof. Amrita Banerjee", "Capstone Teams", "WEEKEND_SESSION", batch),
+
+                    // Weekend Schedule: Sunday
+                    new ClassTimetableDocument("213", "Sunday", 2, "CLUB-INC", "Corporate Leadership Conclave", "INC - The corporate club", "Open Campus", "WEEKEND_SESSION", batch),
+                    new ClassTimetableDocument("213", "Sunday", 3, "CLUB-INC", "Corporate Leadership Conclave", "INC - The corporate club", "Open Campus", "WEEKEND_SESSION", batch)
+            );
+
+            timetableRepository.saveAll(schedule);
+            System.out.printf(">>> [MongoDB Atlas] Seeded %d verified weekly academic timetable blocks across daily & weekend slots.%n", schedule.size());
         }
     }
 }

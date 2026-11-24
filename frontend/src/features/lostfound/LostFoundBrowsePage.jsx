@@ -67,11 +67,27 @@ export default function LostFoundBrowsePage() {
   const [autocompleteSuggestions, setAutocompleteSuggestions] = useState([]);
   const [showTrieDropdown, setShowTrieDropdown] = useState(false);
   const debounceTimerRef = useRef(null);
+  const searchTrieRef = useRef(null);
 
   // Modal Autocomplete state (Unit 4 Trie for Report Modal)
   const [formSuggestions, setFormSuggestions] = useState([]);
   const [showFormTrieDropdown, setShowFormTrieDropdown] = useState(false);
   const formDebounceTimerRef = useRef(null);
+  const formTrieRef = useRef(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (formTrieRef.current && !formTrieRef.current.contains(event.target)) {
+        setShowFormTrieDropdown(false);
+      }
+      if (searchTrieRef.current && !searchTrieRef.current.contains(event.target)) {
+        setShowTrieDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Modals state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -173,15 +189,16 @@ export default function LostFoundBrowsePage() {
     }
 
     if (!val || val.trim().length === 0) {
-      setAutocompleteSuggestions([]);
-      setShowTrieDropdown(false);
+      const topDefaults = TRIE_SEED_ITEMS.slice(0, 5).map((m) => m.term);
+      setAutocompleteSuggestions(topDefaults);
+      setShowTrieDropdown(true);
       return;
     }
 
     // 1. Instant Trie lookup (0ms)
     const localMatches = queryTrie(val.trim(), 6).map((m) => m.term);
     setAutocompleteSuggestions(localMatches);
-    setShowTrieDropdown(localMatches.length > 0);
+    setShowTrieDropdown(true);
 
     // 2. Authoritative backend Trie query
     debounceTimerRef.current = setTimeout(async () => {
@@ -214,15 +231,16 @@ export default function LostFoundBrowsePage() {
     }
 
     if (!val || val.trim().length === 0) {
-      setFormSuggestions([]);
-      setShowFormTrieDropdown(false);
+      const topItems = TRIE_SEED_ITEMS.slice(0, 5);
+      setFormSuggestions(topItems);
+      setShowFormTrieDropdown(true);
       return;
     }
 
     // 1. Instant local Trie lookup (0ms)
     const localMatches = queryTrie(val.trim(), 6);
     setFormSuggestions(localMatches);
-    setShowFormTrieDropdown(localMatches.length > 0);
+    setShowFormTrieDropdown(true);
 
     // 2. Authoritative backend Trie query
     formDebounceTimerRef.current = setTimeout(async () => {
@@ -435,14 +453,17 @@ export default function LostFoundBrowsePage() {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-center gap-3">
           {/* Autocomplete Input */}
-          <div className="relative flex-1 w-full">
+          <div ref={searchTrieRef} className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               onFocus={() => {
-                if (autocompleteSuggestions.length > 0) setShowTrieDropdown(true);
+                const q = searchQuery.trim();
+                const matches = q.length > 0 ? queryTrie(q, 6).map((m) => m.term) : TRIE_SEED_ITEMS.slice(0, 5).map((m) => m.term);
+                setAutocompleteSuggestions(matches);
+                setShowTrieDropdown(true);
               }}
               placeholder="Search by item name, category, or campus location..."
               className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
@@ -660,15 +681,16 @@ export default function LostFoundBrowsePage() {
                 <label className="block font-bold text-gray-700 uppercase mb-1">
                   Item Title / Model Name
                 </label>
-                <div className="relative">
+                <div ref={formTrieRef} className="relative">
                   <input
                     type="text"
                     value={formItemName}
                     onChange={(e) => handleFormItemNameChange(e.target.value)}
                     onFocus={() => {
-                      if (formItemName.trim().length > 0 && formSuggestions.length > 0) {
-                        setShowFormTrieDropdown(true);
-                      }
+                      const q = formItemName.trim();
+                      const matches = q.length > 0 ? queryTrie(q, 6) : TRIE_SEED_ITEMS.slice(0, 5);
+                      setFormSuggestions(matches);
+                      setShowFormTrieDropdown(true);
                     }}
                     placeholder="e.g. Laptop, MacBook Pro, AirPods, Casio Calculator..."
                     required
@@ -680,55 +702,55 @@ export default function LostFoundBrowsePage() {
                       type="button"
                       onClick={() => {
                         setFormItemName('');
-                        setFormSuggestions([]);
-                        setShowFormTrieDropdown(false);
+                        setFormSuggestions(TRIE_SEED_ITEMS.slice(0, 5));
+                        setShowFormTrieDropdown(true);
                       }}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black text-xs cursor-pointer"
                     >
                       ✕
                     </button>
                   )}
-                </div>
 
-                {/* Floating Autocomplete Suggestions Dropdown */}
-                {showFormTrieDropdown && formSuggestions.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-[#EBEAE5] z-50 overflow-hidden divide-y divide-gray-100 max-h-56 overflow-y-auto">
-                    <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
-                      <span className="flex items-center gap-1 text-[#1E3F30]">
-                        <Sparkles className="w-3 h-3 text-emerald-600" />
-                        <span>Suggested Items ({formSuggestions.length})</span>
-                      </span>
-                      <span className="text-[10px] text-gray-400">Select ↵</span>
+                  {/* Floating Autocomplete Suggestions Dropdown */}
+                  {showFormTrieDropdown && formSuggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-[#EBEAE5] z-50 overflow-hidden divide-y divide-gray-100 max-h-56 overflow-y-auto">
+                      <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                        <span className="flex items-center gap-1 text-[#1E3F30]">
+                          <Sparkles className="w-3 h-3 text-emerald-600" />
+                          <span>Suggested Items ({formSuggestions.length})</span>
+                        </span>
+                        <span className="text-[10px] text-gray-400">Select ↵</span>
+                      </div>
+                      {formSuggestions.map((item, idx) => {
+                        const term = typeof item === 'string' ? item : item.term;
+                        const cat = typeof item === 'object' ? item.category : null;
+                        return (
+                          <div
+                            key={idx}
+                            onMouseDown={(e) => {
+                              e.preventDefault(); // Prevent blur
+                              handleSelectFormSuggestion(item);
+                            }}
+                            className="px-3.5 py-2 text-xs text-[#111C2D] hover:bg-[#EAF2EC] hover:text-[#1E3F30] cursor-pointer flex items-center justify-between transition-colors group"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Tag className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1E3F30]" />
+                              <span className="font-medium text-[#111C2D] group-hover:text-[#1E3F30]">{term}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {cat && (
+                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 group-hover:bg-white group-hover:text-[#1E3F30]">
+                                  {cat}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-emerald-700 font-semibold">Select ↵</span>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    {formSuggestions.map((item, idx) => {
-                      const term = typeof item === 'string' ? item : item.term;
-                      const cat = typeof item === 'object' ? item.category : null;
-                      return (
-                        <div
-                          key={idx}
-                          onMouseDown={(e) => {
-                            e.preventDefault(); // Prevent blur
-                            handleSelectFormSuggestion(item);
-                          }}
-                          className="px-3.5 py-2 text-xs text-[#111C2D] hover:bg-[#EAF2EC] hover:text-[#1E3F30] cursor-pointer flex items-center justify-between transition-colors group"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Tag className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1E3F30]" />
-                            <span className="font-medium text-[#111C2D] group-hover:text-[#1E3F30]">{term}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {cat && (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 group-hover:bg-white group-hover:text-[#1E3F30]">
-                                {cat}
-                              </span>
-                            )}
-                            <span className="text-[10px] text-emerald-700 font-semibold">Select ↵</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
