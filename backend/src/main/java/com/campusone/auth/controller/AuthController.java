@@ -32,6 +32,17 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/admin-login")
+    public ResponseEntity<?> adminLogin(@Valid @RequestBody AdminLoginRequest request) {
+        try {
+            AuthResponse response = authService.adminLogin(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", ex.getMessage()));
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         try {
@@ -54,3 +65,4 @@ public class AuthController {
         return ResponseEntity.ok(profile);
     }
 }
+

@@ -27,7 +27,10 @@ campusone:
   auth:
     jwt-secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     jwt-expiration-ms: 86400000 # 24 hours
+    admin-master-password: Password123!
     allowed-domains:
+      - atlasskilltech.university
       - atlasuniversity.edu.in
       - ugdx.edu.in
       - campusone.edu
+

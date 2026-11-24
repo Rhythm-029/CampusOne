@@ -1,56 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LandingPage from './features/landing/LandingPage';
-import Navbar from './components/layout/Navbar';
-import Sidebar from './components/layout/Sidebar';
-import DashboardOverview from './features/dashboard/DashboardOverview';
-import RoomCatalogPage from './features/allocation/RoomCatalogPage';
-import LostFoundBrowsePage from './features/lostfound/LostFoundBrowsePage';
+import StudentPortal from './features/student/StudentPortal';
+import AdminPortal from './features/admin/AdminPortal';
+import LoginModal from './components/auth/LoginModal';
 
 export default function App() {
-  const [view, setView] = useState('landing'); // 'landing' | 'portal'
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [view, setView] = useState('landing'); // 'landing' | 'student-portal' | 'admin-portal'
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginModalMode, setLoginModalMode] = useState('student'); // 'student' | 'admin'
 
-  const handleEnterPortal = (targetTab = 'dashboard') => {
-    setActiveTab(targetTab);
-    setView('portal');
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('campusone_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const [currentRole, setCurrentRole] = useState(() => {
+    return localStorage.getItem('campusone_role') || null;
+  });
+
+  // Restore authenticated view on load if session exists
+  useEffect(() => {
+    if (currentUser && currentRole) {
+      if (currentRole.includes('SPACE_ADMIN') || currentRole.includes('SUPER_ADMIN')) {
+        setView('admin-portal');
+      } else {
+        setView('student-portal');
+      }
+    }
+  }, []);
+
+  const handleOpenLoginModal = (mode = 'student') => {
+    setLoginModalMode(mode);
+    setIsLoginModalOpen(true);
   };
 
-  const renderPortalContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <DashboardOverview onNavigate={setActiveTab} />;
-      case 'allocation':
-        return <RoomCatalogPage />;
-      case 'lostfound':
-        return <LostFoundBrowsePage />;
-      case 'my-bookings':
-        return <RoomCatalogPage />;
-      case 'my-reports':
-        return <LostFoundBrowsePage />;
-      default:
-        return <DashboardOverview onNavigate={setActiveTab} />;
+  const handleLoginSuccess = ({ token, user, role }) => {
+    localStorage.setItem('campusone_jwt', token);
+    localStorage.setItem('campusone_user', JSON.stringify(user));
+    localStorage.setItem('campusone_role', role);
+
+    setCurrentUser(user);
+    setCurrentRole(role);
+
+    if (role.includes('SPACE_ADMIN') || role.includes('SUPER_ADMIN')) {
+      setView('admin-portal');
+    } else {
+      setView('student-portal');
     }
   };
 
-  if (view === 'landing') {
-    return <LandingPage onEnterPortal={handleEnterPortal} />;
-  }
+  const handleLogout = () => {
+    localStorage.removeItem('campusone_jwt');
+    localStorage.removeItem('campusone_user');
+    localStorage.removeItem('campusone_role');
+    setCurrentUser(null);
+    setCurrentRole(null);
+    setView('landing');
+  };
+
+  const handleDirectEnterPortal = (target = 'dashboard') => {
+    if (target === 'admin') {
+      handleOpenLoginModal('admin');
+    } else if (currentUser && currentRole) {
+      if (currentRole.includes('SPACE_ADMIN')) {
+        setView('admin-portal');
+      } else {
+        setView('student-portal');
+      }
+    } else {
+      handleOpenLoginModal('student');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col font-sans">
-      <Navbar
-        onNavigate={setActiveTab}
-        activeTab={activeTab}
-        onReturnToLanding={() => setView('landing')}
+    <>
+      {view === 'landing' && (
+        <LandingPage
+          onEnterPortal={handleDirectEnterPortal}
+          onOpenLoginModal={handleOpenLoginModal}
+        />
+      )}
+
+      {view === 'student-portal' && (
+        <StudentPortal
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onNavigateLanding={() => setView('landing')}
+        />
+      )}
+
+      {view === 'admin-portal' && (
+        <AdminPortal
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onNavigateLanding={() => setView('landing')}
+        />
+      )}
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        initialMode={loginModalMode}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={handleLoginSuccess}
       />
-
-      <div className="flex-1 flex overflow-hidden">
-        <Sidebar activeTab={activeTab} onSelectTab={setActiveTab} />
-
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          {renderPortalContent()}
-        </main>
-      </div>
-    </div>
+    </>
   );
 }

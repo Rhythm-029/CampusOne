@@ -28,6 +28,20 @@ public class AuthDtos {
         public void setPassword(String password) { this.password = password; }
     }
 
+    public static class AdminLoginRequest {
+        @NotBlank(message = "Administrator password is required")
+        private String password;
+
+        public AdminLoginRequest() {}
+
+        public AdminLoginRequest(String password) {
+            this.password = password;
+        }
+
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
+    }
+
     public static class RegisterRequest {
         @NotBlank(message = "Email is required")
         @Email(message = "Must be a valid university email")
@@ -117,3 +131,4 @@ public class AuthDtos {
         public boolean isActive() { return active; }
     }
 }
+

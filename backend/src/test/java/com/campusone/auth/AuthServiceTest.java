@@ -41,7 +41,7 @@ public class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
     private JwtUtil jwtUtil;
     private AuthService authService;
-    private final List<String> allowedDomains = List.of("atlasuniversity.edu.in", "ugdx.edu.in");
+    private final List<String> allowedDomains = List.of("atlasskilltech.university", "atlasuniversity.edu.in", "ugdx.edu.in");
 
     @BeforeEach
     void setUp() {
@@ -53,13 +53,15 @@ public class AuthServiceTest {
                 passwordEncoder,
                 jwtUtil,
                 authenticationManager,
-                allowedDomains
+                allowedDomains,
+                "Password123!"
         );
     }
 
     @Test
     @DisplayName("Validate Email: Authorized University Domains Pass")
     void testUniversityEmailValidationPasses() {
+        assertDoesNotThrow(() -> authService.validateUniversityEmail("student@atlasskilltech.university"));
         assertDoesNotThrow(() -> authService.validateUniversityEmail("student@atlasuniversity.edu.in"));
         assertDoesNotThrow(() -> authService.validateUniversityEmail("faculty@ugdx.edu.in"));
     }
@@ -123,5 +125,31 @@ public class AuthServiceTest {
 
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> authService.login(req));
         assertTrue(ex.getMessage().contains("deactivated"));
+    }
+
+    @Test
+    @DisplayName("Admin Login: Valid Password Generates Admin Token")
+    void testAdminLoginSuccess() {
+        AdminLoginRequest req = new AdminLoginRequest("Password123!");
+
+        User adminUser = new User("admin@atlasskilltech.university", passwordEncoder.encode("Password123!"), "Estate Officer", "Admin");
+        adminUser.addRole(new Role(RoleName.ROLE_SPACE_ADMIN));
+        adminUser.addRole(new Role(RoleName.ROLE_SUPER_ADMIN));
+
+        when(userRepository.findByEmail("admin@atlasskilltech.university")).thenReturn(Optional.of(adminUser));
+
+        AuthResponse resp = authService.adminLogin(req);
+
+        assertNotNull(resp);
+        assertNotNull(resp.getToken());
+        assertEquals("admin@atlasskilltech.university", resp.getEmail());
+        assertTrue(resp.getRoles().contains("ROLE_SPACE_ADMIN"));
+    }
+
+    @Test
+    @DisplayName("Admin Login: Invalid Password Throws BadCredentialsException")
+    void testAdminLoginInvalidPassword() {
+        AdminLoginRequest req = new AdminLoginRequest("WrongAdminKey!");
+        assertThrows(BadCredentialsException.class, () -> authService.adminLogin(req));
     }
 }

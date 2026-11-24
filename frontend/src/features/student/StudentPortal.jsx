@@ -1,0 +1,1180 @@
+import React, { useState } from 'react';
+import {
+  GraduationCap,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  CheckCircle2,
+  Clock3,
+  Search,
+  Filter,
+  Plus,
+  BookOpen,
+  MessageSquare,
+  Award,
+  AlertCircle,
+  ChevronRight,
+  LogOut,
+  Building,
+  Laptop,
+  Tv,
+  Mic,
+  Shield,
+  Layers,
+  Sparkles,
+  ExternalLink,
+  HelpCircle,
+} from 'lucide-react';
+
+export default function StudentPortal({ currentUser, onLogout, onNavigateLanding }) {
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'spaces' | 'my-bookings' | 'faculty' | 'clubs'
+
+  // Spaces Booking State
+  const [bookingMode, setBookingMode] = useState('smart'); // 'smart' | 'catalog'
+  const [selectedFloor, setSelectedFloor] = useState('All');
+  const [smartCapacity, setSmartCapacity] = useState(45);
+  const [smartSlot, setSmartSlot] = useState(3);
+  const [smartEquipment, setSmartEquipment] = useState(['Projector']);
+  const [smartPurpose, setSmartPurpose] = useState('AI & ML Project Group Discussion');
+  const [allocationSuccess, setAllocationSuccess] = useState(null);
+
+  // My Bookings Data
+  const [bookings, setBookings] = useState([
+    {
+      id: 'BK-2026-081',
+      room: 'Room 205 (Smart Classroom)',
+      floor: 'Floor 2',
+      date: '2026-02-24',
+      slots: 'Slot 3 & 4 (10:45 AM – 12:45 PM)',
+      purpose: 'Advanced Algorithms CIA 3 Project Presentation',
+      capacity: 60,
+      status: 'APPROVED',
+      statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      approver: 'Prof. Rajesh Verma (Space Admin)',
+      notes: 'Smartboard and PA mic confirmed available.',
+    },
+    {
+      id: 'BK-2026-094',
+      room: 'Room 313 (Auditorium & Seminar Hall)',
+      floor: 'Floor 3',
+      date: '2026-02-27',
+      slots: 'Slot 5 & 6 (01:30 PM – 03:30 PM)',
+      purpose: 'GDSC Campus Tech Talk & Hands-on Workshop',
+      capacity: 200,
+      status: 'PENDING_APPROVAL',
+      statusColor: 'bg-amber-50 text-amber-700 border-amber-200',
+      approver: 'Pending Estate Admin Review',
+      notes: 'Requested dual laser projectors and stage microphones.',
+    },
+  ]);
+
+  // Faculty Connect State
+  const [selectedCourse, setSelectedCourse] = useState('CS501');
+  const [consultationDate, setConsultationDate] = useState('2026-02-25');
+  const [consultationSlot, setConsultationSlot] = useState('14:30 – 15:30');
+  const [consultationTopic, setConsultationTopic] = useState('');
+  const [consultationSuccess, setConsultationSuccess] = useState(false);
+  const [consultations, setConsultations] = useState([
+    {
+      id: 'FC-102',
+      faculty: 'Dr. Vikram Sharma',
+      course: 'CS501: Advanced Algorithms',
+      date: '2026-02-25',
+      time: '02:30 PM – 03:30 PM',
+      topic: 'Bipartite Matching Augmenting Path Complexity Clarification',
+      status: 'CONFIRMED',
+      office: 'Cabin 412, Academic Block',
+    },
+  ]);
+
+  // Clubs State
+  const [clubProposalTitle, setClubProposalTitle] = useState('');
+  const [clubProposalDesc, setClubProposalDesc] = useState('');
+  const [clubProposalAttendees, setClubProposalAttendees] = useState(80);
+  const [clubProposalSuccess, setClubProposalSuccess] = useState(false);
+
+  // Time Slots
+  const timeSlots = [
+    { num: 1, time: '08:30 – 09:30' },
+    { num: 2, time: '09:30 – 10:30' },
+    { num: 3, time: '10:45 – 11:45' },
+    { num: 4, time: '11:45 – 12:45' },
+    { num: 5, time: '13:30 – 14:30' },
+    { num: 6, time: '14:30 – 15:30' },
+    { num: 7, time: '15:45 – 16:45' },
+    { num: 8, time: '16:45 – 17:45' },
+  ];
+
+  // 74 Campus Rooms Catalog (Floors 1-6)
+  const campusRooms = [
+    // Floor 1 (101-112)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 1,
+      type: i === 4 || i === 8 ? 'Computer Lab' : 'Smart Classroom',
+      capacity: 60,
+      equipment: ['Laser Projector', 'Whiteboard', 'Wi-Fi 6', i % 2 === 0 ? 'Workstations' : 'PA Audio'],
+      status: i === 2 || i === 7 ? 'Occupied (Timetable)' : 'Available',
+    })),
+    // Floor 2 (201-213, with 213 cap 200)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `20${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 20${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 2,
+      type: i === 12 ? 'Special Auditorium' : i === 3 ? 'Seminar Hall' : 'Smart Classroom',
+      capacity: i === 12 ? 200 : 60,
+      equipment:
+        i === 12
+          ? ['Dual Laser Projectors', 'Stage PA Mic System', 'Tiered Seating', 'Acoustic Paneling']
+          : ['Laser Projector', 'Smartboard', 'Wi-Fi 6'],
+      status: i === 4 ? 'Occupied (Class)' : 'Available',
+    })),
+    // Floor 3 (301-313, with 313 cap 200)
+    ...Array.from({ length: 13 }, (_, i) => ({
+      id: `30${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 30${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 3,
+      type: i === 12 ? 'Special Auditorium' : i === 6 ? 'Hardware Lab' : 'Smart Classroom',
+      capacity: i === 12 ? 200 : 60,
+      equipment:
+        i === 12
+          ? ['Dual Laser Projectors', 'PA Audio System', 'Stage Lighting', 'Tiered Seating']
+          : ['Workstations', 'Laser Projector', 'Wi-Fi 6'],
+      status: 'Available',
+    })),
+    // Floor 4 (401-412)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 4,
+      type: 'Smart Classroom',
+      capacity: 60,
+      equipment: ['Projector', 'Whiteboard', 'Wi-Fi 6'],
+      status: 'Available',
+    })),
+    // Floor 5 (501-512)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 5,
+      type: 'Discussion & Seminar Room',
+      capacity: 60,
+      equipment: ['Display Screen', 'Interactive Board', 'Wi-Fi 6'],
+      status: 'Available',
+    })),
+    // Floor 6 (601-612)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 6,
+      type: 'Innovation Lab & Studio',
+      capacity: 60,
+      equipment: ['Workstations', 'Prototyping Tools', 'Wi-Fi 6'],
+      status: 'Available',
+    })),
+  ];
+
+  const handleEquipmentToggle = (item) => {
+    setSmartEquipment((prev) =>
+      prev.includes(item) ? prev.filter((x) => x !== item) : [...prev, item]
+    );
+  };
+
+  const handleSmartAllocationSubmit = (e) => {
+    e.preventDefault();
+    // Simulate algorithmic Bipartite Matching allocation
+    const matchedRoom = smartCapacity > 70 ? 'Room 213 (Special Auditorium, Cap 200)' : 'Room 205 (Smart Classroom, Cap 60)';
+    const newBooking = {
+      id: `BK-2026-${Math.floor(100 + Math.random() * 900)}`,
+      room: matchedRoom,
+      floor: 'Floor 2',
+      date: '2026-02-26',
+      slots: `Slot ${smartSlot} (${timeSlots[smartSlot - 1].time})`,
+      purpose: smartPurpose,
+      capacity: smartCapacity,
+      status: 'PENDING_APPROVAL',
+      statusColor: 'bg-amber-50 text-amber-700 border-amber-200',
+      approver: 'Space Admin Review Queue',
+      notes: `Optimal room matched via Maximum Bipartite Matching algorithm satisfying capacity (${smartCapacity}) and equipment (${smartEquipment.join(', ')}).`,
+    };
+
+    setBookings([newBooking, ...bookings]);
+    setAllocationSuccess({
+      room: matchedRoom,
+      slot: `Slot ${smartSlot} (${timeSlots[smartSlot - 1].time})`,
+      bookingId: newBooking.id,
+    });
+  };
+
+  const handleConsultationSubmit = (e) => {
+    e.preventDefault();
+    const facultyMap = {
+      CS501: 'Dr. Vikram Sharma',
+      CS502: 'Dr. Meera Nambiar',
+      AI503: 'Prof. Rajesh Verma',
+    };
+
+    const newAppointment = {
+      id: `FC-${Math.floor(100 + Math.random() * 900)}`,
+      faculty: facultyMap[selectedCourse] || 'Course Faculty',
+      course: selectedCourse,
+      date: consultationDate,
+      time: consultationSlot,
+      topic: consultationTopic || 'Coursework & Project Guidance',
+      status: 'PENDING_FACULTY_CONFIRMATION',
+      office: 'Faculty Block B',
+    };
+
+    setConsultations([newAppointment, ...consultations]);
+    setConsultationSuccess(true);
+    setConsultationTopic('');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FBFBF9] text-[#111C2D] flex flex-col font-sans selection:bg-[#1E3F30] selection:text-white">
+      {/* =========================================================================
+          TOP UNIVERSITY PORTAL NAVBAR
+          ========================================================================= */}
+      <header className="h-16 bg-white border-b border-[#EBEAE5] px-6 sm:px-10 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+        {/* Brand identity */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onNavigateLanding}
+            className="flex items-center gap-2.5 text-left group cursor-pointer"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center font-bold shadow-xs">
+              <GraduationCap className="w-5 h-5 stroke-[1.75]" />
+            </div>
+            <div>
+              <div className="font-display font-extrabold text-lg text-[#111C2D] tracking-tight leading-tight flex items-center gap-1.5">
+                <span>Campus<span className="text-[#1E3F30]">One</span></span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF9F6] text-[#1E3F30] border border-[#EBEAE5]">
+                  Student Portal
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-500 font-medium">ATLAS SkillTech University</p>
+            </div>
+          </button>
+
+          <div className="h-5 w-px bg-gray-200 hidden md:block" />
+
+          <div className="hidden lg:flex items-center gap-2 text-xs text-gray-500">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Semester V 2026-27 (Spring)</span>
+          </div>
+        </div>
+
+        {/* User profile & actions */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
+            <div className="w-8 h-8 rounded-full bg-[#EAF2EC] text-[#1E3F30] font-bold text-xs flex items-center justify-center border border-[#1E3F30]/20">
+              {currentUser?.fullName ? currentUser.fullName.substring(0, 2).toUpperCase() : 'AS'}
+            </div>
+            <div className="text-left hidden sm:block">
+              <div className="text-xs font-bold text-[#111C2D] leading-tight">
+                {currentUser?.fullName || 'Ananya Sharma'}
+              </div>
+              <div className="text-[11px] text-gray-500 font-mono">
+                {currentUser?.email || 'ananya.student@atlasskilltech.university'}
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={onLogout}
+            title="Sign out of Student Portal"
+            className="p-2 rounded-lg text-gray-400 hover:text-[#BA4A38] hover:bg-gray-100 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </header>
+
+      {/* =========================================================================
+          MAIN NAVIGATION BAR (SUB-HEADER TABS)
+          ========================================================================= */}
+      <div className="w-full bg-white border-b border-[#EBEAE5] px-6 sm:px-10">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 sm:gap-6 overflow-x-auto py-2 text-xs sm:text-sm font-semibold">
+          {[
+            { id: 'overview', label: 'Dashboard Overview', icon: Layers },
+            { id: 'spaces', label: 'Campus Spaces & Room Booking', icon: Calendar },
+            { id: 'my-bookings', label: 'My Bookings', icon: Clock },
+            { id: 'faculty', label: 'Faculty Connect', icon: BookOpen },
+            { id: 'clubs', label: 'Events & Student Clubs', icon: Award },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-2 px-3 rounded-lg flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-[#1E3F30] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-[#111C2D] hover:bg-gray-100'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* =========================================================================
+          MAIN PORTAL CONTENT AREA
+          ========================================================================= */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-10 space-y-8">
+        {/* =====================================================================
+            TAB 1: DASHBOARD OVERVIEW
+            ===================================================================== */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Welcome banner */}
+            <div className="p-8 rounded-2xl bg-gradient-to-r from-white via-[#FAF9F6] to-[#FAF9F6] border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF2EC] text-[#1E3F30]">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Welcome back, {currentUser?.fullName || 'Ananya'}</span>
+                </div>
+                <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#111C2D] tracking-tight">
+                  Academic Operations Terminal
+                </h1>
+                <p className="text-sm text-gray-600 max-w-2xl leading-relaxed">
+                  Reserve academic spaces with non-overlapping slot guarantees, connect with course faculty for 1-on-1 consultations, and propose club activities.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    setActiveTab('spaces');
+                    setBookingMode('smart');
+                  }}
+                  className="px-5 py-3 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Book a Space</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('faculty')}
+                  className="px-5 py-3 rounded-xl bg-white hover:bg-gray-50 text-[#111C2D] border border-gray-300 text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+                >
+                  <BookOpen className="w-4 h-4 text-[#1E3F30]" />
+                  <span>Faculty Consultation</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Metric Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs">
+                <div className="flex items-center justify-between text-gray-500 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider">Active Bookings</span>
+                  <Calendar className="w-5 h-5 text-[#1E3F30]" />
+                </div>
+                <div className="text-3xl font-display font-extrabold text-[#111C2D]">
+                  {bookings.length}
+                </div>
+                <div className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>1 Approved for this week</span>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs">
+                <div className="flex items-center justify-between text-gray-500 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider">Campus Rooms</span>
+                  <Building className="w-5 h-5 text-[#1E3F30]" />
+                </div>
+                <div className="text-3xl font-display font-extrabold text-[#111C2D]">74</div>
+                <div className="text-xs text-gray-500 font-medium mt-1">Floors 1–6 Configured</div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs">
+                <div className="flex items-center justify-between text-gray-500 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider">Enrolled Courses</span>
+                  <BookOpen className="w-5 h-5 text-[#1E3F30]" />
+                </div>
+                <div className="text-3xl font-display font-extrabold text-[#111C2D]">3</div>
+                <div className="text-xs text-gray-500 font-medium mt-1">CS501, CS502, AI503</div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs">
+                <div className="flex items-center justify-between text-gray-500 mb-3">
+                  <span className="text-xs font-bold uppercase tracking-wider">Consultations</span>
+                  <Users className="w-5 h-5 text-[#1E3F30]" />
+                </div>
+                <div className="text-3xl font-display font-extrabold text-[#111C2D]">
+                  {consultations.length}
+                </div>
+                <div className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Confirmed with Dr. Sharma</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Upcoming Reservation & Timetable Preview */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left 2 Cols: Confirmed Upcoming Booking */}
+              <div className="lg:col-span-2 p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-[#EBEAE5]">
+                  <div>
+                    <h3 className="font-display font-bold text-lg text-[#111C2D]">
+                      Next Confirmed Space Booking
+                    </h3>
+                    <p className="text-xs text-gray-500">Estate Administrator verified and approved</p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Space Approved</span>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] space-y-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      Assigned Room
+                    </div>
+                    <div className="font-display font-bold text-base text-[#111C2D]">
+                      Room 205 (Smart Classroom)
+                    </div>
+                    <div className="text-xs text-gray-500">Floor 2 • Capacity: 60</div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] space-y-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      Reserved Timetable Slots
+                    </div>
+                    <div className="font-display font-bold text-base text-[#111C2D]">
+                      Slots 3 & 4 (10:45 AM – 12:45 PM)
+                    </div>
+                    <div className="text-xs text-gray-500">Tuesday, 24 Feb 2026</div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#EAF2EC]/60 border border-[#1E3F30]/15 flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-[#1E3F30] shrink-0 mt-0.5" />
+                  <div className="text-xs text-[#1E3F30] leading-relaxed">
+                    <strong>Algorithmic Multi-Slot Guarantee:</strong> Room 205 is reserved across discrete slots in the database (`room_booking_slots`) with unique constraints. No other class, maintenance block, or booking can overlap with this interval.
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Col: Standard 8 Academic Slots */}
+              <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                <h3 className="font-display font-bold text-base text-[#111C2D]">
+                  Standard Daily Academic Slots
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Campus operations follow 8 discrete slots as configured in the academic timetable.
+                </p>
+
+                <div className="space-y-2 pt-2">
+                  {timeSlots.map((s) => (
+                    <div
+                      key={s.num}
+                      className="flex items-center justify-between p-2 rounded-lg bg-[#FAF9F6] border border-[#EBEAE5] text-xs"
+                    >
+                      <span className="font-bold text-[#111C2D]">Slot {s.num}</span>
+                      <span className="font-mono text-gray-600">{s.time}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            TAB 2: CAMPUS SPACES & ROOM BOOKING
+            ===================================================================== */}
+        {activeTab === 'spaces' && (
+          <div className="space-y-8 animate-fade-in">
+            {/* Top toggle: Smart Allocation vs Exact Room Catalog */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
+              <div>
+                <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
+                  Reserve Academic Spaces
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Choose between automatic optimal room matching (Bipartite Matching) or selecting an exact room from the 74-room inventory.
+                </p>
+              </div>
+
+              <div className="p-1 bg-[#FAF9F6] border border-[#EBEAE5] rounded-xl flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setBookingMode('smart')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    bookingMode === 'smart'
+                      ? 'bg-[#1E3F30] text-white shadow-xs'
+                      : 'text-gray-600 hover:text-[#111C2D]'
+                  }`}
+                >
+                  Automatic Room Allocation (Bipartite)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBookingMode('catalog')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    bookingMode === 'catalog'
+                      ? 'bg-[#1E3F30] text-white shadow-xs'
+                      : 'text-gray-600 hover:text-[#111C2D]'
+                  }`}
+                >
+                  Browse Exact Rooms (Floors 1–6)
+                </button>
+              </div>
+            </div>
+
+            {bookingMode === 'smart' ? (
+              /* SMART ALLOCATION MODE */
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Form Col */}
+                <div className="lg:col-span-2 p-8 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center font-bold">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-display font-bold text-lg text-[#111C2D]">
+                        Smart Room Allocation Engine
+                      </h3>
+                      <p className="text-xs text-gray-500">
+                        Powered by Syllabus Unit 5 Maximum Bipartite Matching
+                      </p>
+                    </div>
+                  </div>
+
+                  {allocationSuccess && (
+                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-2">
+                      <div className="font-bold flex items-center gap-1.5 text-sm">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Room Allocated Successfully!</span>
+                      </div>
+                      <p>
+                        The allocation algorithm matched your requirements to <strong>{allocationSuccess.room}</strong> for <strong>{allocationSuccess.slot}</strong>.
+                      </p>
+                      <div className="text-[11px] text-emerald-700">
+                        Request ID: <span className="font-mono font-bold">{allocationSuccess.bookingId}</span> • Submitted to Space Admin Approval Queue.
+                      </div>
+                    </div>
+                  )}
+
+                  <form onSubmit={handleSmartAllocationSubmit} className="space-y-6">
+                    {/* Capacity Slider */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-[#111C2D] uppercase tracking-wider">
+                          Required Student Capacity
+                        </label>
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2EC] text-[#1E3F30]">
+                          {smartCapacity} Seats
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="10"
+                        max="200"
+                        step="5"
+                        value={smartCapacity}
+                        onChange={(e) => setSmartCapacity(Number(e.target.value))}
+                        className="w-full accent-[#1E3F30] cursor-pointer"
+                      />
+                      <div className="flex justify-between text-[11px] text-gray-400 mt-1">
+                        <span>10 (Discussion)</span>
+                        <span>60 (Ordinary Classrooms)</span>
+                        <span>200 (Rooms 213 & 313)</span>
+                      </div>
+                    </div>
+
+                    {/* Time Slot Selector */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-2">
+                        Select Academic Slot
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {timeSlots.map((s) => (
+                          <button
+                            key={s.num}
+                            type="button"
+                            onClick={() => setSmartSlot(s.num)}
+                            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                              smartSlot === s.num
+                                ? 'bg-[#1E3F30] text-white border-[#1E3F30]'
+                                : 'bg-[#FAF9F6] border-[#EBEAE5] text-[#111C2D] hover:bg-gray-100'
+                            }`}
+                          >
+                            <div className="text-xs font-bold">Slot {s.num}</div>
+                            <div className={`text-[10px] ${smartSlot === s.num ? 'text-white/80' : 'text-gray-500'}`}>
+                              {s.time}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Required Equipment Multi-Select */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-2">
+                        Required Facilities & Equipment
+                      </label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        {[
+                          { name: 'Projector', icon: Tv },
+                          { name: 'PA Audio Mic', icon: Mic },
+                          { name: 'Linux PCs', icon: Laptop },
+                          { name: 'Smartboard', icon: Layers },
+                        ].map((eq) => {
+                          const isSelected = smartEquipment.includes(eq.name);
+                          const Icon = eq.icon;
+                          return (
+                            <button
+                              key={eq.name}
+                              type="button"
+                              onClick={() => handleEquipmentToggle(eq.name)}
+                              className={`p-3 rounded-xl border flex items-center gap-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#EAF2EC] text-[#1E3F30] border-[#1E3F30]'
+                                  : 'bg-white border-[#EBEAE5] text-gray-600 hover:bg-gray-50'
+                              }`}
+                            >
+                              <Icon className={`w-4 h-4 ${isSelected ? 'text-[#1E3F30]' : 'text-gray-400'}`} />
+                              <span>{eq.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Purpose / Notes */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Event / Purpose Description
+                      </label>
+                      <input
+                        type="text"
+                        value={smartPurpose}
+                        onChange={(e) => setSmartPurpose(e.target.value)}
+                        placeholder="e.g. CIA 3 Algorithm Presentation or GDSC Club Meet"
+                        required
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3.5 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Find & Allocate Compatible Space</span>
+                    </button>
+                  </form>
+                </div>
+
+                {/* Algorithm Explanation Card */}
+                <div className="space-y-6">
+                  <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                    <h3 className="font-display font-bold text-base text-[#111C2D] flex items-center gap-2">
+                      <GraduationCap className="w-5 h-5 text-[#1E3F30]" />
+                      <span>Unit 5 Bipartite Matching</span>
+                    </h3>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      Instead of a greedy heuristic that causes artificial capacity fragmentation, CampusOne runs an <strong>Augmenting Path Maximum Bipartite Matching algorithm</strong> ($O(V \cdot E)$) in pure Java.
+                    </p>
+
+                    <div className="space-y-2 pt-2 border-t border-[#EBEAE5] text-xs">
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-500">Left Set (U):</span>
+                        <span className="font-bold text-[#111C2D]">Pending Student Requests</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-500">Right Set (V):</span>
+                        <span className="font-bold text-[#111C2D]">Compatible Available Rooms</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-500">Multi-Slot Checker:</span>
+                        <span className="font-bold text-[#111C2D]">Segment Tree (Unit 3)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 rounded-2xl bg-[#FAF9F6] border border-[#EBEAE5] space-y-3">
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#1E3F30]">
+                      Approval Policy
+                    </div>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      Per university policy, every room booking requires Space Admin approval. Once approved, the allocated slots are committed with database uniqueness constraints to prevent concurrent double-booking.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* EXACT ROOM CATALOG (74 ROOMS) */
+              <div className="space-y-6">
+                {/* Floor filter bar */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500 mr-2">
+                    Filter by Floor:
+                  </span>
+                  {['All', '1', '2', '3', '4', '5', '6'].map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => setSelectedFloor(f)}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        selectedFloor === f
+                          ? 'bg-[#1E3F30] text-white shadow-xs'
+                          : 'bg-white border border-[#EBEAE5] text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {f === 'All' ? 'All Floors (74 Rooms)' : `Floor ${f}`}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Rooms Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {campusRooms
+                    .filter((r) => selectedFloor === 'All' || r.floor === Number(selectedFloor))
+                    .map((room) => (
+                      <div
+                        key={room.id}
+                        className="p-6 rounded-2xl bg-white border border-[#EBEAE5] hover:border-[#1E3F30]/40 hover:shadow-md transition-all flex flex-col justify-between"
+                      >
+                        <div className="space-y-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <div className="text-xs font-bold text-[#1E3F30]">Floor {room.floor}</div>
+                              <h4 className="font-display font-bold text-lg text-[#111C2D]">
+                                {room.name}
+                              </h4>
+                            </div>
+                            <span
+                              className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+                                room.capacity === 200
+                                  ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                  : 'bg-[#FAF9F6] text-gray-700 border-[#EBEAE5]'
+                              }`}
+                            >
+                              Cap: {room.capacity}
+                            </span>
+                          </div>
+
+                          <div className="text-xs text-gray-500">{room.type}</div>
+
+                          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-[#EBEAE5]">
+                            {room.equipment.map((eq) => (
+                              <span
+                                key={eq}
+                                className="px-2 py-0.5 rounded-md bg-[#FAF9F6] text-[10px] font-medium text-gray-600 border border-[#EBEAE5]"
+                              >
+                                {eq}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-5 mt-5 border-t border-[#EBEAE5] flex items-center justify-between">
+                          <span
+                            className={`text-xs font-bold ${
+                              room.status === 'Available' ? 'text-emerald-600' : 'text-gray-400'
+                            }`}
+                          >
+                            ● {room.status}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSmartPurpose(`Specific booking for ${room.name}`);
+                              setSmartCapacity(room.capacity);
+                              setBookingMode('smart');
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-[#FAF9F6] hover:bg-[#1E3F30] hover:text-white text-xs font-semibold text-[#111C2D] border border-[#EBEAE5] transition-all cursor-pointer"
+                          >
+                            Book Room →
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* =====================================================================
+            TAB 3: MY BOOKINGS
+            ===================================================================== */}
+        {activeTab === 'my-bookings' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between pb-4 border-b border-[#EBEAE5]">
+              <div>
+                <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
+                  My Reservation Records
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Track room reservation lifecycle: Submitted → Space Admin Review → Approved.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveTab('spaces');
+                  setBookingMode('smart');
+                }}
+                className="px-4 py-2 rounded-xl bg-[#1E3F30] text-white text-xs font-semibold flex items-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Space Request</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {bookings.map((b) => (
+                <div
+                  key={b.id}
+                  className="p-6 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs font-bold text-gray-500">{b.id}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${b.statusColor}`}>
+                        {b.status}
+                      </span>
+                      <span className="text-xs text-gray-400">• {b.floor}</span>
+                    </div>
+
+                    <h4 className="font-display font-bold text-lg text-[#111C2D]">{b.room}</h4>
+                    <p className="text-xs text-gray-600 font-medium">
+                      <strong>Purpose:</strong> {b.purpose}
+                    </p>
+
+                    <div className="text-xs text-gray-500 flex flex-wrap items-center gap-4 pt-1">
+                      <span>
+                        <strong>Date:</strong> {b.date}
+                      </span>
+                      <span>
+                        <strong>Slots:</strong> {b.slots}
+                      </span>
+                      <span>
+                        <strong>Approver:</strong> {b.approver}
+                      </span>
+                    </div>
+
+                    {b.notes && (
+                      <div className="p-2.5 rounded-lg bg-[#FAF9F6] border border-[#EBEAE5] text-xs text-gray-600">
+                        {b.notes}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="shrink-0 flex items-center gap-2">
+                    {b.status === 'PENDING_APPROVAL' && (
+                      <button
+                        onClick={() => setBookings(bookings.filter((x) => x.id !== b.id))}
+                        className="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold cursor-pointer"
+                      >
+                        Cancel Request
+                      </button>
+                    )}
+                    <div className="text-xs font-semibold text-[#1E3F30] flex items-center gap-1">
+                      <span>View Audit Log</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            TAB 4: FACULTY CONNECT
+            ===================================================================== */}
+        {activeTab === 'faculty' && (
+          <div className="space-y-8 animate-fade-in">
+            <div className="pb-4 border-b border-[#EBEAE5]">
+              <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
+                Faculty Connect & Consultations
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600">
+                Select your enrolled courses and book 1-on-1 office consultations with assigned professors.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left 2 Cols: Form to schedule consultation */}
+              <div className="lg:col-span-2 p-8 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
+                <h3 className="font-display font-bold text-lg text-[#111C2D]">
+                  Schedule a Consultation Appointment
+                </h3>
+
+                {consultationSuccess && (
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      Appointment request submitted to professor! You will receive confirmation on your dashboard.
+                    </span>
+                  </div>
+                )}
+
+                <form onSubmit={handleConsultationSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                      Select Enrolled Course & Assigned Professor
+                    </label>
+                    <select
+                      value={selectedCourse}
+                      onChange={(e) => setSelectedCourse(e.target.value)}
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
+                    >
+                      <option value="CS501">CS501: Advanced Algorithms — Dr. Vikram Sharma</option>
+                      <option value="CS502">CS502: Distributed Operating Systems — Dr. Meera Nambiar</option>
+                      <option value="AI503">AI503: Machine Learning Foundations — Prof. Rajesh Verma</option>
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Consultation Date
+                      </label>
+                      <input
+                        type="date"
+                        value={consultationDate}
+                        onChange={(e) => setConsultationDate(e.target.value)}
+                        required
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Available Office Hours
+                      </label>
+                      <select
+                        value={consultationSlot}
+                        onChange={(e) => setConsultationSlot(e.target.value)}
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
+                      >
+                        <option value="11:45 – 12:45">Slot 4 (11:45 AM – 12:45 PM)</option>
+                        <option value="14:30 – 15:30">Slot 6 (02:30 PM – 03:30 PM)</option>
+                        <option value="16:45 – 17:45">Slot 8 (04:45 PM – 05:45 PM)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                      Consultation Topic & Specific Questions
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={consultationTopic}
+                      onChange={(e) => setConsultationTopic(e.target.value)}
+                      placeholder="e.g. Unit 3 Segment Tree lazy propagation and time complexity proofs for CIA 3"
+                      required
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    <span>Request Consultation Meeting</span>
+                  </button>
+                </form>
+              </div>
+
+              {/* Right Col: Consultation List */}
+              <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                <h3 className="font-display font-bold text-base text-[#111C2D]">
+                  My Scheduled Consultations
+                </h3>
+
+                <div className="space-y-3">
+                  {consultations.map((c) => (
+                    <div
+                      key={c.id}
+                      className="p-4 rounded-xl bg-[#FAF9F6] border border-[#EBEAE5] space-y-2 text-xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#111C2D]">{c.faculty}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            c.status === 'CONFIRMED'
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-amber-50 text-amber-700'
+                          }`}
+                        >
+                          {c.status}
+                        </span>
+                      </div>
+                      <div className="text-gray-500">{c.course}</div>
+                      <div className="font-medium text-gray-700">
+                        {c.date} • {c.time}
+                      </div>
+                      <div className="text-gray-600 italic">"{c.topic}"</div>
+                      <div className="text-[11px] text-gray-400">Location: {c.office}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            TAB 5: EVENTS & STUDENT CLUBS
+            ===================================================================== */}
+        {activeTab === 'clubs' && (
+          <div className="space-y-8 animate-fade-in">
+            <div className="pb-4 border-b border-[#EBEAE5]">
+              <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
+                Events & Student Clubs
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600">
+                Submit campus event proposals, track faculty and event administrator reviews, and request auditorium venues.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Proposal Submission */}
+              <div className="lg:col-span-2 p-8 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-6">
+                <h3 className="font-display font-bold text-lg text-[#111C2D]">
+                  Submit New Club Event Proposal
+                </h3>
+
+                {clubProposalSuccess && (
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      Event proposal submitted! Sent to Faculty Coordinator for Stage 1 document review.
+                    </span>
+                  </div>
+                )}
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setClubProposalSuccess(true);
+                    setClubProposalTitle('');
+                    setClubProposalDesc('');
+                  }}
+                  className="space-y-4"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Organizing Student Club
+                      </label>
+                      <select className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]">
+                        <option>Google Developer Student Club (GDSC)</option>
+                        <option>AI & Robotics Society (AIRS)</option>
+                        <option>ATLAS Design Collective</option>
+                        <option>Competitive Programming Club</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Expected Attendance
+                      </label>
+                      <input
+                        type="number"
+                        value={clubProposalAttendees}
+                        onChange={(e) => setClubProposalAttendees(Number(e.target.value))}
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                      Event Title
+                    </label>
+                    <input
+                      type="text"
+                      value={clubProposalTitle}
+                      onChange={(e) => setClubProposalTitle(e.target.value)}
+                      placeholder="e.g. HackATLAS 2026: 24-Hour AI Hackathon"
+                      required
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                      Event Summary & Venue Requirement
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={clubProposalDesc}
+                      onChange={(e) => setClubProposalDesc(e.target.value)}
+                      placeholder="Describe target dates, key objectives, and required venue (e.g. Auditorium 213 with PA audio system)."
+                      required
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Award className="w-4 h-4" />
+                    <span>Submit Proposal for Approval Pipeline</span>
+                  </button>
+                </form>
+              </div>
+
+              {/* Approval Pipeline Info */}
+              <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+                <h3 className="font-display font-bold text-base text-[#111C2D]">
+                  CampusOne Multi-Stage Approval Pipeline
+                </h3>
+                <div className="space-y-4 pt-2 text-xs">
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#EAF2EC] text-[#1E3F30] font-bold flex items-center justify-center shrink-0">
+                      1
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#111C2D]">Faculty Review</div>
+                      <p className="text-gray-500">Club faculty coordinator reviews event proposal and budget.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#EAF2EC] text-[#1E3F30] font-bold flex items-center justify-center shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#111C2D]">Event Admin Review</div>
+                      <p className="text-gray-500">Dean of Student Affairs evaluates campus policy compliance.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#EAF2EC] text-[#1E3F30] font-bold flex items-center justify-center shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <div className="font-bold text-[#111C2D]">Space Allocation</div>
+                      <p className="text-gray-500">Estate Administrator approves venue allocation with non-overlapping database slots.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

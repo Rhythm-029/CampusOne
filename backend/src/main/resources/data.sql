@@ -41,6 +41,14 @@ VALUES (5, 'rhythm.coordinator@atlasuniversity.edu.in', '$2a$10$7EqJtq98hPqEX7fN
 MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
 VALUES (6, 'ananya.student@atlasuniversity.edu.in', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Ananya Sharma', 'Computer Science (Semester V)', TRUE);
 
+-- 7. ATLAS SkillTech Admin (For single-password Admin Login & Portal Access)
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (7, 'admin@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Prof. Rajesh Verma', 'Estate & Space Operations', TRUE);
+
+-- 8. ATLAS SkillTech Verified Student
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (8, 'ananya.student@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Ananya Sharma', 'Computer Science (Semester V)', TRUE);
+
 -- Assign User Roles
 -- Admin has SUPER_ADMIN (6), SPACE_ADMIN (4), EVENT_ADMIN (5)
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (1, 6);
@@ -63,6 +71,14 @@ MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (5, 3);
 -- Ananya: STUDENT (1)
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (6, 1);
 
+-- ATLAS SkillTech Admin (7): SUPER_ADMIN (6), SPACE_ADMIN (4), EVENT_ADMIN (5)
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (7, 6);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (7, 4);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (7, 5);
+
+-- ATLAS SkillTech Student (8): STUDENT (1)
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (8, 1);
+
 -- Seed Academic Term
 MERGE INTO academic_terms (id, term_name, start_date, end_date, is_current) KEY(term_name)
 VALUES (1, 'Semester V 2026-27', '2026-07-15', '2026-12-10', TRUE);
@@ -84,3 +100,4 @@ VALUES (2, 2, 1, 'Section A', 60);
 -- Assign Dr. Vikram Sharma to teach CS501 Section A
 MERGE INTO faculty_assignments (id, course_offering_id, faculty_id) KEY(course_offering_id, faculty_id)
 VALUES (1, 1, 4);
+

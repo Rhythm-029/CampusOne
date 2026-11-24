@@ -10,9 +10,11 @@ import {
   Users,
   PackageSearch,
   ChevronRight,
+  ShieldCheck,
+  KeyRound,
 } from 'lucide-react';
 
-export default function LandingPage({ onEnterPortal }) {
+export default function LandingPage({ onEnterPortal, onOpenLoginModal }) {
   // Clear any hash from the URL on load so the page always starts smoothly at the top
   useEffect(() => {
     if (window.location.hash) {
@@ -90,13 +92,22 @@ export default function LandingPage({ onEnterPortal }) {
         </nav>
 
         {/* Right CTA */}
-        <div>
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => onEnterPortal('dashboard')}
-            className="px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-[#1E3F30] text-white hover:bg-[#152C22] shadow-sm transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
+            onClick={() => (onOpenLoginModal ? onOpenLoginModal('admin') : onEnterPortal('admin'))}
+            className="px-3.5 py-2 rounded-lg text-xs font-semibold text-gray-700 hover:text-black hover:bg-gray-100 transition-all hidden sm:flex items-center gap-1.5 cursor-pointer border border-gray-200"
+            title="Administrator direct password access"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-gray-700" />
+            <span>Admin Access</span>
+          </button>
+
+          <button
+            onClick={() => (onOpenLoginModal ? onOpenLoginModal('student') : onEnterPortal('dashboard'))}
+            className="px-4 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-[#1E3F30] text-white hover:bg-[#152C22] shadow-sm transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
           >
             <UserCheck className="w-4 h-4" />
-            <span>Enter Portal</span>
+            <span>Sign In / Enter Portal</span>
           </button>
         </div>
       </header>
@@ -140,7 +151,7 @@ export default function LandingPage({ onEnterPortal }) {
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
-                onClick={() => onEnterPortal('allocation')}
+                onClick={() => (onOpenLoginModal ? onOpenLoginModal('student') : onEnterPortal('allocation'))}
                 className="group px-6 py-3.5 rounded-xl bg-[#1E3F30] text-white font-semibold text-sm hover:bg-[#152C22] shadow-sm hover:shadow-md transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
               >
                 <Calendar className="w-4 h-4 text-white" />
@@ -149,13 +160,18 @@ export default function LandingPage({ onEnterPortal }) {
               </button>
 
               <button
-                onClick={() => onEnterPortal('lostfound')}
+                onClick={() => (onOpenLoginModal ? onOpenLoginModal('admin') : onEnterPortal('admin'))}
                 className="group px-6 py-3.5 rounded-xl bg-white text-[#111C2D] font-semibold text-sm border-2 border-[#111C2D] hover:bg-gray-50 transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
               >
-                <Tag className="w-4 h-4 text-[#111C2D]" />
-                <span>Lost & Found</span>
+                <KeyRound className="w-4 h-4 text-[#111C2D]" />
+                <span>Admin Login (Password Only)</span>
                 <ArrowRight className="w-4 h-4 text-[#111C2D]/70 group-hover:translate-x-1 transition-transform" />
               </button>
+            </div>
+
+            <div className="text-xs text-gray-500 pt-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Official @atlasskilltech.university student accounts • Direct Estate Officer access</span>
             </div>
           </div>
         </div>
@@ -393,6 +409,23 @@ export default function LandingPage({ onEnterPortal }) {
             <GraduationCap className="w-4 h-4 text-[#1E3F30]" />
             <span>CampusOne — ATLAS SkillTech University</span>
           </div>
+
+          <div className="flex items-center gap-4 text-xs font-semibold">
+            <button
+              onClick={() => (onOpenLoginModal ? onOpenLoginModal('student') : onEnterPortal('dashboard'))}
+              className="text-[#1E3F30] hover:underline cursor-pointer"
+            >
+              Student Portal (@atlasskilltech.university)
+            </button>
+            <span className="text-gray-300">•</span>
+            <button
+              onClick={() => (onOpenLoginModal ? onOpenLoginModal('admin') : onEnterPortal('admin'))}
+              className="text-gray-700 hover:text-black hover:underline cursor-pointer"
+            >
+              Admin Terminal (Password Only)
+            </button>
+          </div>
+
           <div>Continuous Internal Assessment 03 • Advanced Algorithms Project</div>
         </div>
       </footer>

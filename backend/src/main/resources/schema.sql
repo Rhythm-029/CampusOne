@@ -269,3 +269,4 @@ CREATE TABLE IF NOT EXISTS faculty_appointments (
     CONSTRAINT fk_fa_aslot FOREIGN KEY (slot_id) REFERENCES time_slots(id),
     CONSTRAINT uq_faculty_date_slot UNIQUE (faculty_id, appointment_date, slot_id)
 );
+

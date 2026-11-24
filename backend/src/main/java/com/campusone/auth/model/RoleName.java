@@ -8,3 +8,4 @@ public enum RoleName {
     ROLE_EVENT_ADMIN,
     ROLE_SUPER_ADMIN
 }
+
