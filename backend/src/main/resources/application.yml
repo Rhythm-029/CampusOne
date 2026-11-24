@@ -4,6 +4,14 @@ server:
 spring:
   application:
     name: campusone-backend
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/campusone}
+      database: ${MONGODB_DATABASE:campusone}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   datasource:
     url: jdbc:h2:mem:campusone_db;DB_CLOSE_DELAY=-1;MODE=MySQL
     driver-class-name: org.h2.Driver

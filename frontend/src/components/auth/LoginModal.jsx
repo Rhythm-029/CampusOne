@@ -397,3 +397,4 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
     </div>
   );
 }
+

@@ -25,7 +25,10 @@ import {
   Sparkles,
   ExternalLink,
   HelpCircle,
+  Tag,
+  PackageSearch,
 } from 'lucide-react';
+import LostFoundBrowsePage from '../lostfound/LostFoundBrowsePage';
 
 export default function StudentPortal({ currentUser, onLogout, onNavigateLanding }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'spaces' | 'my-bookings' | 'faculty' | 'clubs'
@@ -300,6 +303,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
           {[
             { id: 'overview', label: 'Dashboard Overview', icon: Layers },
             { id: 'spaces', label: 'Campus Spaces & Room Booking', icon: Calendar },
+            { id: 'lostfound', label: 'Lost & Found Desk', icon: Tag },
             { id: 'my-bookings', label: 'My Bookings', icon: Clock },
             { id: 'faculty', label: 'Faculty Connect', icon: BookOpen },
             { id: 'clubs', label: 'Events & Student Clubs', icon: Award },
@@ -809,6 +813,15 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
         )}
 
         {/* =====================================================================
+            LOST & FOUND DESK TAB
+            ===================================================================== */}
+        {activeTab === 'lostfound' && (
+          <div className="space-y-6 animate-fade-in">
+            <LostFoundBrowsePage />
+          </div>
+        )}
+
+        {/* =====================================================================
             TAB 3: MY BOOKINGS
             ===================================================================== */}
         {activeTab === 'my-bookings' && (
@@ -1178,3 +1191,4 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     </div>
   );
 }
+
