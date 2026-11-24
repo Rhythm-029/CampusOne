@@ -36,12 +36,15 @@ public class LostFoundAutocompleteService {
         List<ItemVocabulary> vocabularyList = itemVocabularyRepository.findAll();
         for (ItemVocabulary iv : vocabularyList) {
             trie.insert(iv.getDisplayTerm(), iv.getFrequency());
+            if (iv.getNormalizedWord() != null && !iv.getNormalizedWord().equalsIgnoreCase(iv.getDisplayTerm())) {
+                trie.insert(iv.getNormalizedWord(), iv.getFrequency());
+            }
         }
 
         // 2. Aggregate active report item names
         List<LostFoundReport> reports = lostFoundReportRepository.findAll();
         for (LostFoundReport r : reports) {
-            if (!"WITHDRAWN".equalsIgnoreCase(r.getStatus())) {
+            if (!"WITHDRAWN".equalsIgnoreCase(r.getStatus()) && r.getItemName() != null && !r.getItemName().isBlank()) {
                 trie.incrementFrequency(r.getItemName());
             }
         }

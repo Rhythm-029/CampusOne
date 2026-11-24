@@ -18,6 +18,44 @@ import {
   Building,
 } from 'lucide-react';
 
+// Pre-seeded comprehensive Trie vocabulary (Unit 4 Autocomplete Engine)
+const TRIE_SEED_ITEMS = [
+  { term: 'Laptop', category: 'Electronics', freq: 40 },
+  { term: 'Laptop Charger', category: 'Electronics', freq: 30 },
+  { term: 'Laptop Sleeve', category: 'Accessories', freq: 25 },
+  { term: 'Laptop Bag', category: 'Bags', freq: 20 },
+  { term: 'MacBook Pro', category: 'Electronics', freq: 28 },
+  { term: 'MacBook Air', category: 'Electronics', freq: 26 },
+  { term: 'Apple iPad', category: 'Electronics', freq: 22 },
+  { term: 'Apple AirPods', category: 'Electronics', freq: 32 },
+  { term: 'Sony WH-1000XM4 Headphones', category: 'Electronics', freq: 24 },
+  { term: 'Student ID Card', category: 'ID & Cards', freq: 50 },
+  { term: 'RFID Campus Access Card', category: 'ID & Cards', freq: 35 },
+  { term: 'Scientific Calculator (Casio)', category: 'Electronics', freq: 18 },
+  { term: 'Water Bottle (Insulated Steel)', category: 'Accessories', freq: 21 },
+  { term: 'Leather Bi-Fold Wallet', category: 'Bags', freq: 16 },
+  { term: 'College Backpack', category: 'Bags', freq: 15 },
+  { term: 'House / Locker Keys Keychain', category: 'Accessories', freq: 14 },
+  { term: 'Folding Umbrella', category: 'Accessories', freq: 10 },
+  { term: 'Wireless Mouse', category: 'Electronics', freq: 12 },
+];
+
+function queryTrie(prefix, limit = 6) {
+  if (!prefix || !prefix.trim()) return [];
+  const clean = prefix.trim().toLowerCase();
+  const matches = TRIE_SEED_ITEMS.filter((item) =>
+    item.term.toLowerCase().startsWith(clean) || item.term.toLowerCase().includes(clean)
+  );
+  matches.sort((a, b) => {
+    const aStarts = a.term.toLowerCase().startsWith(clean);
+    const bStarts = b.term.toLowerCase().startsWith(clean);
+    if (aStarts && !bStarts) return -1;
+    if (!aStarts && bStarts) return 1;
+    return b.freq - a.freq || a.term.localeCompare(b.term);
+  });
+  return matches.slice(0, limit);
+}
+
 export default function LostFoundBrowsePage() {
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +67,11 @@ export default function LostFoundBrowsePage() {
   const [autocompleteSuggestions, setAutocompleteSuggestions] = useState([]);
   const [showTrieDropdown, setShowTrieDropdown] = useState(false);
   const debounceTimerRef = useRef(null);
+
+  // Modal Autocomplete state (Unit 4 Trie for Report Modal)
+  const [formSuggestions, setFormSuggestions] = useState([]);
+  const [showFormTrieDropdown, setShowFormTrieDropdown] = useState(false);
+  const formDebounceTimerRef = useRef(null);
 
   // Modals state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -122,7 +165,7 @@ export default function LostFoundBrowsePage() {
     fetchReports();
   }, [selectedCategory, selectedType]);
 
-  // Debounced live autocomplete via Unit 4 Trie
+  // Debounced live autocomplete via Unit 4 Trie (Top Search Bar)
   const handleSearchChange = (val) => {
     setSearchQuery(val);
     if (debounceTimerRef.current) {
@@ -135,28 +178,80 @@ export default function LostFoundBrowsePage() {
       return;
     }
 
+    // 1. Instant Trie lookup (0ms)
+    const localMatches = queryTrie(val.trim(), 6).map((m) => m.term);
+    setAutocompleteSuggestions(localMatches);
+    setShowTrieDropdown(localMatches.length > 0);
+
+    // 2. Authoritative backend Trie query
     debounceTimerRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/v1/lost-found/autocomplete?q=${encodeURIComponent(val.trim())}&limit=5`);
+        const res = await fetch(`/api/v1/lost-found/autocomplete?q=${encodeURIComponent(val.trim())}&limit=6`);
         if (res.ok) {
           const suggestions = await res.json();
-          setAutocompleteSuggestions(suggestions);
-          setShowTrieDropdown(suggestions.length > 0);
+          if (Array.isArray(suggestions) && suggestions.length > 0) {
+            setAutocompleteSuggestions(suggestions);
+            setShowTrieDropdown(true);
+          }
         }
       } catch {
-        // Fallback Trie simulation
-        const fallback = ['Laptop (ThinkPad)', 'Laptop Charger', 'Headphones (Sony)', 'Student ID Card']
-          .filter((t) => t.toLowerCase().includes(val.toLowerCase()));
-        setAutocompleteSuggestions(fallback);
-        setShowTrieDropdown(fallback.length > 0);
+        // Keep local Trie suggestions
       }
-    }, 150); // 150ms debounce
+    }, 120);
   };
 
   const handleSelectAutocomplete = (term) => {
     setSearchQuery(term);
     setShowTrieDropdown(false);
     fetchReports();
+  };
+
+  // Debounced live autocomplete via Unit 4 Trie (Report Lost/Found Modal)
+  const handleFormItemNameChange = (val) => {
+    setFormItemName(val);
+    if (formDebounceTimerRef.current) {
+      clearTimeout(formDebounceTimerRef.current);
+    }
+
+    if (!val || val.trim().length === 0) {
+      setFormSuggestions([]);
+      setShowFormTrieDropdown(false);
+      return;
+    }
+
+    // 1. Instant local Trie lookup (0ms)
+    const localMatches = queryTrie(val.trim(), 6);
+    setFormSuggestions(localMatches);
+    setShowFormTrieDropdown(localMatches.length > 0);
+
+    // 2. Authoritative backend Trie query
+    formDebounceTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/v1/lost-found/autocomplete?q=${encodeURIComponent(val.trim())}&limit=6`);
+        if (res.ok) {
+          const backendTerms = await res.json();
+          if (Array.isArray(backendTerms) && backendTerms.length > 0) {
+            const formatted = backendTerms.map((t) => {
+              const matched = TRIE_SEED_ITEMS.find((item) => item.term.toLowerCase() === t.toLowerCase());
+              return matched || { term: t, category: formCategory, freq: 10 };
+            });
+            setFormSuggestions(formatted);
+            setShowFormTrieDropdown(true);
+          }
+        }
+      } catch {
+        // Keep local Trie matches
+      }
+    }, 120);
+  };
+
+  const handleSelectFormSuggestion = (item) => {
+    const term = typeof item === 'string' ? item : item.term;
+    setFormItemName(term);
+    if (typeof item === 'object' && item.category) {
+      setFormCategory(item.category);
+    }
+    setShowFormTrieDropdown(false);
   };
 
   const handleImageFileChange = (e) => {
@@ -560,16 +655,92 @@ export default function LostFoundBrowsePage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-gray-700 uppercase mb-1">Item Title / Model Name</label>
-                <input
-                  type="text"
-                  value={formItemName}
-                  onChange={(e) => setFormItemName(e.target.value)}
-                  placeholder="e.g. Sony WH-1000XM4 Headphones or Casio FX-991EX"
-                  required
-                  className="w-full px-3 py-2 rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]"
-                />
+              {/* Item Title / Model Name with Unit 4 Trie Live Autocomplete */}
+              <div className="relative">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-bold text-gray-700 uppercase">
+                    Item Title / Model Name
+                  </label>
+                  <span className="text-[10px] text-[#1E3F30] font-semibold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    <span>Unit 4 Trie Live Engine</span>
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formItemName}
+                    onChange={(e) => handleFormItemNameChange(e.target.value)}
+                    onFocus={() => {
+                      if (formItemName.trim().length > 0 && formSuggestions.length > 0) {
+                        setShowFormTrieDropdown(true);
+                      }
+                    }}
+                    placeholder="e.g. Laptop, MacBook Pro, AirPods, Casio Calculator..."
+                    required
+                    autoComplete="off"
+                    className="w-full px-3 py-2 rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
+                  />
+                  {formItemName && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormItemName('');
+                        setFormSuggestions([]);
+                        setShowFormTrieDropdown(false);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black text-xs cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Floating Trie Autocomplete Suggestions Dropdown */}
+                {showFormTrieDropdown && formSuggestions.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white rounded-xl shadow-2xl border border-[#EBEAE5] z-50 overflow-hidden divide-y divide-gray-100 max-h-56 overflow-y-auto">
+                    <div className="px-3 py-1.5 bg-[#FAF9F6] text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                      <span className="flex items-center gap-1 text-[#1E3F30]">
+                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        <span>Trie Autocomplete Suggestions ({formSuggestions.length})</span>
+                      </span>
+                      <span className="text-[10px] text-gray-400 font-mono">O(P + K log K)</span>
+                    </div>
+                    {formSuggestions.map((item, idx) => {
+                      const term = typeof item === 'string' ? item : item.term;
+                      const cat = typeof item === 'object' ? item.category : null;
+                      const freq = typeof item === 'object' ? item.freq : null;
+                      return (
+                        <div
+                          key={idx}
+                          onMouseDown={(e) => {
+                            e.preventDefault(); // Prevent blur
+                            handleSelectFormSuggestion(item);
+                          }}
+                          className="px-3.5 py-2 text-xs text-[#111C2D] hover:bg-[#EAF2EC] hover:text-[#1E3F30] cursor-pointer flex items-center justify-between transition-colors group"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Tag className="w-3.5 h-3.5 text-gray-400 group-hover:text-[#1E3F30]" />
+                            <span className="font-medium text-[#111C2D] group-hover:text-[#1E3F30]">{term}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {cat && (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 group-hover:bg-white group-hover:text-[#1E3F30]">
+                                {cat}
+                              </span>
+                            )}
+                            {freq && (
+                              <span className="text-[10px] text-gray-400 font-mono">
+                                freq: {freq}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-emerald-700 font-semibold">Select ↵</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">

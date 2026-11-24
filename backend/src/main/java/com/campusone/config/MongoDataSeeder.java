@@ -150,22 +150,30 @@ public class MongoDataSeeder implements CommandLineRunner {
     }
 
     private void seedItemVocabularyIfEmpty() {
-        if (itemVocabularyRepository.count() == 0) {
+        if (itemVocabularyRepository.count() < 15 || itemVocabularyRepository.findByNormalizedWord("laptop sleeve").isEmpty()) {
+            itemVocabularyRepository.deleteAll();
             List<ItemVocabulary> vocab = List.of(
-                    new ItemVocabulary("laptop", "Laptop (MacBook / ThinkPad)", "Electronics", 20, "SEED"),
-                    new ItemVocabulary("laptop charger", "Laptop Charger (Type-C / MagSafe)", "Electronics", 15, "SEED"),
-                    new ItemVocabulary("headphones", "Headphones (Over-Ear)", "Electronics", 18, "SEED"),
-                    new ItemVocabulary("airpods", "Apple AirPods / Earbuds", "Electronics", 22, "SEED"),
-                    new ItemVocabulary("student id card", "Student ID Card", "ID & Cards", 30, "SEED"),
-                    new ItemVocabulary("scientific calculator", "Scientific Calculator (Casio)", "Electronics", 12, "SEED"),
-                    new ItemVocabulary("water bottle", "Water Bottle (Insulated Steel)", "Accessories", 16, "SEED"),
-                    new ItemVocabulary("wallet", "Leather Bi-Fold Wallet", "Bags", 14, "SEED"),
-                    new ItemVocabulary("backpack", "College Backpack", "Bags", 10, "SEED"),
-                    new ItemVocabulary("umbrella", "Folding Umbrella", "Accessories", 8, "SEED"),
-                    new ItemVocabulary("keys", "House / Locker Keys Keychain", "Accessories", 9, "SEED")
+                    new ItemVocabulary("laptop", "Laptop", "Electronics", 40, "SEED"),
+                    new ItemVocabulary("laptop charger", "Laptop Charger", "Electronics", 30, "SEED"),
+                    new ItemVocabulary("laptop sleeve", "Laptop Sleeve", "Accessories", 25, "SEED"),
+                    new ItemVocabulary("laptop bag", "Laptop Bag", "Bags", 20, "SEED"),
+                    new ItemVocabulary("macbook pro", "MacBook Pro", "Electronics", 28, "SEED"),
+                    new ItemVocabulary("macbook air", "MacBook Air", "Electronics", 26, "SEED"),
+                    new ItemVocabulary("ipad", "Apple iPad", "Electronics", 22, "SEED"),
+                    new ItemVocabulary("headphones", "Headphones (Sony / Bose)", "Electronics", 24, "SEED"),
+                    new ItemVocabulary("airpods", "Apple AirPods", "Electronics", 32, "SEED"),
+                    new ItemVocabulary("student id card", "Student ID Card", "ID & Cards", 50, "SEED"),
+                    new ItemVocabulary("rfid access card", "RFID Campus Access Card", "ID & Cards", 35, "SEED"),
+                    new ItemVocabulary("scientific calculator", "Scientific Calculator (Casio)", "Electronics", 18, "SEED"),
+                    new ItemVocabulary("water bottle", "Water Bottle (Insulated Steel)", "Accessories", 21, "SEED"),
+                    new ItemVocabulary("wallet", "Leather Bi-Fold Wallet", "Bags", 16, "SEED"),
+                    new ItemVocabulary("backpack", "College Backpack", "Bags", 15, "SEED"),
+                    new ItemVocabulary("keys", "House / Locker Keys Keychain", "Accessories", 14, "SEED"),
+                    new ItemVocabulary("umbrella", "Folding Umbrella", "Accessories", 10, "SEED"),
+                    new ItemVocabulary("wireless mouse", "Wireless Mouse", "Electronics", 12, "SEED")
             );
             itemVocabularyRepository.saveAll(vocab);
-            System.out.println(">>> [MongoDB Atlas] Seeded baseline item vocabulary for Unit 4 Trie Autocomplete.");
+            System.out.println(">>> [MongoDB Atlas] Seeded comprehensive item vocabulary for Unit 4 Trie Autocomplete.");
         }
     }
 }
