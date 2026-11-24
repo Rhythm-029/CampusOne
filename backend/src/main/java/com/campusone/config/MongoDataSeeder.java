@@ -4,6 +4,7 @@ import com.campusone.auth.model.RoleName;
 import com.campusone.lostfound.model.ItemVocabulary;
 import com.campusone.lostfound.repository.ItemVocabularyRepository;
 import com.campusone.lostfound.repository.LostFoundReportRepository;
+import com.campusone.lostfound.service.LostFoundAutocompleteService;
 import com.campusone.model.RoomDocument;
 import com.campusone.model.UserDocument;
 import com.campusone.repository.RoomMongoRepository;
@@ -28,15 +29,18 @@ public class MongoDataSeeder implements CommandLineRunner {
     private final RoomMongoRepository roomRepository;
     private final ItemVocabularyRepository itemVocabularyRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LostFoundAutocompleteService autocompleteService;
 
     public MongoDataSeeder(UserMongoRepository userRepository,
                            RoomMongoRepository roomRepository,
                            ItemVocabularyRepository itemVocabularyRepository,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           LostFoundAutocompleteService autocompleteService) {
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.itemVocabularyRepository = itemVocabularyRepository;
         this.passwordEncoder = passwordEncoder;
+        this.autocompleteService = autocompleteService;
     }
 
     @Override
@@ -44,6 +48,7 @@ public class MongoDataSeeder implements CommandLineRunner {
         seedUsersIfEmpty();
         seedRoomsIfEmpty();
         seedItemVocabularyIfEmpty();
+        autocompleteService.rebuildTrie();
     }
 
     private void seedUsersIfEmpty() {
@@ -158,3 +163,4 @@ public class MongoDataSeeder implements CommandLineRunner {
         }
     }
 }
+

@@ -137,7 +137,7 @@ public class CampusSpacesController {
         results.put("baseline", "Greedy First-Fit Heuristic");
         results.put("totalRequests", requestCount);
         results.put("bipartiteMatchesCount", bipartiteResult.getMaxMatchingCardinality());
-        results.put("greedyMatchesCount", greedyResult.getMatchedCount());
+        results.put("greedyMatchesCount", greedyResult.getTotalAllocations());
         results.put("bipartiteRuntimeMs", bipartiteResult.getExecutionTimeNs() / 1_000_000.0);
         results.put("greedyRuntimeMs", greedyResult.getExecutionTimeNs() / 1_000_000.0);
         results.put("bipartiteAssignments", assignments);

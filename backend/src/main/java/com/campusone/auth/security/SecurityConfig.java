@@ -41,9 +41,15 @@ public class SecurityConfig {
                     "/api/v1/auth/**",
                     "/h2-console/**",
                     "/api/v1/spaces/rooms",
-                    "/api/v1/spaces/rooms/*/availability"
+                    "/api/v1/spaces/rooms/**",
+                    "/api/v1/spaces/check-availability",
+                    "/api/v1/lost-found/autocomplete",
+                    "/api/v1/lost-found/reports",
+                    "/api/v1/lost-found/images/**",
+                    "/api/v1/lost-found/screen/**"
                 ).permitAll()
-                .requestMatchers("/api/v1/admin/spaces/**").hasAnyAuthority("ROLE_SPACE_ADMIN", "ROLE_SUPER_ADMIN")
+                .requestMatchers("/api/v1/admin/spaces/**", "/api/v1/spaces/admin/**").hasAnyAuthority("ROLE_SPACE_ADMIN", "ROLE_SUPER_ADMIN")
+                .requestMatchers("/api/v1/lost-found/admin/**").hasAnyAuthority("ROLE_LOST_FOUND_ADMIN", "ROLE_SUPER_ADMIN")
                 .requestMatchers("/api/v1/admin/events/**").hasAnyAuthority("ROLE_EVENT_ADMIN", "ROLE_SUPER_ADMIN")
                 .requestMatchers("/api/v1/admin/system/**").hasAuthority("ROLE_SUPER_ADMIN")
                 .anyRequest().authenticated()

@@ -34,7 +34,7 @@ public class AuthService {
                        PasswordEncoder passwordEncoder,
                        JwtUtil jwtUtil,
                        AuthenticationManager authenticationManager,
-                       @Value("${campusone.auth.allowed-domains}") List<String> allowedDomains,
+                       @Value("${campusone.auth.allowed-domains:atlasskilltech.university,atlasuniversity.edu.in,ugdx.edu.in,campusone.edu}") List<String> allowedDomains,
                        @Value("${campusone.auth.admin-master-password:Password123!}") String adminMasterPassword) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
