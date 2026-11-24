@@ -13,3 +13,4 @@ public interface RoomMongoRepository extends MongoRepository<RoomDocument, Strin
     List<RoomDocument> findByFloor(int floor);
     List<RoomDocument> findByActiveTrue();
 }
+

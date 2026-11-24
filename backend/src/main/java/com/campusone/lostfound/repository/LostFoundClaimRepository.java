@@ -15,3 +15,4 @@ public interface LostFoundClaimRepository extends MongoRepository<LostFoundClaim
     List<LostFoundClaim> findByStatusOrderByCreatedAtDesc(String status);
     boolean existsByReportIdAndStatus(String reportId, String status);
 }
+

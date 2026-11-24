@@ -15,3 +15,4 @@ public interface RoomBookingSlotMongoRepository extends MongoRepository<RoomBook
     List<RoomBookingSlotDocument> findByBookingRequestId(String bookingRequestId);
     boolean existsByRoomIdAndBookingDateAndSlotId(String roomId, String bookingDate, int slotId);
 }
+

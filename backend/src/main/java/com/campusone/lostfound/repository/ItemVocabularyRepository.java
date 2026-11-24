@@ -12,3 +12,4 @@ public interface ItemVocabularyRepository extends MongoRepository<ItemVocabulary
     Optional<ItemVocabulary> findByNormalizedWord(String normalizedWord);
     List<ItemVocabulary> findAllByOrderByFrequencyDesc();
 }
+

@@ -52,3 +52,4 @@ public class TrieNode {
         this.canonicalTerm = canonicalTerm;
     }
 }
+

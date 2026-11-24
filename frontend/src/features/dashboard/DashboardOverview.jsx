@@ -9,34 +9,34 @@ export default function DashboardOverview({ onNavigate }) {
     title: 'Project Discussion & Review',
     date: 'Tuesday, 20 Feb 2026',
     time: '02:00 PM – 04:00 PM',
-    room: 'Room A-204 (Discussion Room)',
+    room: 'Room 205 (Smart Classroom, Floor 2)',
     status: 'available',
     statusLabel: 'Approved',
   };
 
   const roomStatusList = [
-    { name: 'Discussion Room A-204', type: 'Discussion', capacity: 8, status: 'available', label: 'Available' },
-    { name: 'Seminar Hall B-101', type: 'Auditorium', capacity: 120, status: 'available', label: 'Available' },
-    { name: 'Computing Lab C-305', type: 'Lab', capacity: 40, status: 'booked', label: 'Booked' },
-    { name: 'Conference Room A-301', type: 'Meeting', capacity: 20, status: 'available', label: 'Available' },
+    { name: 'Room 205', type: 'Smart Classroom', capacity: 60, status: 'available', label: 'Available' },
+    { name: 'Room 101', type: 'Smart Classroom', capacity: 60, status: 'available', label: 'Available' },
+    { name: 'Room 213', type: 'Special Auditorium', capacity: 200, status: 'booked', label: 'Booked' },
+    { name: 'Room 701', type: 'Academic Executive', capacity: 60, status: 'available', label: 'Available' },
   ];
 
   const recentReports = [
     {
       title: 'Blue Water Bottle',
-      location: 'Found near Library, Block A',
+      location: 'Found near Room 112, Floor 1',
       type: 'found',
       time: '2 hours ago',
     },
     {
       title: 'Wireless Earbuds (Black)',
-      location: 'Lost in the Computing Lab',
+      location: 'Lost in Room 105, Floor 1',
       type: 'lost',
       time: 'Yesterday',
     },
     {
       title: 'Student ID Card',
-      location: 'Found in Cafeteria',
+      location: 'Found near Room 113, Floor 1',
       type: 'found',
       time: 'Yesterday',
     },

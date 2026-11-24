@@ -49,7 +49,47 @@ VALUES (7, 'admin@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L
 MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
 VALUES (8, 'ananya.student@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Ananya Sharma', 'Computer Science (Semester V)', TRUE);
 
+-- 8 Specified Professors
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (11, 'nimesh.bumb@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Nimesh Bumb', 'Computer Science & AI/ML', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (12, 'yogesh.jadhav@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Yogesh Jadhav', 'Computer Science & Systems', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (13, 'kunal.meher@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Kunal Meher', 'Computer Science & Data', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (14, 'rabindra.henry@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Rabindra Henry', 'Computer Science & Networking', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (15, 'lipika.majumdar@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Lipika Majumdar', 'AI & Data Science', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (16, 'mayank.srivastava@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Mayank Srivastava', 'AI & Computational Systems', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (17, 'maria.acharya@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Maria Acharya', 'Human-Computer Interaction & Design', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (18, 'amrita.banerjee@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Amrita Banerjee', 'Cloud Computing & AI', TRUE);
+
+-- 2 Specified Club Coordinators
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (19, 'kunal.ramchandani@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Kunal Ramchandani', 'INC - The corporate club', TRUE);
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (20, 'aaren@atlasskilltech.university', '$2a$10$7EqJtq98hPqEX7fNZaFWoO.89L3WqCj5zN5k2K/L3pQ9K0M1R4WKu', 'Aaren', 'Highflyers', TRUE);
+
 -- Assign User Roles
+-- Faculty (2) for 11..18
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (11, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (12, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (13, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (14, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (15, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (16, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (17, 2);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (18, 2);
+
+-- Club Coordinators (1, 3)
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (19, 1);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (19, 3);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (20, 1);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (20, 3);
+
 -- Admin has SUPER_ADMIN (6), SPACE_ADMIN (4), EVENT_ADMIN (5)
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (1, 6);
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (1, 4);
@@ -97,7 +137,7 @@ VALUES (1, 1, 1, 'Section A', 60);
 MERGE INTO course_offerings (id, course_id, academic_term_id, section, max_seats) KEY(course_id, academic_term_id, section)
 VALUES (2, 2, 1, 'Section A', 60);
 
--- Assign Dr. Vikram Sharma to teach CS501 Section A
+-- Assign Prof. Nimesh Bumb to teach CS501 Section A
 MERGE INTO faculty_assignments (id, course_offering_id, faculty_id) KEY(course_offering_id, faculty_id)
-VALUES (1, 1, 4);
+VALUES (1, 1, 11);
 

@@ -52,56 +52,56 @@ public class MongoDataSeeder implements CommandLineRunner {
     }
 
     private void seedUsersIfEmpty() {
-        if (userRepository.count() == 0) {
+        if (userRepository.findByEmail("nimesh.bumb@atlasskilltech.university").isEmpty()) {
+            userRepository.deleteAll();
             String encodedPwd = passwordEncoder.encode("Password123!");
 
+            List<UserDocument> users = new ArrayList<>();
+
             // 1. Master University Admin (Estate & Space Admin, Lost & Found Admin, Super Admin)
-            UserDocument admin = new UserDocument(
+            users.add(new UserDocument(
                     "admin@atlasskilltech.university",
                     encodedPwd,
-                    "Prof. Rajesh Verma",
+                    "Campus Admin",
                     "Estate & Space Operations",
                     Set.of(RoleName.ROLE_SUPER_ADMIN, RoleName.ROLE_SPACE_ADMIN, RoleName.ROLE_EVENT_ADMIN, RoleName.ROLE_LOST_FOUND_ADMIN)
-            );
+            ));
 
             // 2. Verified Student
-            UserDocument student = new UserDocument(
+            users.add(new UserDocument(
                     "ananya.student@atlasskilltech.university",
                     encodedPwd,
                     "Ananya Sharma",
                     "Computer Science (Semester V)",
                     Set.of(RoleName.ROLE_STUDENT)
-            );
+            ));
 
-            // 3. Faculty Member
-            UserDocument faculty = new UserDocument(
-                    "dr.sharma@atlasskilltech.university",
-                    encodedPwd,
-                    "Dr. Vikram Sharma",
-                    "Computer Science & AI/ML",
-                    Set.of(RoleName.ROLE_FACULTY)
-            );
+            // 3. The 8 Specified Professors
+            users.add(new UserDocument("nimesh.bumb@atlasskilltech.university", encodedPwd, "Nimesh Bumb", "Computer Science & AI/ML", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("yogesh.jadhav@atlasskilltech.university", encodedPwd, "Yogesh Jadhav", "Computer Science & Systems", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("kunal.meher@atlasskilltech.university", encodedPwd, "Kunal Meher", "Computer Science & Data", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("rabindra.henry@atlasskilltech.university", encodedPwd, "Rabindra Henry", "Computer Science & Networking", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("lipika.majumdar@atlasskilltech.university", encodedPwd, "Lipika Majumdar", "AI & Data Science", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("mayank.srivastava@atlasskilltech.university", encodedPwd, "Mayank Srivastava", "AI & Computational Systems", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("maria.acharya@atlasskilltech.university", encodedPwd, "Maria Acharya", "Human-Computer Interaction & Design", Set.of(RoleName.ROLE_FACULTY)));
+            users.add(new UserDocument("amrita.banerjee@atlasskilltech.university", encodedPwd, "Amrita Banerjee", "Cloud Computing & AI", Set.of(RoleName.ROLE_FACULTY)));
 
-            // 4. Student & Club Coordinator
-            UserDocument coordinator = new UserDocument(
-                    "rhythm.coordinator@atlasskilltech.university",
-                    encodedPwd,
-                    "Rhythm Singhal",
-                    "Computer Science (Semester V)",
-                    Set.of(RoleName.ROLE_STUDENT, RoleName.ROLE_CLUB_COORDINATOR)
-            );
+            // 4. The 2 Specified Club Coordinators
+            users.add(new UserDocument("kunal.ramchandani@atlasskilltech.university", encodedPwd, "Kunal Ramchandani", "INC - The corporate club", Set.of(RoleName.ROLE_STUDENT, RoleName.ROLE_CLUB_COORDINATOR)));
+            users.add(new UserDocument("aaren@atlasskilltech.university", encodedPwd, "Aaren", "Highflyers", Set.of(RoleName.ROLE_STUDENT, RoleName.ROLE_CLUB_COORDINATOR)));
 
-            userRepository.saveAll(List.of(admin, student, faculty, coordinator));
-            System.out.println(">>> [MongoDB Atlas] Seeded verified university users.");
+            userRepository.saveAll(users);
+            System.out.println(">>> [MongoDB Atlas] Seeded verified university users (Professors, Club Coordinators, Student, Admin).");
         }
     }
 
     private void seedRoomsIfEmpty() {
-        if (roomRepository.count() == 0) {
+        if (roomRepository.findByRoomNumber("712").isEmpty() || roomRepository.count() < 90) {
+            roomRepository.deleteAll();
             List<RoomDocument> rooms = new ArrayList<>();
 
-            // Floor 1: Rooms 101–112 (12 ordinary classrooms, cap 60)
-            for (int i = 1; i <= 12; i++) {
+            // Floor 1: Rooms 101–113 (13 rooms, cap 60)
+            for (int i = 1; i <= 13; i++) {
                 String num = String.format("1%02d", i);
                 rooms.add(new RoomDocument(num, 1, 60, "Smart Classroom", List.of("Laser Projector", "Whiteboard", "Wi-Fi 6"), true, true));
             }
@@ -120,26 +120,32 @@ public class MongoDataSeeder implements CommandLineRunner {
             }
             rooms.add(new RoomDocument("313", 3, 200, "Special Auditorium", List.of("Dual Laser Projectors", "PA Audio System", "Stage Mic", "Tiered Seating"), true, true));
 
-            // Floor 4: Rooms 401–412 (12 ordinary classrooms, cap 60)
-            for (int i = 1; i <= 12; i++) {
+            // Floor 4: Rooms 401–413 (13 rooms, cap 60)
+            for (int i = 1; i <= 13; i++) {
                 String num = String.format("4%02d", i);
                 rooms.add(new RoomDocument(num, 4, 60, "Smart Classroom", List.of("Laser Projector", "Whiteboard", "Wi-Fi 6"), true, true));
             }
 
-            // Floor 5: Rooms 501–512 (12 ordinary classrooms, cap 60)
-            for (int i = 1; i <= 12; i++) {
+            // Floor 5: Rooms 501–513 (13 rooms, cap 60)
+            for (int i = 1; i <= 13; i++) {
                 String num = String.format("5%02d", i);
                 rooms.add(new RoomDocument(num, 5, 60, "Discussion & Seminar Room", List.of("Display Screen", "Whiteboard", "Wi-Fi 6"), true, true));
             }
 
-            // Floor 6: Rooms 601–612 (12 ordinary classrooms, cap 60)
-            for (int i = 1; i <= 12; i++) {
+            // Floor 6: Rooms 601–613 (13 rooms, cap 60)
+            for (int i = 1; i <= 13; i++) {
                 String num = String.format("6%02d", i);
                 rooms.add(new RoomDocument(num, 6, 60, "Innovation Lab & Studio", List.of("Workstations", "Interactive Board", "Wi-Fi 6"), true, true));
             }
 
+            // Floor 7: Rooms 701–712 (7th floor is the last floor, 12 rooms)
+            for (int i = 1; i <= 12; i++) {
+                String num = String.format("7%02d", i);
+                rooms.add(new RoomDocument(num, 7, 60, "Academic Seminar & Executive Room", List.of("Interactive Display", "Conference Audio", "Wi-Fi 6"), true, true));
+            }
+
             roomRepository.saveAll(rooms);
-            System.out.printf(">>> [MongoDB Atlas] Seeded %d verified campus rooms across Floors 1–6.%n", rooms.size());
+            System.out.printf(">>> [MongoDB Atlas] Seeded %d verified campus rooms across Floors 1–7 (Rooms 101-113 to 701-712).%n", rooms.size());
         }
     }
 

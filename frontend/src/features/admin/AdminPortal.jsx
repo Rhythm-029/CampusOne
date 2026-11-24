@@ -49,9 +49,9 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     },
     {
       id: 'REQ-805',
-      requester: 'Rhythm Singhal (GDSC Club)',
-      department: 'Student Affairs & Technical Clubs',
-      purpose: 'Campus Hackathon Keynote & Orientation',
+      requester: 'Kunal Ramchandani (INC - The corporate club)',
+      department: 'INC - The corporate club',
+      purpose: 'Corporate Leadership Keynote & Conclave',
       preferredRoom: 'Room 213 (Special Auditorium)',
       capacityNeeded: 180,
       date: '2026-02-27',
@@ -62,10 +62,10 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     },
     {
       id: 'REQ-811',
-      requester: 'DevOps & Cloud Study Circle',
-      department: 'Computer Science',
-      purpose: 'Kubernetes Hands-on Workshop',
-      preferredRoom: 'Room 105 (Computer Lab)',
+      requester: 'Aaren (Highflyers)',
+      department: 'Highflyers Club',
+      purpose: 'Highflyers Executive Workshop',
+      preferredRoom: 'Room 105 (Smart Classroom)',
       capacityNeeded: 45,
       date: '2026-02-28',
       slots: [2, 3],
@@ -78,11 +78,11 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
   const [approvedHistory, setApprovedHistory] = useState([
     {
       id: 'REQ-791',
-      requester: 'Dr. Vikram Sharma',
+      requester: 'Prof. Nimesh Bumb',
       room: 'Room 313 (Auditorium)',
       date: '2026-02-20',
       slotLabel: 'Slot 1 & 2 (08:30 AM – 10:30 AM)',
-      approvedBy: 'Prof. Rajesh Verma',
+      approvedBy: 'Space & Estate Admin',
       status: 'COMMITTED',
     },
   ]);
@@ -104,8 +104,9 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
   // Floor 7 Configurable Inventory
   const [floor7Rooms, setFloor7Rooms] = useState([
-    { id: '701', name: 'Room 701 (Executive Boardroom)', capacity: 40, type: 'Boardroom', status: 'Active' },
-    { id: '702', name: 'Room 702 (Multipurpose Innovation Arena)', capacity: 250, type: 'Large Hall', status: 'Active' },
+    { id: '701', name: 'Room 701 (Faculty Executive Seminar)', capacity: 60, type: 'Executive Seminar', status: 'Active' },
+    { id: '702', name: 'Room 702 (Academic Council Room)', capacity: 60, type: 'Council Room', status: 'Active' },
+    { id: '712', name: 'Room 712 (Floor 7 Capstone Room)', capacity: 60, type: 'Capstone Suite', status: 'Active' },
   ]);
   const [newRoomNumber, setNewRoomNumber] = useState('');
   const [newRoomCapacity, setNewRoomCapacity] = useState(60);
@@ -1070,20 +1071,21 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2EC] text-[#1E3F30]">
-                  74 Core Rooms Active
+                  90 Campus Rooms Active (Floors 1–7)
                 </span>
               </div>
             </div>
 
             {/* Floor Summary Matrix */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
               {[
-                { floor: 'Floor 1', rooms: '101–112 (12 Rooms)', cap: '60 each' },
+                { floor: 'Floor 1', rooms: '101–113 (13 Rooms)', cap: '60 each' },
                 { floor: 'Floor 2', rooms: '201–212 + Room 213', cap: 'Ordinary 60, Room 213: 200' },
                 { floor: 'Floor 3', rooms: '301–312 + Room 313', cap: 'Ordinary 60, Room 313: 200' },
-                { floor: 'Floor 4', rooms: '401–412 (12 Rooms)', cap: '60 each' },
-                { floor: 'Floor 5', rooms: '501–512 (12 Rooms)', cap: '60 each' },
-                { floor: 'Floor 6', rooms: '601–612 (12 Rooms)', cap: '60 each' },
+                { floor: 'Floor 4', rooms: '401–413 (13 Rooms)', cap: '60 each' },
+                { floor: 'Floor 5', rooms: '501–513 (13 Rooms)', cap: '60 each' },
+                { floor: 'Floor 6', rooms: '601–613 (13 Rooms)', cap: '60 each' },
+                { floor: 'Floor 7', rooms: '701–712 (12 Rooms)', cap: '60 each, Last Floor' },
               ].map((f) => (
                 <div key={f.floor} className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs space-y-1">
                   <div className="text-xs font-bold text-[#1E3F30]">{f.floor}</div>

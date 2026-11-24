@@ -59,11 +59,11 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     },
     {
       id: 'BK-2026-094',
-      room: 'Room 313 (Auditorium & Seminar Hall)',
+      room: 'Room 313 (Special Auditorium)',
       floor: 'Floor 3',
       date: '2026-02-27',
       slots: 'Slot 5 & 6 (01:30 PM – 03:30 PM)',
-      purpose: 'GDSC Campus Tech Talk & Hands-on Workshop',
+      purpose: 'INC - The corporate club Conclave & Hands-on Workshop',
       capacity: 200,
       status: 'PENDING_APPROVAL',
       statusColor: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -81,13 +81,13 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
   const [consultations, setConsultations] = useState([
     {
       id: 'FC-102',
-      faculty: 'Dr. Vikram Sharma',
+      faculty: 'Prof. Nimesh Bumb',
       course: 'CS501: Advanced Algorithms',
       date: '2026-02-25',
       time: '02:30 PM – 03:30 PM',
       topic: 'Bipartite Matching Augmenting Path Complexity Clarification',
       status: 'CONFIRMED',
-      office: 'Cabin 412, Academic Block',
+      office: 'Cabin 701, Floor 7 Academic Block',
     },
   ]);
 
@@ -109,10 +109,10 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     { num: 8, time: '16:45 – 17:45' },
   ];
 
-  // 74 Campus Rooms Catalog (Floors 1-6)
+  // Verified Campus Rooms Catalog (Floors 1-7: Rooms 101-113 to 701-712)
   const campusRooms = [
-    // Floor 1 (101-112)
-    ...Array.from({ length: 12 }, (_, i) => ({
+    // Floor 1 (101-113)
+    ...Array.from({ length: 13 }, (_, i) => ({
       id: `10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       name: `Room 10${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       floor: 1,
@@ -147,8 +147,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
           : ['Workstations', 'Laser Projector', 'Wi-Fi 6'],
       status: 'Available',
     })),
-    // Floor 4 (401-412)
-    ...Array.from({ length: 12 }, (_, i) => ({
+    // Floor 4 (401-413)
+    ...Array.from({ length: 13 }, (_, i) => ({
       id: `40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       name: `Room 40${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       floor: 4,
@@ -157,8 +157,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       equipment: ['Projector', 'Whiteboard', 'Wi-Fi 6'],
       status: 'Available',
     })),
-    // Floor 5 (501-512)
-    ...Array.from({ length: 12 }, (_, i) => ({
+    // Floor 5 (501-513)
+    ...Array.from({ length: 13 }, (_, i) => ({
       id: `50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       name: `Room 50${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       floor: 5,
@@ -167,14 +167,24 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       equipment: ['Display Screen', 'Interactive Board', 'Wi-Fi 6'],
       status: 'Available',
     })),
-    // Floor 6 (601-612)
-    ...Array.from({ length: 12 }, (_, i) => ({
+    // Floor 6 (601-613)
+    ...Array.from({ length: 13 }, (_, i) => ({
       id: `60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       name: `Room 60${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
       floor: 6,
       type: 'Innovation Lab & Studio',
       capacity: 60,
       equipment: ['Workstations', 'Prototyping Tools', 'Wi-Fi 6'],
+      status: 'Available',
+    })),
+    // Floor 7 (701-712, 7th floor is the last floor)
+    ...Array.from({ length: 12 }, (_, i) => ({
+      id: `70${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      name: `Room 70${i + 1 > 9 ? i + 1 : '0' + (i + 1)}`,
+      floor: 7,
+      type: 'Academic Seminar & Executive Room',
+      capacity: 60,
+      equipment: ['Interactive Display', 'Conference Audio', 'Wi-Fi 6'],
       status: 'Available',
     })),
   ];
@@ -214,9 +224,14 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
   const handleConsultationSubmit = (e) => {
     e.preventDefault();
     const facultyMap = {
-      CS501: 'Dr. Vikram Sharma',
-      CS502: 'Dr. Meera Nambiar',
-      AI503: 'Prof. Rajesh Verma',
+      CS501: 'Prof. Nimesh Bumb',
+      CS502: 'Prof. Yogesh Jadhav',
+      CS503: 'Prof. Kunal Meher',
+      CS504: 'Prof. Rabindra Henry',
+      AI501: 'Prof. Lipika Majumdar',
+      AI502: 'Prof. Mayank Srivastava',
+      AI503: 'Prof. Maria Acharya',
+      AI504: 'Prof. Amrita Banerjee',
     };
 
     const newAppointment = {
@@ -227,7 +242,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       time: consultationSlot,
       topic: consultationTopic || 'Coursework & Project Guidance',
       status: 'PENDING_FACULTY_CONFIRMATION',
-      office: 'Faculty Block B',
+      office: 'Floor 7 Faculty Block',
     };
 
     setConsultations([newAppointment, ...consultations]);
@@ -417,7 +432,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                 </div>
                 <div className="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Confirmed with Dr. Sharma</span>
+                  <span>Confirmed with Prof. Nimesh Bumb</span>
                 </div>
               </div>
             </div>
@@ -665,7 +680,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                         type="text"
                         value={smartPurpose}
                         onChange={(e) => setSmartPurpose(e.target.value)}
-                        placeholder="e.g. CIA 3 Algorithm Presentation or GDSC Club Meet"
+                        placeholder="e.g. CIA 3 Algorithm Presentation or INC - The corporate club Meet"
                         required
                         className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30 focus:border-[#1E3F30]"
                       />
@@ -726,7 +741,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   <span className="text-xs font-bold uppercase tracking-wider text-gray-500 mr-2">
                     Filter by Floor:
                   </span>
-                  {['All', '1', '2', '3', '4', '5', '6'].map((f) => (
+                  {['All', '1', '2', '3', '4', '5', '6', '7'].map((f) => (
                     <button
                       key={f}
                       type="button"
@@ -737,7 +752,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                           : 'bg-white border border-[#EBEAE5] text-gray-700 hover:bg-gray-100'
                       }`}
                     >
-                      {f === 'All' ? 'All Floors (74 Rooms)' : `Floor ${f}`}
+                      {f === 'All' ? 'All Floors (1–7: 90 Rooms)' : f === '7' ? 'Floor 7 (Last Floor: 701-712)' : `Floor ${f}`}
                     </button>
                   ))}
                 </div>
@@ -946,9 +961,14 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                       onChange={(e) => setSelectedCourse(e.target.value)}
                       className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D] focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/30"
                     >
-                      <option value="CS501">CS501: Advanced Algorithms — Dr. Vikram Sharma</option>
-                      <option value="CS502">CS502: Distributed Operating Systems — Dr. Meera Nambiar</option>
-                      <option value="AI503">AI503: Machine Learning Foundations — Prof. Rajesh Verma</option>
+                      <option value="CS501">CS501: Advanced Algorithms — Prof. Nimesh Bumb</option>
+                      <option value="CS502">CS502: Distributed Operating Systems — Prof. Yogesh Jadhav</option>
+                      <option value="CS503">CS503: Database Engineering & Scalability — Prof. Kunal Meher</option>
+                      <option value="CS504">CS504: Computer Networks & Security — Prof. Rabindra Henry</option>
+                      <option value="AI501">AI501: Machine Learning & Deep Learning — Prof. Lipika Majumdar</option>
+                      <option value="AI502">AI502: Data Structures & System Design — Prof. Mayank Srivastava</option>
+                      <option value="AI503">AI503: Human-Computer Interaction & Design — Prof. Maria Acharya</option>
+                      <option value="AI504">AI504: Cloud Computing & Big Data — Prof. Amrita Banerjee</option>
                     </select>
                   </div>
 
@@ -1083,16 +1103,28 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   }}
                   className="space-y-4"
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
                         Organizing Student Club
                       </label>
                       <select className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]">
-                        <option>Google Developer Student Club (GDSC)</option>
-                        <option>AI & Robotics Society (AIRS)</option>
-                        <option>ATLAS Design Collective</option>
-                        <option>Competitive Programming Club</option>
+                        <option>INC - The corporate club</option>
+                        <option>Highflyers</option>
+                        <option>Agile</option>
+                        <option>Futureprenuers</option>
+                        <option>The student council</option>
+                        <option>Finterest</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#111C2D] uppercase tracking-wider mb-1.5">
+                        Club Coordinator
+                      </label>
+                      <select className="w-full px-4 py-2.5 text-sm rounded-xl border border-[#EBEAE5] bg-white text-[#111C2D]">
+                        <option>Kunal Ramchandani</option>
+                        <option>Aaren</option>
                       </select>
                     </div>
 

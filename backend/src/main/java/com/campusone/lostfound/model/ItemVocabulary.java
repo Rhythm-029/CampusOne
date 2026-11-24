@@ -47,3 +47,4 @@ public class ItemVocabulary {
     public Instant getLastUpdated() { return lastUpdated; }
     public void setLastUpdated(Instant lastUpdated) { this.lastUpdated = lastUpdated; }
 }
+

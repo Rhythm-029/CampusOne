@@ -16,3 +16,4 @@ public interface LostFoundReportRepository extends MongoRepository<LostFoundRepo
     List<LostFoundReport> findByStatusOrderByCreatedAtDesc(String status);
     List<LostFoundReport> findByCategoryOrderByCreatedAtDesc(String category);
 }
+

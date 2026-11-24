@@ -13,3 +13,4 @@ public interface FacultyAppointmentMongoRepository extends MongoRepository<Facul
     List<FacultyAppointmentDocument> findByFacultyIdAndAppointmentDate(String facultyId, String appointmentDate);
     boolean existsByFacultyIdAndAppointmentDateAndSlotIdAndStatusIn(String facultyId, String appointmentDate, int slotId, List<String> statuses);
 }
+

@@ -88,3 +88,4 @@ public class LostFoundAutocompleteService {
         return trie.size();
     }
 }
+
