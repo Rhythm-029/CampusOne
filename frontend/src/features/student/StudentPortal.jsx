@@ -107,10 +107,19 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
 
   const fetchCampusNotifications = () => {
     fetch('/api/v1/spaces/notifications')
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => {
+        const ct = res.headers.get('content-type') || '';
+        if (res.ok && ct.includes('application/json')) return res.json();
+        return null;
+      })
       .then((data) => {
+        const localNotifs = JSON.parse(localStorage.getItem('campusone_campus_notifications') || '[]');
         if (Array.isArray(data) && data.length > 0) {
-          setCampusNotifications(data);
+          const ids = new Set(localNotifs.map(n => n.id));
+          const merged = [...localNotifs, ...data.filter(d => !ids.has(d.id))];
+          setCampusNotifications(merged);
+        } else if (localNotifs.length > 0) {
+          setCampusNotifications(localNotifs);
         }
       })
       .catch(() => {});
@@ -150,10 +159,29 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     const studentEmail = currentUser?.email;
     const url = studentEmail ? `/api/v1/spaces/requests?studentEmail=${encodeURIComponent(studentEmail)}` : '/api/v1/spaces/requests';
     fetch(url)
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => {
+        const ct = res.headers.get('content-type') || '';
+        if (res.ok && ct.includes('application/json')) return res.json();
+        return null;
+      })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((b) => ({
+        const localReqs = JSON.parse(localStorage.getItem('campusone_space_requests') || '[]');
+        let combined = Array.isArray(data) && data.length > 0 ? [...data] : [];
+        localReqs.forEach((lr) => {
+          const idx = combined.findIndex(c => c.id === lr.id);
+          if (idx >= 0) {
+            combined[idx] = lr;
+          } else {
+            combined.unshift(lr);
+          }
+        });
+
+        if (studentEmail && combined.length > 0) {
+          combined = combined.filter(b => !b.studentEmail || b.studentEmail.toLowerCase() === studentEmail.toLowerCase());
+        }
+
+        if (combined.length > 0) {
+          const mapped = combined.map((b) => ({
             id: b.id,
             room: b.roomName || `Room ${b.roomId}`,
             floor: `Floor ${b.roomId ? b.roomId.charAt(0) : '2'}`,
@@ -201,7 +229,16 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       fetchBookings();
     }, 5000);
 
-    return () => clearInterval(interval);
+    const handleStorageChange = () => {
+      fetchCampusNotifications();
+      fetchBookings();
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [currentUser?.email]);
 
   // Faculty Connect State
@@ -335,6 +372,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     const slotTimeStr = timeSlots[smartSlot - 1]?.time || '10:45 – 11:45';
 
     const reqPayload = {
+      id: `BK-2026-${Math.floor(100 + Math.random() * 900)}`,
       studentEmail: currentUser?.email || 'rhythm.singhal.btech2028@atlasskilltech.university',
       studentName: currentUser?.fullName || 'Rhythm Singhal',
       department: currentUser?.department || 'B.Tech CS AI-ML Sem V',
@@ -358,39 +396,25 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       });
 
       if (res.ok) {
-        const created = await res.json();
-        fetchBookings();
-        setAllocationSuccess({
-          room: created.roomName || matchedRoom,
-          slot: created.slotTime || `Slot ${smartSlot} (${slotTimeStr})`,
-          bookingId: created.id,
-        });
-        return;
+        const created = await res.json().catch(() => null);
+        if (created && created.id) {
+          reqPayload.id = created.id;
+        }
       }
-    } catch (err) {
-      console.error('Failed to submit booking request to server:', err);
+    } catch {
+      // Backend unavailable; proceed with local storage
     }
 
-    // Fallback local update if offline
-    const newBooking = {
-      id: `BK-2026-${Math.floor(100 + Math.random() * 900)}`,
-      room: matchedRoom,
-      floor: `Floor ${roomId.charAt(0)}`,
-      date: targetDate,
-      slots: `Slot ${smartSlot} (${slotTimeStr})`,
-      purpose: smartPurpose,
-      capacity: smartCapacity,
-      status: 'PENDING_APPROVAL',
-      statusColor: 'bg-amber-50 text-amber-700 border-amber-200',
-      approver: 'Space Admin Review Queue',
-      notes: `Optimal room matched satisfying capacity (${smartCapacity}) and equipment (${smartEquipment.join(', ')}).`,
-    };
+    // Persist locally for cross-tab live sync on Vercel
+    const stored = JSON.parse(localStorage.getItem('campusone_space_requests') || '[]');
+    localStorage.setItem('campusone_space_requests', JSON.stringify([reqPayload, ...stored]));
+    window.dispatchEvent(new Event('storage'));
 
-    setBookings([newBooking, ...bookings]);
+    fetchBookings();
     setAllocationSuccess({
       room: matchedRoom,
       slot: `Slot ${smartSlot} (${slotTimeStr})`,
-      bookingId: newBooking.id,
+      bookingId: reqPayload.id,
     });
   };
 

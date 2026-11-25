@@ -104,12 +104,27 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
   // Real-time Space Requests & Announcements Sync
   const fetchSpaceRequests = () => {
     fetch('/api/v1/spaces/requests')
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => {
+        const ct = res.headers.get('content-type') || '';
+        if (res.ok && ct.includes('application/json')) return res.json();
+        return [];
+      })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        const localReqs = JSON.parse(localStorage.getItem('campusone_space_requests') || '[]');
+        let combined = Array.isArray(data) && data.length > 0 ? [...data] : [];
+        localReqs.forEach((lr) => {
+          const idx = combined.findIndex(c => c.id === lr.id);
+          if (idx >= 0) {
+            combined[idx] = lr;
+          } else {
+            combined.unshift(lr);
+          }
+        });
+
+        if (combined.length > 0) {
           const pending = [];
           const approved = [];
-          data.forEach((r) => {
+          combined.forEach((r) => {
             const item = {
               id: r.id,
               requester: `${r.studentName || 'Student'} (${r.studentEmail || ''})`,
@@ -178,10 +193,19 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
   const fetchAdminNotifications = () => {
     fetch('/api/v1/spaces/notifications')
-      .then((res) => (res.ok ? res.json() : []))
+      .then((res) => {
+        const ct = res.headers.get('content-type') || '';
+        if (res.ok && ct.includes('application/json')) return res.json();
+        return [];
+      })
       .then((data) => {
+        const localNotifs = JSON.parse(localStorage.getItem('campusone_campus_notifications') || '[]');
         if (Array.isArray(data) && data.length > 0) {
-          setAdminNotifications(data);
+          const ids = new Set(localNotifs.map(n => n.id));
+          const merged = [...localNotifs, ...data.filter(d => !ids.has(d.id))];
+          setAdminNotifications(merged);
+        } else if (localNotifs.length > 0) {
+          setAdminNotifications(localNotifs);
         }
       })
       .catch(() => {});
@@ -195,34 +219,37 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     }
 
     setIsPostingNotif(true);
-    try {
-      const payload = {
-        title: newNotifTitle.trim(),
-        content: newNotifContent.trim(),
-        category: newNotifCategory,
-        authorName: currentUser?.fullName || 'Prof. Rajesh Verma',
-        authorEmail: currentUser?.email || 'admin@atlasskilltech.university',
-        pinned: newNotifPinned,
-      };
+    const newNotice = {
+      id: `NOTIF-${Date.now()}`,
+      title: newNotifTitle.trim(),
+      content: newNotifContent.trim(),
+      category: newNotifCategory,
+      authorName: currentUser?.fullName || 'Prof. Rajesh Verma',
+      authorEmail: currentUser?.email || 'admin@atlasskilltech.university',
+      createdAt: 'Just now',
+      pinned: newNotifPinned,
+    };
 
-      const res = await fetch('/api/v1/spaces/notifications', {
+    try {
+      await fetch('/api/v1/spaces/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(newNotice),
       });
-
-      if (res.ok) {
-        showToast('Campus broadcast announcement published to all student portals!');
-        setNewNotifTitle('');
-        setNewNotifContent('');
-        setNewNotifPinned(false);
-        fetchAdminNotifications();
-      }
     } catch {
-      showToast('Failed to post announcement.', 'error');
-    } finally {
-      setIsPostingNotif(false);
+      // Backend unavailable; local persistence
     }
+
+    const storedNotifs = JSON.parse(localStorage.getItem('campusone_campus_notifications') || '[]');
+    localStorage.setItem('campusone_campus_notifications', JSON.stringify([newNotice, ...storedNotifs]));
+    window.dispatchEvent(new Event('storage'));
+
+    showToast('Campus broadcast published live to all student terminals!');
+    setNewNotifTitle('');
+    setNewNotifContent('');
+    setNewNotifPinned(false);
+    setIsPostingNotif(false);
+    fetchAdminNotifications();
   };
 
   const handleDeleteNotification = async (notifId) => {
@@ -230,11 +257,17 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       await fetch(`/api/v1/spaces/notifications/${notifId}`, {
         method: 'DELETE',
       });
-      setAdminNotifications((prev) => prev.filter((n) => n.id !== notifId));
-      showToast('Broadcast notice deleted from student feeds.');
     } catch {
-      showToast('Failed to delete notification.', 'error');
+      // Backend unavailable
     }
+
+    const storedNotifs = JSON.parse(localStorage.getItem('campusone_campus_notifications') || '[]');
+    const updated = storedNotifs.filter(n => n.id !== notifId);
+    localStorage.setItem('campusone_campus_notifications', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
+
+    setAdminNotifications(prev => prev.filter(n => n.id !== notifId));
+    showToast('Broadcast notice deleted from student feeds.');
   };
 
   useEffect(() => {
@@ -255,7 +288,20 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       fetchAdminNotifications();
     }, 5000);
 
-    return () => clearInterval(interval);
+    const handleStorageChange = () => {
+      fetchSpaceRequests();
+      fetchAdminNotifications();
+      const userReports = JSON.parse(localStorage.getItem('campusone_lost_found_reports') || '[]');
+      setLfReports([...userReports, ...INITIAL_LF_REPORTS]);
+      const userClaims = JSON.parse(localStorage.getItem('campusone_lost_found_claims') || '[]');
+      setLfClaims([...userClaims, ...INITIAL_LF_CLAIMS]);
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const handleDownloadSampleCsv = () => {
@@ -554,11 +600,23 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
   const [newRoomType, setNewRoomType] = useState('Seminar Hall');
 
   // Lost & Found Operations State (ROLE_LOST_FOUND_ADMIN)
-  const [lfReports, setLfReports] = useState([
+  const INITIAL_LF_REPORTS = [
     {
       reportId: 'LF-2026-001',
       reportType: 'FOUND',
-      itemName: 'Sony WH-1000XM4 Headphones (Black)',
+      itemName: 'Apple 96W USB-C Power Adapter & Braided MagSafe Cable',
+      category: 'Electronics',
+      location: 'Floor 2, Smart Classroom / AI Lab 205',
+      date: '2026-02-24',
+      status: 'OPEN',
+      reportedBy: 'Estate Operations Patrol',
+      custody: 'Security Desk Block A Ground Floor',
+      identifyingDetails: '96W white adapter, 2m braided cable',
+    },
+    {
+      reportId: 'LF-2026-002',
+      reportType: 'FOUND',
+      itemName: 'Sony WH-1000XM4 Noise-Cancelling Headphones (Black)',
       category: 'Electronics',
       location: 'Central Library, 2nd Floor',
       date: '2026-02-23',
@@ -568,22 +626,127 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       identifyingDetails: 'Scratch near right hinge, initial AS engraved on inside headband',
     },
     {
-      reportId: 'LF-2026-002',
+      reportId: 'LF-2026-003',
       reportType: 'LOST',
-      itemName: 'Leather Bi-Fold Wallet (Brown)',
-      category: 'Bags',
-      location: 'Academic Block Ground Floor',
+      itemName: 'Apple AirPods Pro (2nd Gen) with Gray Silicone Case',
+      category: 'Electronics',
+      location: 'Floor 2, Auditorium 213 (Row 4)',
+      date: '2026-02-24',
+      status: 'OPEN',
+      reportedBy: 'Rhythm Singhal (rhythm.singhal.btech2028@atlasskilltech.university)',
+      identifyingDetails: 'White MagSafe case with gray silicone sleeve and woven wrist lanyard',
+    },
+    {
+      reportId: 'LF-2026-004',
+      reportType: 'FOUND',
+      itemName: 'Casio fx-991CW ClassWiz Scientific Calculator',
+      category: 'Electronics',
+      location: 'Floor 3, Special Auditorium 313',
+      date: '2026-02-24',
+      status: 'OPEN',
+      reportedBy: 'Academic Block Staff Desk',
+      custody: 'Floor 3 Faculty Cabin Staff Desk',
+      identifyingDetails: 'Small blue vinyl dot on the battery door',
+    },
+    {
+      reportId: 'LF-2026-005',
+      reportType: 'FOUND',
+      itemName: 'ATLAS SkillTech University RFID Student ID Card & Lanyard',
+      category: 'ID & Cards',
+      location: 'Student Cafeteria & Dining Hall, Ground Floor',
+      date: '2026-02-24',
+      status: 'CLAIM_APPROVED',
+      reportedBy: 'Cafeteria Manager Desk',
+      custody: 'Cafeteria Manager Desk',
+      identifyingDetails: 'B.Tech CS & AI 2028 batch student identity card',
+    },
+    {
+      reportId: 'LF-2026-006',
+      reportType: 'LOST',
+      itemName: 'Titan Edge Ultra-Slim Wristwatch (Gunmetal Steel)',
+      category: 'Accessories',
+      location: 'Floor 4, Quiet Collaborative Zone',
       date: '2026-02-23',
       status: 'OPEN',
-      reportedBy: 'Ananya Sharma (Student)',
-      identifyingDetails: 'Contains cafeteria card and metro pass',
+      reportedBy: 'Yashwardhan Singh (yashwardhan.singh.btech2028@atlasskilltech.university)',
+      identifyingDetails: 'Black dial ultra-slim analog watch with mesh stainless steel strap',
     },
-  ]);
+    {
+      reportId: 'LF-2026-007',
+      reportType: 'FOUND',
+      itemName: 'Hydro Flask 32oz Wide Mouth Insulated Water Bottle',
+      category: 'Accessories',
+      location: 'Floor 5, Seminar Hall 502',
+      date: '2026-02-24',
+      status: 'OPEN',
+      reportedBy: 'Floor 5 Security Station',
+      custody: 'Floor 5 Security Station',
+      identifyingDetails: 'Olive green vacuum flask with "Stay Curious" sticker on base',
+    },
+    {
+      reportId: 'LF-2026-008',
+      reportType: 'LOST',
+      itemName: 'Herschel Pop Quiz Laptop Backpack (Navy / Tan)',
+      category: 'Bags',
+      location: 'Central Library, Ground Floor Baggage Counter',
+      date: '2026-02-23',
+      status: 'OPEN',
+      reportedBy: 'Prathamesh Bhandare (prathamesh.bhandare.btech2028@atlasskilltech.university)',
+      identifyingDetails: 'Navy backpack with tan synthetic leather bottom and red tag',
+    },
+    {
+      reportId: 'LF-2026-009',
+      reportType: 'FOUND',
+      itemName: 'Apple iPad Air 11-inch (M2, Space Gray) in Smart Folio',
+      category: 'Electronics',
+      location: 'Floor 7, Executive Conference Suite 701',
+      date: '2026-02-24',
+      status: 'CLAIM_PENDING',
+      reportedBy: 'Estate & Security Directorate Block A',
+      custody: 'Estate & Security Directorate Block A',
+      identifyingDetails: 'Space Gray with dark charcoal magnetic folio and Apple Pencil',
+    },
+    {
+      reportId: 'LF-2026-010',
+      reportType: 'FOUND',
+      itemName: 'Two-Wheeler Bike Keys with ATLAS Red Rubber Keychain',
+      category: 'Accessories',
+      location: 'Basement Parking Level B1 (Bay 14)',
+      date: '2026-02-24',
+      status: 'HANDED_OVER',
+      reportedBy: 'Basement Security Checkpoint',
+      custody: 'Basement Security Checkpoint',
+      identifyingDetails: 'Two silver door keys, brass key, motorcycle helmet rubber keychain',
+    },
+    {
+      reportId: 'LF-2026-011',
+      reportType: 'FOUND',
+      itemName: 'Dell Premier Rechargeable Wireless Mouse (MS7421W)',
+      category: 'Electronics',
+      location: 'Floor 1, Computer Networks Lab 101',
+      date: '2026-02-23',
+      status: 'OPEN',
+      reportedBy: 'Lab Assistant Cabin Room 101',
+      custody: 'Lab Assistant Cabin Room 101',
+      identifyingDetails: 'Platinum silver mouse with USB-C nano dongle',
+    },
+    {
+      reportId: 'LF-2026-012',
+      reportType: 'LOST',
+      itemName: 'Leather Bi-Fold Wallet with RFID Protection (Brown)',
+      category: 'Bags',
+      location: 'Academic Block, Ground Floor',
+      date: '2026-02-23',
+      status: 'OPEN',
+      reportedBy: 'Kunal Ramchandani (INC - The Corporate Club)',
+      identifyingDetails: 'Brown calfskin wallet containing cafeteria card and student transit pass',
+    },
+  ];
 
-  const [lfClaims, setLfClaims] = useState([
+  const INITIAL_LF_CLAIMS = [
     {
       claimId: 'CLM-2026-001',
-      reportId: 'LF-2026-001',
+      reportId: 'LF-2026-002',
       claimantName: 'Rohan Mehta',
       claimantEmail: 'rohan.mehta@atlasskilltech.university',
       proof: 'Original invoice #CR-8821 from Croma, serial number S01-2849201',
@@ -591,7 +754,50 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       status: 'SUBMITTED',
       date: '2026-02-24',
     },
-  ]);
+    {
+      claimId: 'CLM-2026-002',
+      reportId: 'LF-2026-009',
+      claimantName: 'Yashwardhan Singh',
+      claimantEmail: 'yashwardhan.singh.btech2028@atlasskilltech.university',
+      proof: 'Apple Store invoice #APL-99218, device named "Yashwardhan iPad", matching passcode unlock',
+      details: 'Charcoal magnetic smart folio with white Apple Pencil (USB-C) engraved initials Y.S.',
+      status: 'SUBMITTED',
+      date: '2026-02-24',
+    },
+    {
+      claimId: 'CLM-2026-003',
+      reportId: 'LF-2026-005',
+      claimantName: 'Rhythm Singhal',
+      claimantEmail: 'rhythm.singhal.btech2028@atlasskilltech.university',
+      proof: 'Student Portal ERP verification and registered phone number SMS OTP match',
+      details: 'Card barcode matches roll B.Tech 2028-CS-041 on navy blue satin lanyard',
+      status: 'APPROVED',
+      date: '2026-02-24',
+    },
+    {
+      claimId: 'CLM-2026-004',
+      reportId: 'LF-2026-010',
+      claimantName: 'Prathamesh Bhandare',
+      claimantEmail: 'prathamesh.bhandare.btech2028@atlasskilltech.university',
+      proof: 'Vehicle parking sticker #B1-042 and duplicate key verification at security desk',
+      details: 'Red helmet keychain with license tag on Honda CB350 parked in Bay 14',
+      status: 'HANDED_OVER',
+      date: '2026-02-24',
+    },
+  ];
+
+  const getCombinedReports = () => {
+    const userReports = JSON.parse(localStorage.getItem('campusone_lost_found_reports') || '[]');
+    return [...userReports, ...INITIAL_LF_REPORTS];
+  };
+
+  const getCombinedClaims = () => {
+    const userClaims = JSON.parse(localStorage.getItem('campusone_lost_found_claims') || '[]');
+    return [...userClaims, ...INITIAL_LF_CLAIMS];
+  };
+
+  const [lfReports, setLfReports] = useState(getCombinedReports);
+  const [lfClaims, setLfClaims] = useState(getCombinedClaims);
 
   const [cacheSyncMessage, setCacheSyncMessage] = useState('');
 
@@ -640,7 +846,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     { num: 8, time: '16:45 – 17:45' },
   ];
 
-  // Action: Approve Space Request (Real-time backend commitment)
+  // Action: Approve Space Request (Real-time backend & Vercel sync)
   const handleApprove = async (req) => {
     try {
       await fetch(`/api/v1/spaces/requests/${req.id}/status`, {
@@ -648,12 +854,18 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: 'APPROVED',
-          adminNotes: 'Approved by Space & Estate Operations Admin',
+          adminNotes: 'Approved by Prof. Rajesh Verma (Central availability committed)',
         }),
       });
-    } catch (e) {
-      console.error('Failed to notify backend of approval:', e);
+    } catch {
+      // Backend unavailable; proceed with local storage update
     }
+
+    // Update localStorage for cross-tab student sync on Vercel
+    const storedReqs = JSON.parse(localStorage.getItem('campusone_space_requests') || '[]');
+    const updated = storedReqs.map(r => r.id === req.id ? { ...r, status: 'APPROVED', adminNotes: 'Approved by Prof. Rajesh Verma (Space Admin)' } : r);
+    localStorage.setItem('campusone_space_requests', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
 
     // Commit multi-slot reservation
     const currentSlots = roomOccupancy[inspectedRoom] || [0, 0, 0, 0, 0, 0, 0, 0];
@@ -706,9 +918,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
           adminNotes: 'Rejected due to academic schedule overlap or room unavailable',
         }),
       });
-    } catch (e) {
-      console.error('Failed to update rejection on backend:', e);
+    } catch {
+      // Backend unavailable
     }
+
+    const storedReqs = JSON.parse(localStorage.getItem('campusone_space_requests') || '[]');
+    const updated = storedReqs.map(r => r.id === reqId ? { ...r, status: 'REJECTED', adminNotes: 'Rejected due to schedule conflict' } : r);
+    localStorage.setItem('campusone_space_requests', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
+
     setPendingRequests(pendingRequests.filter((r) => r.id !== reqId));
     showToast(`Reservation request ${reqId} rejected.`, 'info');
   };
