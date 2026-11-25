@@ -623,29 +623,29 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       {/* =========================================================================
           TOP ADMIN NAVBAR
           ========================================================================= */}
-      <header className="h-16 bg-[#111C2D] border-b border-black px-6 sm:px-10 flex items-center justify-between sticky top-0 z-30 shadow-md">
+      <header className="h-16 bg-gradient-to-r from-slate-950 via-[#1B1032] to-[#0F172A] border-b border-purple-900/40 px-6 sm:px-10 flex items-center justify-between sticky top-0 z-30 shadow-lg shadow-purple-950/20">
         <div className="flex items-center gap-4">
           <button
             onClick={onNavigateLanding}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-xl bg-white/10 text-emerald-400 flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-950/50">
               <ShieldCheck className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
               <div className="font-display font-extrabold text-lg text-white tracking-tight leading-tight flex items-center gap-1.5">
-                <span>Campus<span className="text-emerald-400">One</span></span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/15 text-white border border-white/20">
+                <span>Campus<span className="text-purple-400">One</span></span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-gradient-to-r from-purple-700 to-indigo-700 text-white border border-purple-400/30">
                   Estate & Space Admin
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400 font-medium">ATLAS SkillTech University</p>
+              <p className="text-[11px] text-purple-200/70 font-medium">ATLAS SkillTech University</p>
             </div>
           </button>
 
-          <div className="h-5 w-px bg-white/20 hidden md:block" />
+          <div className="h-5 w-px bg-purple-800/40 hidden md:block" />
 
-          <div className="hidden lg:flex items-center gap-2 text-xs text-gray-300">
+          <div className="hidden lg:flex items-center gap-2 text-xs text-purple-200/90 bg-purple-900/30 px-3 py-1 rounded-full border border-purple-500/20">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>Master Operations Console • 90 Rooms Synced</span>
           </div>
@@ -653,15 +653,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
         {/* Admin profile pill & Sign out */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 pl-3 border-l border-white/20">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center border border-emerald-500/40">
+          <div className="flex items-center gap-3 pl-3 border-l border-purple-800/40">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
               RV
             </div>
             <div className="text-left hidden sm:block">
               <div className="text-xs font-bold text-white leading-tight">
                 {currentUser?.fullName || 'Prof. Rajesh Verma'}
               </div>
-              <div className="text-[11px] text-gray-400 font-mono">
+              <div className="text-[11px] text-purple-300 font-mono">
                 {currentUser?.email || 'admin@atlasskilltech.university'}
               </div>
             </div>
@@ -708,16 +708,16 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2 px-3 rounded-lg flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#111C2D] text-white shadow-xs'
-                    : 'text-gray-600 hover:text-[#111C2D] hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-slate-950 via-purple-950 to-indigo-950 text-white shadow-xs'
+                    : 'text-gray-600 hover:text-purple-950 hover:bg-purple-50/60'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-gray-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-purple-300' : 'text-gray-500'}`} />
                 <span>{tab.label}</span>
                 {tab.badge !== undefined && tab.badge > 0 && (
                   <span
                     className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                      isActive ? 'bg-emerald-400 text-black' : 'bg-amber-100 text-amber-800'
+                      isActive ? 'bg-purple-400 text-slate-950' : 'bg-amber-100 text-amber-800'
                     }`}
                   >
                     {tab.badge}

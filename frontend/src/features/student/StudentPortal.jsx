@@ -277,13 +277,13 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
             onClick={onNavigateLanding}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center font-bold shadow-xs">
-              <GraduationCap className="w-5 h-5 stroke-[1.75]" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+              <GraduationCap className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
               <div className="font-display font-extrabold text-lg text-[#111C2D] tracking-tight leading-tight flex items-center gap-1.5">
-                <span>Campus<span className="text-[#1E3F30]">One</span></span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FAF9F6] text-[#1E3F30] border border-[#EBEAE5]">
+                <span>Campus<span className="text-purple-700">One</span></span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-gradient-to-r from-purple-700 to-indigo-700 text-white shadow-2xs">
                   Student Portal
                 </span>
               </div>
@@ -293,8 +293,8 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
 
           <div className="h-5 w-px bg-gray-200 hidden md:block" />
 
-          <div className="hidden lg:flex items-center gap-2 text-xs text-gray-500">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="hidden lg:flex items-center gap-2 text-xs text-purple-900 font-medium bg-purple-50/80 px-2.5 py-1 rounded-full border border-purple-200/60">
+            <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
             <span>Semester V 2026-27 (Spring)</span>
           </div>
         </div>
@@ -302,14 +302,14 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
         {/* User profile & actions */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
-            <div className="w-8 h-8 rounded-full bg-[#EAF2EC] text-[#1E3F30] font-bold text-xs flex items-center justify-center border border-[#1E3F30]/20">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
               {currentUser?.fullName ? currentUser.fullName.substring(0, 2).toUpperCase() : 'AS'}
             </div>
             <div className="text-left hidden sm:block">
               <div className="text-xs font-bold text-[#111C2D] leading-tight">
                 {currentUser?.fullName || 'Ananya Sharma'}
               </div>
-              <div className="text-[11px] text-gray-500 font-mono">
+              <div className="text-[11px] text-purple-800 font-mono">
                 {currentUser?.email || 'ananya.student@atlasskilltech.university'}
               </div>
             </div>
@@ -346,11 +346,11 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2 px-3 rounded-lg flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#1E3F30] text-white shadow-xs'
-                    : 'text-gray-600 hover:text-[#111C2D] hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-purple-900 via-indigo-950 to-slate-900 text-white shadow-xs'
+                    : 'text-gray-600 hover:text-purple-950 hover:bg-purple-50/60'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-purple-300' : 'text-gray-500'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -367,11 +367,11 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
             ===================================================================== */}
         {activeTab === 'overview' && (
           <div className="space-y-8 animate-fade-in">
-            {/* Welcome banner */}
-            <div className="p-8 rounded-2xl bg-gradient-to-r from-white via-[#FAF9F6] to-[#FAF9F6] border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Welcome banner with subtle purple-indigo gradient */}
+            <div className="p-8 rounded-2xl bg-gradient-to-r from-white via-purple-50/30 to-indigo-50/20 border border-purple-200/60 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6 border-l-4 border-l-purple-600">
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#EAF2EC] text-[#1E3F30]">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900 border border-purple-200/60">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
                   <span>Welcome back, {currentUser?.fullName || 'Ananya'}</span>
                 </div>
                 <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#111C2D] tracking-tight">
@@ -388,7 +388,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                     setActiveTab('spaces');
                     setBookingMode('smart');
                   }}
-                  className="px-5 py-3 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
+                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 hover:from-purple-600 hover:to-indigo-600 text-white text-xs sm:text-sm font-semibold shadow-xs flex items-center gap-2 transition-all cursor-pointer"
                 >
                   <Calendar className="w-4 h-4" />
                   <span>Book a Space</span>
