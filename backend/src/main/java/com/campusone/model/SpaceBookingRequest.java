@@ -93,3 +93,4 @@ public class SpaceBookingRequest {
     public boolean isConflict() { return conflict; }
     public void setConflict(boolean conflict) { this.conflict = conflict; }
 }
+

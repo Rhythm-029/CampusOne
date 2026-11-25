@@ -64,3 +64,4 @@ public class ClubProposal {
     public String getSubmittedAt() { return submittedAt; }
     public void setSubmittedAt(String submittedAt) { this.submittedAt = submittedAt; }
 }
+

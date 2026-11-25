@@ -48,3 +48,4 @@ public class CampusNotification {
     public boolean isPinned() { return pinned; }
     public void setPinned(boolean pinned) { this.pinned = pinned; }
 }
+
