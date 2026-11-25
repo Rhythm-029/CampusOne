@@ -44,7 +44,41 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
 
   // Weekly Timetable & Room Occupancy State
   const [studentTimetableDay, setStudentTimetableDay] = useState('Monday');
-  const [studentTimetableEntries, setStudentTimetableEntries] = useState([]);
+  const [studentTimetableRoom, setStudentTimetableRoom] = useState('All');
+  const [studentTimetableSearch, setStudentTimetableSearch] = useState('');
+  const [studentTimetableEntries, setStudentTimetableEntries] = useState([
+    { id: '1', roomId: '205', dayOfWeek: 'Monday', slotId: 1, courseCode: 'CS501', courseName: 'Advanced Algorithms', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '2', roomId: '205', dayOfWeek: 'Monday', slotId: 2, courseCode: 'CS501', courseName: 'Advanced Algorithms', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '3', roomId: '105', dayOfWeek: 'Monday', slotId: 3, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '4', roomId: '105', dayOfWeek: 'Monday', slotId: 4, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '5', roomId: '213', dayOfWeek: 'Monday', slotId: 5, courseCode: 'CS503', courseName: 'Database Engineering & Scalability', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '6', roomId: '213', dayOfWeek: 'Monday', slotId: 6, courseCode: 'CS503', courseName: 'Database Engineering & Scalability', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '7', roomId: '101', dayOfWeek: 'Tuesday', slotId: 1, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '8', roomId: '101', dayOfWeek: 'Tuesday', slotId: 2, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '9', roomId: '205', dayOfWeek: 'Tuesday', slotId: 3, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '10', roomId: '205', dayOfWeek: 'Tuesday', slotId: 4, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '11', roomId: '313', dayOfWeek: 'Tuesday', slotId: 5, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '12', roomId: '313', dayOfWeek: 'Tuesday', slotId: 6, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '13', roomId: '105', dayOfWeek: 'Wednesday', slotId: 1, courseCode: 'AI503', courseName: 'Human-Computer Interaction & Design', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '14', roomId: '105', dayOfWeek: 'Wednesday', slotId: 2, courseCode: 'AI503', courseName: 'Human-Computer Interaction & Design', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '15', roomId: '205', dayOfWeek: 'Wednesday', slotId: 3, courseCode: 'CS501', courseName: 'Advanced Algorithms Tutorial', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '16', roomId: '701', dayOfWeek: 'Wednesday', slotId: 7, courseCode: 'AI505', courseName: 'Applied Mathematics & Optimization', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '17', roomId: '701', dayOfWeek: 'Wednesday', slotId: 8, courseCode: 'AI505', courseName: 'Applied Mathematics & Optimization', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '18', roomId: '101', dayOfWeek: 'Thursday', slotId: 2, courseCode: 'CS502', courseName: 'Distributed Systems Lab', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '19', roomId: '101', dayOfWeek: 'Thursday', slotId: 3, courseCode: 'CS502', courseName: 'Distributed Systems Lab', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '20', roomId: '213', dayOfWeek: 'Thursday', slotId: 5, courseCode: 'AI501', courseName: 'Deep Learning Research Seminar', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '21', roomId: '213', dayOfWeek: 'Thursday', slotId: 6, courseCode: 'AI501', courseName: 'Deep Learning Research Seminar', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '22', roomId: '313', dayOfWeek: 'Friday', slotId: 1, courseCode: 'CS503', courseName: 'Database Engineering Capstone', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '23', roomId: '313', dayOfWeek: 'Friday', slotId: 2, courseCode: 'CS503', courseName: 'Database Engineering Capstone', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '24', roomId: '205', dayOfWeek: 'Friday', slotId: 5, courseCode: 'CS504', courseName: 'Network Defense & Pentesting', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '25', roomId: '205', dayOfWeek: 'Friday', slotId: 6, courseCode: 'CS504', courseName: 'Network Defense & Pentesting', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '26', roomId: '213', dayOfWeek: 'Saturday', slotId: 3, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '27', roomId: '213', dayOfWeek: 'Saturday', slotId: 4, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '28', roomId: '701', dayOfWeek: 'Saturday', slotId: 5, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '29', roomId: '701', dayOfWeek: 'Saturday', slotId: 6, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '30', roomId: '213', dayOfWeek: 'Sunday', slotId: 2, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+    { id: '31', roomId: '213', dayOfWeek: 'Sunday', slotId: 3, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+  ]);
 
   useEffect(() => {
     fetch('/api/v1/spaces/timetable')
@@ -852,9 +886,10 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
             ) : (
               /* WEEKLY CLASS TIMETABLE GRID (DAILY & WEEKEND SESSIONS) */
               <div className="space-y-6">
-                {/* Day selector */}
-                <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex items-center justify-between gap-4 overflow-x-auto">
-                  <div className="flex items-center gap-1.5">
+                {/* Controls: Day Selector, Room Filter, Search */}
+                <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  {/* Days Selector */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                     <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mr-1">Day:</span>
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
                       const isWeekend = day === 'Saturday' || day === 'Sunday';
@@ -879,6 +914,35 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Room & Search Filters */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={studentTimetableSearch}
+                        onChange={(e) => setStudentTimetableSearch(e.target.value)}
+                        placeholder="Search course or faculty..."
+                        className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] text-[#111C2D] placeholder:text-gray-400 focus:bg-white focus:outline-none w-48"
+                      />
+                    </div>
+
+                    <select
+                      value={studentTimetableRoom}
+                      onChange={(e) => setStudentTimetableRoom(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] text-xs font-bold text-[#111C2D] focus:bg-white focus:outline-none"
+                    >
+                      <option value="All">All Scheduled Rooms</option>
+                      {Array.from(new Set(studentTimetableEntries.map((e) => e.roomId)))
+                        .sort()
+                        .map((r) => (
+                          <option key={r} value={r}>
+                            Room {r}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
 
@@ -926,6 +990,17 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                           new Set(
                             studentTimetableEntries
                               .filter((e) => e.dayOfWeek?.toLowerCase() === studentTimetableDay.toLowerCase())
+                              .filter((e) => {
+                                if (studentTimetableRoom !== 'All' && e.roomId !== studentTimetableRoom) return false;
+                                if (!studentTimetableSearch.trim()) return true;
+                                const q = studentTimetableSearch.toLowerCase();
+                                return (
+                                  e.courseCode?.toLowerCase().includes(q) ||
+                                  e.courseName?.toLowerCase().includes(q) ||
+                                  e.facultyName?.toLowerCase().includes(q) ||
+                                  e.roomId?.toLowerCase().includes(q)
+                                );
+                              })
                               .map((e) => e.roomId)
                           )
                         )
@@ -954,26 +1029,26 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                                   return (
                                     <td key={slotNum} className="p-2 border-r border-[#EBEAE5] align-top">
                                       <div
-                                        className={`p-2 rounded-xl border text-[11px] space-y-1 ${
+                                        className={`p-2.5 rounded-xl border text-[11px] space-y-1 shadow-2xs ${
                                           isLab
-                                            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                                            ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
                                             : isWeekend
-                                            ? 'bg-amber-50/90 border-amber-300 text-amber-950'
+                                            ? 'bg-amber-50/90 border-amber-200 text-amber-950'
                                             : isSeminar
-                                            ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900'
-                                            : 'bg-blue-50/80 border-blue-300 text-blue-950'
+                                            ? 'bg-indigo-50/90 border-indigo-200 text-indigo-900'
+                                            : 'bg-blue-50/90 border-blue-200 text-blue-950'
                                         }`}
                                       >
                                         <div className="flex items-center justify-between font-bold text-xs">
                                           <span>{classEntry.courseCode}</span>
-                                          <span className="text-[9px] px-1 py-0.2 rounded font-semibold bg-white/70">
+                                          <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-white/80 border border-black/5">
                                             {classEntry.sessionType}
                                           </span>
                                         </div>
                                         <div className="font-semibold text-[11px] leading-tight line-clamp-2">
                                           {classEntry.courseName}
                                         </div>
-                                        <div className="text-[10px] text-gray-700 font-medium">
+                                        <div className="text-[10px] text-gray-700 font-medium pt-0.5">
                                           {classEntry.facultyName}
                                         </div>
                                       </div>
@@ -983,9 +1058,18 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
 
                                 return (
                                   <td key={slotNum} className="p-2 border-r border-[#EBEAE5] text-center align-middle">
-                                    <div className="py-2.5 px-2 rounded-lg bg-[#FAF9F6]/80 text-[10px] font-medium text-emerald-700 border border-dashed border-emerald-200">
-                                      Available
-                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setBookingMode('smart');
+                                        setSmartSlot(slotNum);
+                                      }}
+                                      title={`Book Room ${roomId} at Slot ${slotNum}`}
+                                      className="w-full py-2.5 px-2 rounded-xl bg-emerald-50/50 hover:bg-emerald-100 text-[10px] font-semibold text-emerald-800 border border-dashed border-emerald-200 transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 group"
+                                    >
+                                      <span className="group-hover:scale-105 transition-transform">Available</span>
+                                      <span className="text-[9px] text-emerald-600 font-normal opacity-80 group-hover:opacity-100">Click to Book</span>
+                                    </button>
                                   </td>
                                 );
                               })}

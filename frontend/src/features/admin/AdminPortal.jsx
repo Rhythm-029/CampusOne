@@ -54,32 +54,43 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     { id: '2', roomId: '205', dayOfWeek: 'Monday', slotId: 2, courseCode: 'CS501', courseName: 'Advanced Algorithms', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '3', roomId: '105', dayOfWeek: 'Monday', slotId: 3, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '4', roomId: '105', dayOfWeek: 'Monday', slotId: 4, courseCode: 'CS502', courseName: 'Distributed Operating Systems', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
-    { id: '5', roomId: '213', dayOfWeek: 'Monday', slotId: 5, courseCode: 'CS503', courseName: 'Database Engineering', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
-    { id: '6', roomId: '213', dayOfWeek: 'Monday', slotId: 6, courseCode: 'CS503', courseName: 'Database Engineering', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '5', roomId: '213', dayOfWeek: 'Monday', slotId: 5, courseCode: 'CS503', courseName: 'Database Engineering & Scalability', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '6', roomId: '213', dayOfWeek: 'Monday', slotId: 6, courseCode: 'CS503', courseName: 'Database Engineering & Scalability', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '7', roomId: '101', dayOfWeek: 'Tuesday', slotId: 1, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '8', roomId: '101', dayOfWeek: 'Tuesday', slotId: 2, courseCode: 'CS504', courseName: 'Computer Networks & Security', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '9', roomId: '205', dayOfWeek: 'Tuesday', slotId: 3, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
     { id: '10', roomId: '205', dayOfWeek: 'Tuesday', slotId: 4, courseCode: 'AI501', courseName: 'Machine Learning & Deep Learning', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
     { id: '11', roomId: '313', dayOfWeek: 'Tuesday', slotId: 5, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
     { id: '12', roomId: '313', dayOfWeek: 'Tuesday', slotId: 6, courseCode: 'AI502', courseName: 'Data Structures & System Design', facultyName: 'Prof. Mayank Srivastava', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
-    { id: '13', roomId: '105', dayOfWeek: 'Wednesday', slotId: 1, courseCode: 'AI503', courseName: 'Human-Computer Interaction', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
-    { id: '14', roomId: '105', dayOfWeek: 'Wednesday', slotId: 2, courseCode: 'AI503', courseName: 'Human-Computer Interaction', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
-    { id: '15', roomId: '701', dayOfWeek: 'Wednesday', slotId: 7, courseCode: 'AI505', courseName: 'Applied Mathematics', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
-    { id: '16', roomId: '701', dayOfWeek: 'Wednesday', slotId: 8, courseCode: 'AI505', courseName: 'Applied Mathematics', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
-    { id: '17', roomId: '213', dayOfWeek: 'Saturday', slotId: 3, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
-    { id: '18', roomId: '213', dayOfWeek: 'Saturday', slotId: 4, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
-    { id: '19', roomId: '701', dayOfWeek: 'Saturday', slotId: 5, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
-    { id: '20', roomId: '701', dayOfWeek: 'Saturday', slotId: 6, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
-    { id: '21', roomId: '213', dayOfWeek: 'Sunday', slotId: 2, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
-    { id: '22', roomId: '213', dayOfWeek: 'Sunday', slotId: 3, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+    { id: '13', roomId: '105', dayOfWeek: 'Wednesday', slotId: 1, courseCode: 'AI503', courseName: 'Human-Computer Interaction & Design', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '14', roomId: '105', dayOfWeek: 'Wednesday', slotId: 2, courseCode: 'AI503', courseName: 'Human-Computer Interaction & Design', facultyName: 'Prof. Maria Acharya', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '15', roomId: '205', dayOfWeek: 'Wednesday', slotId: 3, courseCode: 'CS501', courseName: 'Advanced Algorithms Tutorial', facultyName: 'Prof. Nimesh Bumb', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '16', roomId: '701', dayOfWeek: 'Wednesday', slotId: 7, courseCode: 'AI505', courseName: 'Applied Mathematics & Optimization', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '17', roomId: '701', dayOfWeek: 'Wednesday', slotId: 8, courseCode: 'AI505', courseName: 'Applied Mathematics & Optimization', facultyName: 'Prof. Amrita Banerjee', section: 'B.Tech CS AI-ML Sem V', sessionType: 'SEMINAR' },
+    { id: '18', roomId: '101', dayOfWeek: 'Thursday', slotId: 2, courseCode: 'CS502', courseName: 'Distributed Systems Lab', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '19', roomId: '101', dayOfWeek: 'Thursday', slotId: 3, courseCode: 'CS502', courseName: 'Distributed Systems Lab', facultyName: 'Prof. Yogesh Jadhav', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '20', roomId: '213', dayOfWeek: 'Thursday', slotId: 5, courseCode: 'AI501', courseName: 'Deep Learning Research Seminar', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '21', roomId: '213', dayOfWeek: 'Thursday', slotId: 6, courseCode: 'AI501', courseName: 'Deep Learning Research Seminar', facultyName: 'Prof. Lipika Majumdar', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LECTURE' },
+    { id: '22', roomId: '313', dayOfWeek: 'Friday', slotId: 1, courseCode: 'CS503', courseName: 'Database Engineering Capstone', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '23', roomId: '313', dayOfWeek: 'Friday', slotId: 2, courseCode: 'CS503', courseName: 'Database Engineering Capstone', facultyName: 'Prof. Kunal Meher', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '24', roomId: '205', dayOfWeek: 'Friday', slotId: 5, courseCode: 'CS504', courseName: 'Network Defense & Pentesting', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '25', roomId: '205', dayOfWeek: 'Friday', slotId: 6, courseCode: 'CS504', courseName: 'Network Defense & Pentesting', facultyName: 'Prof. Rabindra Henry', section: 'B.Tech CS AI-ML Sem V', sessionType: 'LAB' },
+    { id: '26', roomId: '213', dayOfWeek: 'Saturday', slotId: 3, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '27', roomId: '213', dayOfWeek: 'Saturday', slotId: 4, courseCode: 'CS590', courseName: 'Weekend Industry Masterclass & Hackathon', facultyName: 'Prof. Nimesh Bumb', section: 'All CS AI-ML', sessionType: 'WEEKEND_SESSION' },
+    { id: '28', roomId: '701', dayOfWeek: 'Saturday', slotId: 5, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '29', roomId: '701', dayOfWeek: 'Saturday', slotId: 6, courseCode: 'AI591', courseName: 'Weekend AI Research Colloquium', facultyName: 'Prof. Amrita Banerjee', section: 'Capstone Teams', sessionType: 'WEEKEND_SESSION' },
+    { id: '30', roomId: '213', dayOfWeek: 'Sunday', slotId: 2, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
+    { id: '31', roomId: '213', dayOfWeek: 'Sunday', slotId: 3, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
   ]);
 
   const [selectedTimetableDay, setSelectedTimetableDay] = useState('Monday');
   const [selectedTimetableRoom, setSelectedTimetableRoom] = useState('All');
+  const [timetableSearch, setTimetableSearch] = useState('');
   const [csvParsedRows, setCsvParsedRows] = useState([]);
   const [csvParseErrors, setCsvParseErrors] = useState([]);
   const [isUploadingCsv, setIsUploadingCsv] = useState(false);
   const [activeTimetableSubView, setActiveTimetableSubView] = useState('grid'); // 'grid' | 'upload'
+  const [isCsvDragging, setIsCsvDragging] = useState(false);
 
   const showToast = (msg, type = 'success') => {
     setActionToast({ msg, type });
@@ -134,79 +145,132 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     showToast('Downloaded standardized timetable template CSV!');
   };
 
+  const parseCsvText = (text) => {
+    const lines = text.split(/\r\n|\n/).filter((l) => l.trim().length > 0);
+    if (lines.length <= 1) {
+      showToast('CSV file is empty or missing data rows.', 'error');
+      return;
+    }
+
+    const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/['"]/g, ''));
+    const parsed = [];
+    const errors = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const parts = lines[i].split(',').map((p) => p.trim().replace(/^["']|["']$/g, ''));
+      if (parts.length < 3) {
+        errors.push(`Row ${i + 1}: Insufficient columns`);
+        continue;
+      }
+
+      const rowObj = {};
+      headers.forEach((h, idx) => {
+        rowObj[h] = parts[idx] || '';
+      });
+
+      const roomId = (rowObj.room_id || rowObj.roomid || rowObj.room || '').trim();
+      const day = (rowObj.day_of_week || rowObj.day || '').trim();
+      const slot = Number(rowObj.slot_id || rowObj.slot || '');
+      const courseCode = (rowObj.course_code || rowObj.course || '').trim();
+      const courseName = (rowObj.course_name || rowObj.title || '').trim();
+      const faculty = (rowObj.faculty_name || rowObj.faculty || rowObj.professor || '').trim();
+      const section = (rowObj.section || rowObj.batch || 'B.Tech CS Sem V').trim();
+      const sessionType = (rowObj.session_type || rowObj.type || 'LECTURE').trim().toUpperCase();
+
+      const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+      if (!validDays.includes(day.toLowerCase())) {
+        errors.push(`Row ${i + 1}: Invalid day "${day}". Must be Monday through Sunday.`);
+        continue;
+      }
+      if (isNaN(slot) || slot < 1 || slot > 8) {
+        errors.push(`Row ${i + 1}: Invalid slot "${slot}". Must be an integer between 1 and 8.`);
+        continue;
+      }
+      if (!roomId) {
+        errors.push(`Row ${i + 1}: Missing room identifier.`);
+        continue;
+      }
+
+      const normDay = day.charAt(0).toUpperCase() + day.slice(1).toLowerCase();
+      const isConflicted = timetableEntries.some(
+        (e) => e.roomId === roomId && e.dayOfWeek.toLowerCase() === day.toLowerCase() && e.slotId === slot
+      );
+
+      parsed.push({
+        roomId,
+        dayOfWeek: normDay,
+        slotId: slot,
+        courseCode: courseCode || 'COURSE',
+        courseName: courseName || 'Academic Class',
+        facultyName: faculty || 'Department Faculty',
+        section,
+        sessionType: ['LECTURE', 'LAB', 'SEMINAR', 'WEEKEND_SESSION'].includes(sessionType) ? sessionType : 'LECTURE',
+        isConflicted,
+      });
+    }
+
+    setCsvParsedRows(parsed);
+    setCsvParseErrors(errors);
+    if (parsed.length > 0) {
+      showToast(`Successfully validated ${parsed.length} timetable entries! Review and commit below.`);
+    } else {
+      showToast('No valid rows parsed from CSV.', 'error');
+    }
+  };
+
   const handleCsvFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = (evt) => {
-      const text = evt.target.result;
-      const lines = text.split(/\r\n|\n/).filter((l) => l.trim().length > 0);
-      if (lines.length <= 1) {
-        showToast('CSV file is empty or missing data rows.', 'error');
-        return;
-      }
-
-      const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/['"]/g, ''));
-      const parsed = [];
-      const errors = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const parts = lines[i].split(',').map((p) => p.trim().replace(/^["']|["']$/g, ''));
-        if (parts.length < 4) {
-          errors.push(`Row ${i + 1}: Insufficient columns`);
-          continue;
-        }
-
-        const rowObj = {};
-        headers.forEach((h, idx) => {
-          rowObj[h] = parts[idx] || '';
-        });
-
-        const roomId = (rowObj.room_id || rowObj.roomid || rowObj.room || '').trim();
-        const day = (rowObj.day_of_week || rowObj.day || '').trim();
-        const slot = Number(rowObj.slot_id || rowObj.slot || '');
-        const courseCode = (rowObj.course_code || rowObj.course || '').trim();
-        const courseName = (rowObj.course_name || rowObj.title || '').trim();
-        const faculty = (rowObj.faculty_name || rowObj.faculty || rowObj.professor || '').trim();
-        const section = (rowObj.section || rowObj.batch || 'B.Tech CS Sem V').trim();
-        const sessionType = (rowObj.session_type || rowObj.type || 'LECTURE').trim().toUpperCase();
-
-        const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-        if (!validDays.includes(day.toLowerCase())) {
-          errors.push(`Row ${i + 1}: Invalid day "${day}". Must be Monday through Sunday.`);
-          continue;
-        }
-        if (isNaN(slot) || slot < 1 || slot > 8) {
-          errors.push(`Row ${i + 1}: Invalid slot "${slot}". Must be 1 to 8.`);
-          continue;
-        }
-        if (!roomId) {
-          errors.push(`Row ${i + 1}: Missing room identifier.`);
-          continue;
-        }
-
-        parsed.push({
-          roomId,
-          dayOfWeek: day.charAt(0).toUpperCase() + day.slice(1).toLowerCase(),
-          slotId: slot,
-          courseCode: courseCode || 'COURSE',
-          courseName: courseName || 'Academic Class',
-          facultyName: faculty || 'Department Faculty',
-          section,
-          sessionType: ['LECTURE', 'LAB', 'SEMINAR', 'WEEKEND_SESSION'].includes(sessionType) ? sessionType : 'LECTURE',
-        });
-      }
-
-      setCsvParsedRows(parsed);
-      setCsvParseErrors(errors);
-      if (parsed.length > 0) {
-        showToast(`Parsed ${parsed.length} timetable entries! Review and commit below.`);
-      } else {
-        showToast('No valid rows parsed from CSV.', 'error');
-      }
-    };
+    reader.onload = (evt) => parseCsvText(evt.target.result);
     reader.readAsText(file);
+  };
+
+  const handleCsvDrop = (e) => {
+    e.preventDefault();
+    setIsCsvDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => parseCsvText(evt.target.result);
+    reader.readAsText(file);
+  };
+
+  const handleLoadSampleCsvData = () => {
+    const sampleCsv =
+      'room_id,day_of_week,slot_id,course_code,course_name,faculty_name,section,session_type\n' +
+      '205,Monday,1,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '205,Monday,2,CS501,Advanced Algorithms,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Monday,3,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Monday,4,CS502,Distributed Operating Systems,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '213,Monday,5,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '213,Monday,6,CS503,Database Engineering & Scalability,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '101,Tuesday,1,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '101,Tuesday,2,CS504,Computer Networks & Security,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '205,Tuesday,3,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n' +
+      '205,Tuesday,4,AI501,Machine Learning & Deep Learning,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LAB\n' +
+      '313,Tuesday,5,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '313,Tuesday,6,AI502,Data Structures & System Design,Prof. Mayank Srivastava,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Wednesday,1,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '105,Wednesday,2,AI503,Human-Computer Interaction & Design,Prof. Maria Acharya,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '205,Wednesday,3,CS501,Advanced Algorithms Tutorial,Prof. Nimesh Bumb,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '701,Wednesday,7,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n' +
+      '701,Wednesday,8,AI505,Applied Mathematics & Optimization,Prof. Amrita Banerjee,B.Tech CS AI-ML Sem V,SEMINAR\n' +
+      '101,Thursday,2,CS502,Distributed Systems Lab,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LAB\n' +
+      '101,Thursday,3,CS502,Distributed Systems Lab,Prof. Yogesh Jadhav,B.Tech CS AI-ML Sem V,LAB\n' +
+      '213,Thursday,5,AI501,Deep Learning Research Seminar,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '213,Thursday,6,AI501,Deep Learning Research Seminar,Prof. Lipika Majumdar,B.Tech CS AI-ML Sem V,LECTURE\n' +
+      '313,Friday,1,CS503,Database Engineering Capstone,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LAB\n' +
+      '313,Friday,2,CS503,Database Engineering Capstone,Prof. Kunal Meher,B.Tech CS AI-ML Sem V,LAB\n' +
+      '205,Friday,5,CS504,Network Defense & Pentesting,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LAB\n' +
+      '205,Friday,6,CS504,Network Defense & Pentesting,Prof. Rabindra Henry,B.Tech CS AI-ML Sem V,LAB\n' +
+      '213,Saturday,3,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n' +
+      '213,Saturday,4,CS590,Weekend Industry Masterclass & Hackathon,Prof. Nimesh Bumb,All CS AI-ML,WEEKEND_SESSION\n' +
+      '701,Saturday,5,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n' +
+      '701,Saturday,6,AI591,Weekend AI Research Colloquium,Prof. Amrita Banerjee,Capstone Teams,WEEKEND_SESSION\n' +
+      '213,Sunday,2,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n' +
+      '213,Sunday,3,CLUB-INC,Corporate Leadership Conclave,INC - The corporate club,Open Campus,WEEKEND_SESSION\n';
+    parseCsvText(sampleCsv);
   };
 
   const handleCommitParsedCsv = async () => {
@@ -220,8 +284,14 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       });
       if (res.ok) {
         const data = await res.json();
-        showToast(`Committed ${data.savedCount} entries to MongoDB Atlas class_timetable!`);
-        setTimetableEntries((prev) => [...prev, ...csvParsedRows]);
+        showToast(`Committed ${data.savedCount || csvParsedRows.length} entries to MongoDB Atlas class_timetable!`);
+        setTimetableEntries((prev) => {
+          // Merge without duplicate (roomId, dayOfWeek, slotId)
+          const map = new Map();
+          prev.forEach((e) => map.set(`${e.roomId}-${e.dayOfWeek.toLowerCase()}-${e.slotId}`, e));
+          csvParsedRows.forEach((e) => map.set(`${e.roomId}-${e.dayOfWeek.toLowerCase()}-${e.slotId}`, e));
+          return Array.from(map.values());
+        });
         setCsvParsedRows([]);
         setCsvParseErrors([]);
         setActiveTimetableSubView('grid');
@@ -233,7 +303,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       }
     } catch {
       setTimetableEntries((prev) => [...prev, ...csvParsedRows]);
-      showToast(`Synced ${csvParsedRows.length} entries to timetable!`);
+      showToast(`Locally synced ${csvParsedRows.length} entries!`);
       setCsvParsedRows([]);
       setActiveTimetableSubView('grid');
     } finally {
@@ -1826,33 +1896,58 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         {activeTab === 'timetable' && (
           <div className="space-y-8 animate-fade-in">
             {/* Header with Sub-View Switcher & Quick Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
               <div>
-                <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
-                  Academic Timetable & Weekly Schedule Console
+                <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight flex items-center gap-2">
+                  <CalendarDays className="w-6 h-6 text-emerald-600" />
+                  <span>Academic Timetable & Weekly Schedule Console</span>
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Manage weekly room occupancy across daily weekdays and weekend sessions. Upload schedules via standardized CSV/Excel to prevent booking overlaps.
+                <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
+                  Inspect weekly room occupancy across all 7 days (daily lectures & weekend sessions), upload semester CSVs, and prevent booking overlaps.
                 </p>
               </div>
 
+              {/* Segmented Sub-View Switcher */}
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleDownloadSampleCsv}
-                  className="px-3.5 py-2 rounded-xl bg-white hover:bg-gray-100 text-[#111C2D] border border-[#EBEAE5] text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Download className="w-4 h-4 text-emerald-600" />
-                  <span>Download Sample CSV Template</span>
-                </button>
+                <div className="flex p-1 bg-[#FAF9F6] border border-[#EBEAE5] rounded-xl shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTimetableSubView('grid')}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                      activeTimetableSubView === 'grid'
+                        ? 'bg-[#111C2D] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                    }`}
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Weekly Schedule Grid</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${activeTimetableSubView === 'grid' ? 'bg-emerald-400 text-black' : 'bg-gray-200 text-gray-700'}`}>
+                      {timetableEntries.length}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveTimetableSubView('upload')}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                      activeTimetableSubView === 'upload'
+                        ? 'bg-[#111C2D] text-white shadow-xs'
+                        : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                    }`}
+                  >
+                    <Upload className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>CSV Timetable Uploader</span>
+                  </button>
+                </div>
 
                 <button
                   type="button"
-                  onClick={() => setActiveTimetableSubView(activeTimetableSubView === 'grid' ? 'upload' : 'grid')}
-                  className="px-4 py-2 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  onClick={handleDownloadSampleCsv}
+                  title="Download standard CSV template file"
+                  className="px-3 py-2 rounded-xl bg-white hover:bg-gray-100 text-[#111C2D] border border-[#EBEAE5] text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Upload className="w-4 h-4 text-emerald-400" />
-                  <span>{activeTimetableSubView === 'grid' ? 'Upload Timetable CSV' : 'View Weekly Schedule Grid'}</span>
+                  <Download className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="hidden sm:inline">Download CSV Template</span>
                 </button>
               </div>
             </div>
@@ -1860,6 +1955,34 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
             {/* Sub-view 1: WEEKLY ROOM OCCUPANCY MATRIX */}
             {activeTimetableSubView === 'grid' && (
               <div className="space-y-6">
+                {/* Stats Bar */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Classes ({selectedTimetableDay})</div>
+                    <div className="text-xl font-extrabold text-[#111C2D] mt-0.5">
+                      {timetableEntries.filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase()).length}
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Active Rooms Today</div>
+                    <div className="text-xl font-extrabold text-[#111C2D] mt-0.5">
+                      {new Set(timetableEntries.filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase()).map((e) => e.roomId)).size}
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Weekdays (Mon-Fri)</div>
+                    <div className="text-xl font-extrabold text-[#1E3F30] mt-0.5">
+                      {timetableEntries.filter((e) => !['saturday', 'sunday'].includes(e.dayOfWeek.toLowerCase())).length} classes
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white border border-[#EBEAE5] shadow-xs">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Weekend Sessions (Sat-Sun)</div>
+                    <div className="text-xl font-extrabold text-amber-700 mt-0.5">
+                      {timetableEntries.filter((e) => ['saturday', 'sunday'].includes(e.dayOfWeek.toLowerCase())).length} sessions
+                    </div>
+                  </div>
+                </div>
+
                 {/* Day of Week Selector & Room Filter */}
                 <div className="p-4 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
                   {/* Days of Week Filter */}
@@ -1884,7 +2007,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                           {isWeekend && <span className="text-[9px] px-1 rounded bg-amber-200/60 font-semibold">Weekend</span>}
                           <span
                             className={`px-1.5 py-0.2 rounded-full text-[10px] ${
-                              selectedTimetableDay === day ? 'bg-emerald-400 text-black' : 'bg-gray-200 text-gray-700'
+                              selectedTimetableDay === day ? 'bg-emerald-400 text-black font-bold' : 'bg-gray-200 text-gray-700'
                             }`}
                           >
                             {count}
@@ -1894,9 +2017,19 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                     })}
                   </div>
 
-                  {/* Room Filter Dropdown */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Room:</span>
+                  {/* Search & Room Filter Dropdown */}
+                  <div className="flex flex-wrap items-center gap-2 shrink-0">
+                    <div className="relative">
+                      <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={timetableSearch}
+                        onChange={(e) => setTimetableSearch(e.target.value)}
+                        placeholder="Search course or professor..."
+                        className="pl-8 pr-3 py-1.5 text-xs rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] text-[#111C2D] placeholder:text-gray-400 focus:bg-white focus:outline-none w-48"
+                      />
+                    </div>
+
                     <select
                       value={selectedTimetableRoom}
                       onChange={(e) => setSelectedTimetableRoom(e.target.value)}
@@ -1911,6 +2044,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                           </option>
                         ))}
                     </select>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTimetableSubView('upload')}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Upload CSV</span>
+                    </button>
                   </div>
                 </div>
 
@@ -1946,7 +2088,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                             { id: 7, time: '15:45 - 16:45' },
                             { id: 8, time: '16:45 - 17:45' },
                           ].map((s) => (
-                            <th key={s.id} className="py-3 px-3 text-center border-r border-[#EBEAE5] min-w-[140px]">
+                            <th key={s.id} className="py-3 px-3 text-center border-r border-[#EBEAE5] min-w-[145px]">
                               <div>Slot {s.id}</div>
                               <div className="text-[9px] text-gray-400 font-mono font-normal">{s.time}</div>
                             </th>
@@ -1958,10 +2100,20 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                           new Set(
                             timetableEntries
                               .filter((e) => e.dayOfWeek.toLowerCase() === selectedTimetableDay.toLowerCase())
+                              .filter((e) => {
+                                if (selectedTimetableRoom !== 'All' && e.roomId !== selectedTimetableRoom) return false;
+                                if (!timetableSearch.trim()) return true;
+                                const q = timetableSearch.toLowerCase();
+                                return (
+                                  e.courseCode?.toLowerCase().includes(q) ||
+                                  e.courseName?.toLowerCase().includes(q) ||
+                                  e.facultyName?.toLowerCase().includes(q) ||
+                                  e.roomId?.toLowerCase().includes(q)
+                                );
+                              })
                               .map((e) => e.roomId)
                           )
                         )
-                          .filter((roomId) => selectedTimetableRoom === 'All' || selectedTimetableRoom === roomId)
                           .sort()
                           .map((roomId) => (
                             <tr key={roomId} className="hover:bg-gray-50/60 transition-colors">
@@ -1987,26 +2139,26 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                                   return (
                                     <td key={slotNum} className="p-2 border-r border-[#EBEAE5] align-top">
                                       <div
-                                        className={`p-2 rounded-xl border text-[11px] space-y-1 ${
+                                        className={`p-2.5 rounded-xl border text-[11px] space-y-1 shadow-2xs ${
                                           isLab
-                                            ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                                            ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
                                             : isWeekend
-                                            ? 'bg-amber-50/90 border-amber-300 text-amber-950'
+                                            ? 'bg-amber-50/90 border-amber-200 text-amber-950'
                                             : isSeminar
-                                            ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900'
-                                            : 'bg-blue-50/80 border-blue-300 text-blue-950'
+                                            ? 'bg-indigo-50/90 border-indigo-200 text-indigo-900'
+                                            : 'bg-blue-50/90 border-blue-200 text-blue-950'
                                         }`}
                                       >
                                         <div className="flex items-center justify-between font-bold text-xs">
                                           <span>{classEntry.courseCode}</span>
-                                          <span className="text-[9px] px-1 py-0.2 rounded font-semibold bg-white/70">
+                                          <span className="text-[9px] px-1.5 py-0.5 rounded font-semibold bg-white/80 border border-black/5">
                                             {classEntry.sessionType}
                                           </span>
                                         </div>
                                         <div className="font-semibold text-[11px] leading-tight line-clamp-2">
                                           {classEntry.courseName}
                                         </div>
-                                        <div className="text-[10px] text-gray-700 font-medium">
+                                        <div className="text-[10px] text-gray-700 font-medium pt-0.5">
                                           {classEntry.facultyName}
                                         </div>
                                         <div className="text-[9px] text-gray-500 font-mono">
@@ -2019,8 +2171,8 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
                                 return (
                                   <td key={slotNum} className="p-2 border-r border-[#EBEAE5] text-center align-middle">
-                                    <div className="py-3 px-2 rounded-lg bg-[#FAF9F6]/80 text-[10px] font-medium text-gray-400 border border-dashed border-gray-200">
-                                      Free Slot
+                                    <div className="py-3 px-2 rounded-xl bg-[#FAF9F6]/80 text-[10px] font-medium text-gray-400 border border-dashed border-gray-200">
+                                      Available
                                     </div>
                                   </td>
                                 );
@@ -2051,21 +2203,32 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                     <div>
                       <h3 className="font-display font-bold text-base text-[#111C2D] flex items-center gap-2">
                         <FileText className="w-5 h-5 text-emerald-600" />
-                        <span>Standardized CSV Timetable Schema Specification</span>
+                        <span>Official Timetable CSV Schema Specification</span>
                       </h3>
-                      <p className="text-xs text-gray-500">
-                        Upload official university timetable (.csv) exported from Excel, Google Sheets, or campus scheduling software.
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Accepts standard UTF-8 encoded .csv files. Each row schedules one room for a specific day and slot. Compound unique index <code className="font-mono bg-gray-100 px-1 py-0.5 rounded text-[11px]">(roomId, dayOfWeek, slotId)</code> prevents duplicate bookings.
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleDownloadSampleCsv}
-                      className="px-3.5 py-1.5 rounded-lg bg-[#FAF9F6] hover:bg-gray-100 text-xs font-bold text-[#111C2D] border border-[#EBEAE5] flex items-center gap-1.5 cursor-pointer shrink-0"
-                    >
-                      <Download className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Download Sample Template</span>
-                    </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleDownloadSampleCsv}
+                        className="px-3.5 py-1.5 rounded-lg bg-[#FAF9F6] hover:bg-gray-100 text-xs font-bold text-[#111C2D] border border-[#EBEAE5] flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Download Template</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleLoadSampleCsvData}
+                        className="px-3.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-xs font-bold text-emerald-800 border border-emerald-200 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Load Sample Schedule (1-Click Test)</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Schema Columns Table */}
@@ -2073,82 +2236,94 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                     <table className="w-full text-left text-xs">
                       <thead className="bg-[#FAF9F6] text-gray-500 font-bold uppercase text-[10px]">
                         <tr>
-                          <th className="py-2 px-3">Column Name</th>
-                          <th className="py-2 px-3">Required</th>
-                          <th className="py-2 px-3">Format & Valid Values</th>
-                          <th className="py-2 px-3">Example</th>
+                          <th className="py-2.5 px-3">Column Name</th>
+                          <th className="py-2.5 px-3">Required</th>
+                          <th className="py-2.5 px-3">Format & Permitted Values</th>
+                          <th className="py-2.5 px-3">Example</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#EBEAE5] font-mono text-[11px]">
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">room_id</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">3-digit campus room number (101 to 712)</td>
-                          <td className="py-2 px-3 text-gray-700">205</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">room_id</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">3-digit university room number (101 to 712)</td>
+                          <td className="py-2.5 px-3 text-gray-700">205</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">day_of_week</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday</td>
-                          <td className="py-2 px-3 text-gray-700">Monday / Saturday</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">day_of_week</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday</td>
+                          <td className="py-2.5 px-3 text-gray-700">Monday / Saturday</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">slot_id</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Integer 1 to 8 (Standard university timetable slots)</td>
-                          <td className="py-2 px-3 text-gray-700">1</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">slot_id</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Integer 1 to 8 (Discrete 60-min periods, 08:30 to 17:45)</td>
+                          <td className="py-2.5 px-3 text-gray-700">1</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">course_code</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Official syllabus code</td>
-                          <td className="py-2 px-3 text-gray-700">CS501</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">course_code</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Official university course syllabus identifier</td>
+                          <td className="py-2.5 px-3 text-gray-700">CS501</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">course_name</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Course / lecture title</td>
-                          <td className="py-2 px-3 text-gray-700">Advanced Algorithms</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">course_name</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Course / workshop descriptive title</td>
+                          <td className="py-2.5 px-3 text-gray-700">Advanced Algorithms</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">faculty_name</td>
-                          <td className="py-2 px-3 text-emerald-700 font-sans font-bold">Yes</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Assigned course professor / club head</td>
-                          <td className="py-2 px-3 text-gray-700">Prof. Nimesh Bumb</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">faculty_name</td>
+                          <td className="py-2.5 px-3 text-emerald-700 font-sans font-bold">Yes</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Assigned course instructor or club coordinator</td>
+                          <td className="py-2.5 px-3 text-gray-700">Prof. Nimesh Bumb</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">section</td>
-                          <td className="py-2 px-3 text-gray-400 font-sans font-medium">Optional</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">Batch, semester, or division designation</td>
-                          <td className="py-2 px-3 text-gray-700">B.Tech CS AI-ML Sem V</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">section</td>
+                          <td className="py-2.5 px-3 text-gray-400 font-sans font-medium">Optional</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">Batch, division or semester tag</td>
+                          <td className="py-2.5 px-3 text-gray-700">B.Tech CS AI-ML Sem V</td>
                         </tr>
                         <tr>
-                          <td className="py-2 px-3 font-bold text-[#111C2D]">session_type</td>
-                          <td className="py-2 px-3 text-gray-400 font-sans font-medium">Optional</td>
-                          <td className="py-2 px-3 font-sans text-gray-600">LECTURE, LAB, SEMINAR, WEEKEND_SESSION</td>
-                          <td className="py-2 px-3 text-gray-700">LECTURE</td>
+                          <td className="py-2.5 px-3 font-bold text-[#111C2D]">session_type</td>
+                          <td className="py-2.5 px-3 text-gray-400 font-sans font-medium">Optional</td>
+                          <td className="py-2.5 px-3 font-sans text-gray-600">LECTURE, LAB, SEMINAR, WEEKEND_SESSION</td>
+                          <td className="py-2.5 px-3 text-gray-700">LECTURE</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                {/* CSV File Upload Dropzone */}
-                <div className="p-8 rounded-2xl bg-white border-2 border-dashed border-gray-300 hover:border-[#1E3F30] transition-colors text-center space-y-4">
+                {/* CSV File Upload Dropzone with Drag & Drop */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsCsvDragging(true);
+                  }}
+                  onDragLeave={() => setIsCsvDragging(false)}
+                  onDrop={handleCsvDrop}
+                  className={`p-8 rounded-2xl bg-white border-2 border-dashed transition-all text-center space-y-4 ${
+                    isCsvDragging
+                      ? 'border-emerald-500 bg-emerald-50/20 scale-[1.01]'
+                      : 'border-gray-300 hover:border-[#1E3F30]'
+                  }`}
+                >
                   <div className="w-14 h-14 rounded-2xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center mx-auto shadow-xs">
                     <FileSpreadsheet className="w-7 h-7 stroke-[1.75]" />
                   </div>
 
                   <div>
                     <h4 className="font-display font-bold text-lg text-[#111C2D]">
-                      Select or Drop Timetable CSV File Here
+                      Select or Drag & Drop Timetable CSV File Here
                     </h4>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Accepts UTF-8 encoded .csv files adhering to the schema above. Both daily and weekend rows will be parsed and validated.
+                    <p className="text-xs text-gray-500 mt-1 max-w-lg mx-auto">
+                      Ingest weekday & weekend timetables directly into MongoDB Atlas. Files exported from Excel, Google Sheets, or university portals are supported.
                     </p>
                   </div>
 
-                  <div>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                     <label className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold cursor-pointer shadow-xs transition-all active:scale-95">
                       <Upload className="w-4 h-4 text-emerald-400" />
                       <span>Choose CSV File from Computer</span>
@@ -2159,6 +2334,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                         className="hidden"
                       />
                     </label>
+
+                    <button
+                      type="button"
+                      onClick={handleLoadSampleCsvData}
+                      className="px-4 py-2.5 rounded-xl bg-[#FAF9F6] hover:bg-gray-100 text-[#111C2D] border border-[#EBEAE5] text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Sparkles className="w-4 h-4 text-emerald-600" />
+                      <span>Quick Demo: Load Sample Schedule</span>
+                    </button>
                   </div>
                 </div>
 
@@ -2189,8 +2373,8 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                           <span>Validated Timetable Entries Ready to Commit ({csvParsedRows.length})</span>
                         </h4>
-                        <p className="text-xs text-gray-500">
-                          Review parsed schedule before committing to MongoDB Atlas collection `class_timetable`.
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Review parsed schedule below. Click commit to sync to MongoDB Atlas collection <code className="font-mono bg-gray-100 px-1 py-0.5 rounded text-[11px]">class_timetable</code> and update the Segment Tree availability engine.
                         </p>
                       </div>
 
@@ -2201,7 +2385,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                         className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                       >
                         <CheckCheck className="w-4 h-4" />
-                        <span>{isUploadingCsv ? 'Committing to Atlas...' : 'Commit Timetable to Database'}</span>
+                        <span>{isUploadingCsv ? 'Committing to Atlas...' : `Commit ${csvParsedRows.length} Entries to Database`}</span>
                       </button>
                     </div>
 
@@ -2216,6 +2400,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                             <th className="py-2.5 px-3">Course Title</th>
                             <th className="py-2.5 px-3">Professor</th>
                             <th className="py-2.5 px-3">Type</th>
+                            <th className="py-2.5 px-3">Status</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[#EBEAE5]">
@@ -2231,6 +2416,17 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FAF9F6] border border-[#EBEAE5]">
                                   {row.sessionType}
                                 </span>
+                              </td>
+                              <td className="py-2 px-3">
+                                {row.isConflicted ? (
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                    Overwrites existing
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    New Entry
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           ))}
