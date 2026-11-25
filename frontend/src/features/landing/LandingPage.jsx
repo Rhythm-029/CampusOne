@@ -95,31 +95,27 @@ export default function LandingPage({ onEnterPortal, onOpenLoginModal }) {
         <div className="flex items-center gap-3">
           <button
             onClick={() => (onOpenLoginModal ? onOpenLoginModal('admin') : onEnterPortal('admin'))}
-            className="px-3.5 py-2 rounded-xl text-xs font-bold text-purple-950 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-white hover:from-purple-100 hover:to-indigo-100 transition-all hidden sm:flex items-center gap-1.5 cursor-pointer border border-purple-200/80 shadow-2xs hover:shadow-xs"
-            title="Administrator direct access"
+            className="px-3.5 py-2 rounded-lg text-xs font-semibold text-gray-700 hover:text-black hover:bg-gray-100 transition-all hidden sm:flex items-center gap-1.5 cursor-pointer border border-gray-200"
+            title="Administrator direct password access"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-700" />
+            <ShieldCheck className="w-3.5 h-3.5 text-gray-700" />
             <span>Admin Access</span>
           </button>
 
           <button
             onClick={() => (onOpenLoginModal ? onOpenLoginModal('student') : onEnterPortal('dashboard'))}
-            className="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-[#1E3F30] via-emerald-900 to-purple-950 text-white hover:opacity-95 shadow-sm hover:shadow-md transition-all flex items-center gap-2 active:scale-95 cursor-pointer border border-white/10"
+            className="px-4 sm:px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold bg-[#1E3F30] text-white hover:bg-[#152C22] shadow-sm transition-all flex items-center gap-2 active:scale-95 cursor-pointer"
           >
-            <UserCheck className="w-4 h-4 text-emerald-300" />
+            <UserCheck className="w-4 h-4" />
             <span>Sign In / Enter Portal</span>
           </button>
         </div>
       </header>
 
       {/* =========================================================================
-          HERO SECTION: 100% FULL-WIDTH SEAMLESS PHOTOGRAPHIC BLEND WITH SUBTLE PURPLE AMBIENCE
+          HERO SECTION: 100% FULL-WIDTH SEAMLESS PHOTOGRAPHIC BLEND (ZERO CUTOFF LINES)
           ========================================================================= */}
       <section className="relative w-full bg-white overflow-hidden flex flex-col justify-between border-b border-[#EBEAE5]">
-        {/* Subtle royal purple ambient aura */}
-        <div className="absolute top-10 left-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none z-1" />
-        <div className="absolute bottom-10 left-1/3 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none z-1" />
-
         {/* Full-width image covering 100% of the container */}
         <div className="absolute inset-0 w-full h-full pointer-events-none select-none z-0">
           <img
@@ -140,17 +136,11 @@ export default function LandingPage({ onEnterPortal, onOpenLoginModal }) {
 
         {/* Foreground Content on Left */}
         <div className="relative z-10 max-w-[1440px] w-full mx-auto px-6 sm:px-10 lg:px-14 py-16 sm:py-24 lg:py-28">
-          <div className="max-w-xl space-y-6">
-            {/* Elegant Purple Gradient Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-100/90 via-indigo-50 to-purple-50 border border-purple-200/80 text-purple-950 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
-              <span>ATLAS SkillTech University • Smart Operations Platform</span>
-            </div>
-
+          <div className="max-w-xl space-y-7">
             {/* Main Headline */}
             <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-[68px] text-[#111C2D] leading-[1.06] tracking-[-0.03em]">
               Your Campus,<br />
-              <span className="bg-gradient-to-r from-[#1E3F30] via-emerald-800 to-purple-900 bg-clip-text text-transparent">Connected</span>
+              <span className="text-[#1E3F30]">Connected</span>
             </h1>
 
             {/* Subtitle */}
@@ -162,7 +152,7 @@ export default function LandingPage({ onEnterPortal, onOpenLoginModal }) {
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
                 onClick={() => (onOpenLoginModal ? onOpenLoginModal('student') : onEnterPortal('allocation'))}
-                className="group px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#1E3F30] to-emerald-900 text-white font-semibold text-sm hover:from-[#152C22] hover:to-emerald-950 shadow-sm hover:shadow-md transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
+                className="group px-6 py-3.5 rounded-xl bg-[#1E3F30] text-white font-semibold text-sm hover:bg-[#152C22] shadow-sm hover:shadow-md transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
               >
                 <Calendar className="w-4 h-4 text-white" />
                 <span>Book a Space</span>
@@ -171,11 +161,11 @@ export default function LandingPage({ onEnterPortal, onOpenLoginModal }) {
 
               <button
                 onClick={() => (onOpenLoginModal ? onOpenLoginModal('admin') : onEnterPortal('admin'))}
-                className="group px-6 py-3.5 rounded-xl bg-gradient-to-r from-slate-950 via-purple-950 to-indigo-950 text-white font-semibold text-sm border border-purple-400/30 hover:border-purple-300 shadow-sm hover:shadow-md hover:shadow-purple-950/20 transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
+                className="group px-6 py-3.5 rounded-xl bg-white text-[#111C2D] font-semibold text-sm border-2 border-[#111C2D] hover:bg-gray-50 transition-all flex items-center gap-3 active:translate-y-px cursor-pointer"
               >
-                <KeyRound className="w-4 h-4 text-purple-300" />
-                <span>Admin Login</span>
-                <ArrowRight className="w-4 h-4 text-purple-200 group-hover:translate-x-1 transition-transform" />
+                <KeyRound className="w-4 h-4 text-[#111C2D]" />
+                <span>Admin Login (Password Only)</span>
+                <ArrowRight className="w-4 h-4 text-[#111C2D]/70 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
 

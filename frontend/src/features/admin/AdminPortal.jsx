@@ -623,29 +623,29 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       {/* =========================================================================
           TOP ADMIN NAVBAR
           ========================================================================= */}
-      <header className="h-16 bg-gradient-to-r from-slate-950 via-[#1B1032] to-[#0F172A] border-b border-purple-900/40 px-6 sm:px-10 flex items-center justify-between sticky top-0 z-30 shadow-lg shadow-purple-950/20">
+      <header className="h-16 bg-[#111C2D] border-b border-slate-800 px-6 sm:px-10 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-4">
           <button
             onClick={onNavigateLanding}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-md shadow-purple-950/50">
+            <div className="w-9 h-9 rounded-xl bg-emerald-950 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold shadow-xs">
               <ShieldCheck className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
               <div className="font-display font-extrabold text-lg text-white tracking-tight leading-tight flex items-center gap-1.5">
-                <span>Campus<span className="text-purple-400">One</span></span>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-gradient-to-r from-purple-700 to-indigo-700 text-white border border-purple-400/30">
+                <span>Campus<span className="text-emerald-400">One</span></span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase bg-slate-800 text-slate-200 border border-slate-700">
                   Estate & Space Admin
                 </span>
               </div>
-              <p className="text-[11px] text-purple-200/70 font-medium">ATLAS SkillTech University</p>
+              <p className="text-[11px] text-slate-400 font-medium">ATLAS SkillTech University</p>
             </div>
           </button>
 
-          <div className="h-5 w-px bg-purple-800/40 hidden md:block" />
+          <div className="h-5 w-px bg-slate-800 hidden md:block" />
 
-          <div className="hidden lg:flex items-center gap-2 text-xs text-purple-200/90 bg-purple-900/30 px-3 py-1 rounded-full border border-purple-500/20">
+          <div className="hidden lg:flex items-center gap-2 text-xs text-slate-300 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>Master Operations Console • 90 Rooms Synced</span>
           </div>
@@ -653,15 +653,15 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
         {/* Admin profile pill & Sign out */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 pl-3 border-l border-purple-800/40">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+          <div className="flex items-center gap-3 pl-3 border-l border-slate-800">
+            <div className="w-8 h-8 rounded-full bg-emerald-950 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center justify-center shadow-xs">
               RV
             </div>
             <div className="text-left hidden sm:block">
               <div className="text-xs font-bold text-white leading-tight">
                 {currentUser?.fullName || 'Prof. Rajesh Verma'}
               </div>
-              <div className="text-[11px] text-purple-300 font-mono">
+              <div className="text-[11px] text-slate-400 font-mono">
                 {currentUser?.email || 'admin@atlasskilltech.university'}
               </div>
             </div>
@@ -708,16 +708,16 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-2 px-3 rounded-lg flex items-center gap-2 shrink-0 transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-slate-950 via-purple-950 to-indigo-950 text-white shadow-xs'
-                    : 'text-gray-600 hover:text-purple-950 hover:bg-purple-50/60'
+                    ? 'bg-[#111C2D] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-purple-300' : 'text-gray-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-400' : 'text-gray-500'}`} />
                 <span>{tab.label}</span>
                 {tab.badge !== undefined && tab.badge > 0 && (
                   <span
                     className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                      isActive ? 'bg-purple-400 text-slate-950' : 'bg-amber-100 text-amber-800'
+                      isActive ? 'bg-emerald-400 text-slate-950' : 'bg-amber-100 text-amber-800'
                     }`}
                   >
                     {tab.badge}
@@ -801,18 +801,18 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
             onClick={() => setActiveTab('bipartite')}
             className={`p-5 rounded-2xl border transition-all cursor-pointer ${
               activeTab === 'bipartite'
-                ? 'bg-purple-50/70 border-purple-300 shadow-xs'
-                : 'bg-white border-[#EBEAE5] hover:border-purple-300 shadow-2xs'
+                ? 'bg-emerald-50/70 border-emerald-300 shadow-xs'
+                : 'bg-white border-[#EBEAE5] hover:border-emerald-300 shadow-2xs'
             }`}
           >
             <div className="flex items-center justify-between text-gray-500 mb-2">
               <span className="text-[11px] font-bold uppercase tracking-wider">Batch Engine</span>
-              <Zap className="w-4 h-4 text-purple-600" />
+              <Zap className="w-4 h-4 text-[#1E3F30]" />
             </div>
             <div className="text-2xl font-display font-extrabold text-[#111C2D]">
               Optimal
             </div>
-            <div className="text-[11px] text-purple-700 font-semibold mt-1">
+            <div className="text-[11px] text-[#1E3F30] font-semibold mt-1">
               Augmenting Path Solver Ready
             </div>
           </div>
@@ -1993,7 +1993,7 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                                             : isWeekend
                                             ? 'bg-amber-50/90 border-amber-300 text-amber-950'
                                             : isSeminar
-                                            ? 'bg-purple-50/80 border-purple-300 text-purple-950'
+                                            ? 'bg-indigo-50/80 border-indigo-200 text-indigo-900'
                                             : 'bg-blue-50/80 border-blue-300 text-blue-950'
                                         }`}
                                       >

@@ -186,30 +186,26 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-purple-200/50 overflow-hidden my-8">
+      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-[#EBEAE5] overflow-hidden my-8">
         
         {/* =========================================================================
-            HEADER: SLEEK ROYAL PURPLE TO INDIGO GRADIENT BANNER
+            HEADER: CLEAN UNIVERSITY LIGHT HEADER
             ========================================================================= */}
-        <div className="relative px-7 pt-7 pb-6 bg-gradient-to-r from-slate-950 via-[#1E1135] to-[#2E1065] text-white flex items-center justify-between overflow-hidden">
-          {/* Ambient blur glows */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 bg-purple-600/25 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-8 left-1/4 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="relative z-10 flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-violet-500 text-white flex items-center justify-center font-bold shadow-lg shadow-purple-900/50 border border-white/20">
+        <div className="relative px-7 pt-7 pb-6 bg-[#FAF9F6] border-b border-[#EBEAE5] text-[#111C2D] flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center font-bold border border-[#1E3F30]/20 shadow-xs">
               <GraduationCap className="w-6 h-6 stroke-[2]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display font-extrabold text-xl tracking-tight text-white leading-tight">
-                  Campus<span className="text-purple-400">One</span>
+                <h3 className="font-display font-extrabold text-xl tracking-tight text-[#111C2D] leading-tight">
+                  Campus<span className="text-[#1E3F30]">One</span>
                 </h3>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-purple-500/20 border border-purple-400/30 text-purple-200">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-[#EAF2EC] border border-[#1E3F30]/20 text-[#1E3F30]">
                   Live Authentication
                 </span>
               </div>
-              <p className="text-xs text-purple-200/80 font-medium mt-0.5">
+              <p className="text-xs text-gray-500 font-medium mt-0.5">
                 ATLAS SkillTech University Central Authentication
               </p>
             </div>
@@ -217,7 +213,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
 
           <button
             onClick={onClose}
-            className="relative z-10 p-2 rounded-xl text-purple-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-gray-400 hover:text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -241,7 +237,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <GraduationCap className={`w-4 h-4 ${roleMode === 'student' ? 'text-purple-700' : 'text-gray-400'}`} />
+              <GraduationCap className={`w-4 h-4 ${roleMode === 'student' ? 'text-[#1E3F30]' : 'text-gray-400'}`} />
               <span>Student Portal</span>
             </button>
 
@@ -255,11 +251,11 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
               }}
               className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                 roleMode === 'admin'
-                  ? 'bg-gradient-to-r from-purple-900 to-indigo-950 text-white shadow-sm'
+                  ? 'bg-[#111C2D] text-white shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <ShieldCheck className={`w-4 h-4 ${roleMode === 'admin' ? 'text-purple-300' : 'text-gray-400'}`} />
+              <ShieldCheck className={`w-4 h-4 ${roleMode === 'admin' ? 'text-white' : 'text-gray-400'}`} />
               <span>Admin Console</span>
             </button>
           </div>
@@ -275,7 +271,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                 }}
                 className={`pb-3 flex items-center gap-1.5 transition-colors cursor-pointer border-b-2 ${
                   actionTab === 'login'
-                    ? 'border-purple-600 text-purple-900'
+                    ? 'border-[#1E3F30] text-[#1E3F30]'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -291,7 +287,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                 }}
                 className={`pb-3 flex items-center gap-1.5 transition-colors cursor-pointer border-b-2 ${
                   actionTab === 'register'
-                    ? 'border-purple-600 text-purple-900'
+                    ? 'border-[#1E3F30] text-[#1E3F30]'
                     : 'border-transparent text-gray-500 hover:text-gray-800'
                 }`}
               >
@@ -338,7 +334,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setLoginEmail(e.target.value)}
                     placeholder="student.name@atlasskilltech.university"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
               </div>
@@ -355,7 +351,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setLoginPassword(e.target.value)}
                     placeholder="Enter your student password"
                     required
-                    className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                   <button
                     type="button"
@@ -370,7 +366,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 hover:from-purple-600 hover:to-indigo-600 text-white font-bold text-sm shadow-md shadow-purple-900/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                className="w-full py-3 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <span>Authenticating with University Node...</span>
@@ -386,7 +382,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                 <button
                   type="button"
                   onClick={() => setActionTab('register')}
-                  className="text-xs text-purple-700 hover:text-purple-900 font-semibold cursor-pointer hover:underline"
+                  className="text-xs text-[#1E3F30] hover:text-[#152C22] font-semibold cursor-pointer hover:underline"
                 >
                   Don't have an account yet? <strong>Register your student account</strong> →
                 </button>
@@ -409,7 +405,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setRegFullName(e.target.value)}
                     placeholder="e.g. Rhythm Singhal"
                     required
-                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
               </div>
@@ -426,7 +422,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setRegEmail(e.target.value)}
                     placeholder="e.g. rhythm.singhal@atlasskilltech.university"
                     required
-                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
               </div>
@@ -443,7 +439,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setRegDepartment(e.target.value)}
                     placeholder="e.g. Computer Science (Semester V)"
                     required
-                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
               </div>
@@ -460,7 +456,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     placeholder="••••••••"
                     required
                     minLength={8}
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
 
@@ -475,7 +471,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     placeholder="••••••••"
                     required
                     minLength={8}
-                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
               </div>
@@ -483,7 +479,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800 hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-sm shadow-md shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                className="w-full py-3 mt-2 rounded-xl bg-[#1E3F30] hover:bg-[#152C22] text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <span>Registering Student Account in Database...</span>
@@ -499,7 +495,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                 <button
                   type="button"
                   onClick={() => setActionTab('login')}
-                  className="text-xs text-purple-700 hover:text-purple-900 font-semibold cursor-pointer hover:underline"
+                  className="text-xs text-[#1E3F30] hover:text-[#152C22] font-semibold cursor-pointer hover:underline"
                 >
                   Already have an account? <strong>Sign In here</strong> →
                 </button>
@@ -510,8 +506,8 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
           {/* 3. ADMIN LOGIN FORM */}
           {roleMode === 'admin' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
-              <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 text-xs text-purple-900 flex items-start gap-2.5">
-                <KeyRound className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-start gap-2.5">
+                <KeyRound className="w-4 h-4 text-slate-600 shrink-0 mt-0.5" />
                 <div>
                   <strong className="font-bold">Administrative Node Authentication:</strong> Estate & Space Operations Officers log in with their university administrator credentials.
                 </div>
@@ -529,7 +525,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setAdminEmail(e.target.value)}
                     placeholder="admin@atlasskilltech.university"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#111C2D]/20 focus:border-[#111C2D] font-medium"
                   />
                 </div>
               </div>
@@ -546,7 +542,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="Enter admin security password"
                     required
-                    className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-600 font-medium"
+                    className="w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#111C2D]/20 focus:border-[#111C2D] font-medium"
                   />
                   <button
                     type="button"
@@ -561,13 +557,13 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-800 via-indigo-800 to-purple-900 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-purple-900/20 transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                className="w-full py-3 rounded-xl bg-[#111C2D] hover:bg-black text-white font-bold text-sm shadow-xs transition-all flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <span>Authenticating Administrator...</span>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4 text-purple-300" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     <span>Enter Estate & Operations Console</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
@@ -579,21 +575,21 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
           {/* Quick-fill helper for viva demonstration */}
           <div className="mt-5 pt-4 border-t border-gray-200/80 flex flex-wrap items-center justify-between text-[11px] text-gray-500 gap-2">
             <span className="flex items-center gap-1 font-semibold text-gray-600">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+              <Sparkles className="w-3.5 h-3.5 text-gray-500" />
               <span>Demo Fill:</span>
             </span>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={handleFillStudentDemo}
-                className="px-2 py-1 rounded-md bg-purple-50 text-purple-800 hover:bg-purple-100 font-medium cursor-pointer transition-colors border border-purple-200/60"
+                className="px-2.5 py-1 rounded-md bg-[#FAF9F6] text-gray-700 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5]"
               >
                 Student: Ananya (Password123!)
               </button>
               <button
                 type="button"
                 onClick={handleFillAdminDemo}
-                className="px-2 py-1 rounded-md bg-slate-100 text-slate-800 hover:bg-slate-200 font-medium cursor-pointer transition-colors border border-slate-300"
+                className="px-2.5 py-1 rounded-md bg-[#FAF9F6] text-gray-700 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5]"
               >
                 Admin (Password123!)
               </button>
@@ -607,7 +603,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Atlas SkillTech University Live Authentication Service</span>
           </span>
-          <span className="font-semibold text-purple-900">BCrypt + HMAC-SHA512</span>
+          <span className="font-semibold text-gray-700">BCrypt + HMAC-SHA512</span>
         </div>
       </div>
     </div>
