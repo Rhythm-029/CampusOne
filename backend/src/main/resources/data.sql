@@ -73,7 +73,25 @@ VALUES (19, 'kunal.ramchandani@atlasskilltech.university', '$2a$10$FAYQtkpWS7DrY
 MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
 VALUES (20, 'aaren@atlasskilltech.university', '$2a$10$FAYQtkpWS7DrYwdMaKk/4uvSOlXXh7KD8F6FBLcGuSxCKmeTLuwFi', 'Aaren', 'Highflyers', TRUE);
 
+-- Real-time Student Accounts (B.Tech 2028 Cohort)
+-- 21. Rhythm Singhal
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (21, 'rhythm.singhal.btech2028@atlasskilltech.university', '$2a$10$FAYQtkpWS7DrYwdMaKk/4uvSOlXXh7KD8F6FBLcGuSxCKmeTLuwFi', 'Rhythm Singhal', 'B.Tech CS & AI (Batch 2028)', TRUE);
+
+-- 22. Yashwardhan Singh
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (22, 'yashwardhan.singh.btech2028@atlasskilltech.university', '$2a$10$FAYQtkpWS7DrYwdMaKk/4uvSOlXXh7KD8F6FBLcGuSxCKmeTLuwFi', 'Yashwardhan Singh', 'B.Tech CS & AI (Batch 2028)', TRUE);
+
+-- 23. Prathamesh Bhandare
+MERGE INTO users (id, email, password_hash, full_name, department, is_active) KEY(email)
+VALUES (23, 'prathamesh.bhandare.btech2028@atlasskilltech.university', '$2a$10$FAYQtkpWS7DrYwdMaKk/4uvSOlXXh7KD8F6FBLcGuSxCKmeTLuwFi', 'Prathamesh Bhandare', 'B.Tech CS & AI (Batch 2028)', TRUE);
+
 -- Assign User Roles
+-- Students (1) for 21..23
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (21, 1);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (22, 1);
+MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (23, 1);
+
 -- Faculty (2) for 11..18
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (11, 2);
 MERGE INTO user_roles (user_id, role_id) KEY(user_id, role_id) VALUES (12, 2);

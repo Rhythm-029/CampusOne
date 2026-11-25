@@ -23,7 +23,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
   const [actionTab, setActionTab] = useState('login'); // 'login' | 'register' (for student)
 
   // Login form state
-  const [loginEmail, setLoginEmail] = useState('ananya.student@atlasskilltech.university');
+  const [loginEmail, setLoginEmail] = useState('rhythm.singhal.btech2028@atlasskilltech.university');
   const [loginPassword, setLoginPassword] = useState('Password123!');
   const [adminEmail, setAdminEmail] = useState('admin@atlasskilltech.university');
   const [adminPassword, setAdminPassword] = useState('Password123!');
@@ -168,10 +168,10 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
     }
   };
 
-  const handleFillStudentDemo = () => {
+  const handleFillStudent = (email) => {
     setRoleMode('student');
     setActionTab('login');
-    setLoginEmail('ananya.student@atlasskilltech.university');
+    setLoginEmail(email);
     setLoginPassword('Password123!');
     setError('');
   };
@@ -573,25 +573,47 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
           )}
 
           {/* Quick-fill helper for viva demonstration */}
-          <div className="mt-5 pt-4 border-t border-gray-200/80 flex flex-wrap items-center justify-between text-[11px] text-gray-500 gap-2">
-            <span className="flex items-center gap-1 font-semibold text-gray-600">
-              <Sparkles className="w-3.5 h-3.5 text-gray-500" />
-              <span>Demo Fill:</span>
-            </span>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleFillStudentDemo}
-                className="px-2.5 py-1 rounded-md bg-[#FAF9F6] text-gray-700 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5]"
-              >
-                Student: Ananya (Password123!)
-              </button>
+          <div className="mt-5 pt-4 border-t border-gray-200/80 space-y-2 text-[11px] text-gray-500">
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1 font-semibold text-gray-600">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Live Student IDs (B.Tech 2028):</span>
+              </span>
               <button
                 type="button"
                 onClick={handleFillAdminDemo}
-                className="px-2.5 py-1 rounded-md bg-[#FAF9F6] text-gray-700 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5]"
+                className="px-2.5 py-1 rounded-md bg-[#111C2D] text-white hover:bg-black font-semibold cursor-pointer transition-colors shadow-xs"
               >
-                Admin (Password123!)
+                Admin (Prof. Verma)
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleFillStudent('rhythm.singhal.btech2028@atlasskilltech.university')}
+                className="px-2 py-1.5 rounded-lg bg-[#FAF9F6] text-gray-800 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5] text-left truncate"
+                title="Rhythm Singhal (rhythm.singhal.btech2028@atlasskilltech.university)"
+              >
+                <div className="font-semibold text-gray-900 truncate">Rhythm Singhal</div>
+                <div className="text-[10px] text-gray-500 truncate">rhythm.singhal...</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFillStudent('yashwardhan.singh.btech2028@atlasskilltech.university')}
+                className="px-2 py-1.5 rounded-lg bg-[#FAF9F6] text-gray-800 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5] text-left truncate"
+                title="Yashwardhan Singh (yashwardhan.singh.btech2028@atlasskilltech.university)"
+              >
+                <div className="font-semibold text-gray-900 truncate">Yashwardhan Singh</div>
+                <div className="text-[10px] text-gray-500 truncate">yashwardhan...</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFillStudent('prathamesh.bhandare.btech2028@atlasskilltech.university')}
+                className="px-2 py-1.5 rounded-lg bg-[#FAF9F6] text-gray-800 hover:bg-gray-100 font-medium cursor-pointer transition-colors border border-[#EBEAE5] text-left truncate"
+                title="Prathamesh Bhandare (prathamesh.bhandare.btech2028@atlasskilltech.university)"
+              >
+                <div className="font-semibold text-gray-900 truncate">Prathamesh Bhandare</div>
+                <div className="text-[10px] text-gray-500 truncate">prathamesh...</div>
               </button>
             </div>
           </div>

@@ -2,9 +2,12 @@ package com.campusone.spaces.controller;
 
 import com.campusone.algorithm.matching.BipartiteMatcher;
 import com.campusone.algorithm.matching.GreedyBaselineMatcher;
+import com.campusone.model.CampusNotification;
 import com.campusone.model.ClassTimetableDocument;
+import com.campusone.model.ClubProposal;
 import com.campusone.model.RoomBookingSlotDocument;
 import com.campusone.model.RoomDocument;
+import com.campusone.model.SpaceBookingRequest;
 import com.campusone.repository.ClassTimetableMongoRepository;
 import com.campusone.repository.RoomBookingSlotMongoRepository;
 import com.campusone.repository.RoomMongoRepository;
@@ -28,6 +31,9 @@ public class CampusSpacesController {
     private final CentralAvailabilityService availabilityService;
     private final ClassTimetableMongoRepository timetableRepository;
     private final List<ClassTimetableDocument> inMemoryTimetableFallback = Collections.synchronizedList(new ArrayList<>());
+    private final List<SpaceBookingRequest> inMemorySpaceRequests = Collections.synchronizedList(new ArrayList<>());
+    private final List<CampusNotification> inMemoryNotifications = Collections.synchronizedList(new ArrayList<>());
+    private final List<ClubProposal> inMemoryProposals = Collections.synchronizedList(new ArrayList<>());
 
     public CampusSpacesController(RoomMongoRepository roomRepository,
                                   RoomBookingSlotMongoRepository bookingSlotRepository,
@@ -38,6 +44,118 @@ public class CampusSpacesController {
         this.availabilityService = availabilityService;
         this.timetableRepository = timetableRepository;
         initFallbackSchedule();
+        initDefaultRequestsAndBroadcasts();
+    }
+
+    private void initDefaultRequestsAndBroadcasts() {
+        // Initial real-time space booking requests from the 3 student accounts
+        inMemorySpaceRequests.addAll(List.of(
+                new SpaceBookingRequest(
+                        "REQ-2026-101",
+                        "rhythm.singhal.btech2028@atlasskilltech.university",
+                        "Rhythm Singhal",
+                        "B.Tech CS & AI (Batch 2028)",
+                        "205",
+                        "Room 205 (Smart Classroom)",
+                        "2026-02-26",
+                        3,
+                        "10:45 – 11:45",
+                        45,
+                        List.of("Projector", "Linux PCs"),
+                        "Advanced Algorithms Capstone Group Presentation",
+                        "PENDING_APPROVAL",
+                        "Submitted to Estate Admin Review Queue",
+                        "2026-02-24 10:30 AM",
+                        false
+                ),
+                new SpaceBookingRequest(
+                        "REQ-2026-102",
+                        "yashwardhan.singh.btech2028@atlasskilltech.university",
+                        "Yashwardhan Singh",
+                        "B.Tech CS & AI (Batch 2028)",
+                        "213",
+                        "Room 213 (Special Auditorium)",
+                        "2026-02-27",
+                        5,
+                        "13:30 – 14:30",
+                        120,
+                        List.of("PA Audio Mic", "Projector"),
+                        "INC - The Corporate Club Speaker Conclave & Workshop",
+                        "PENDING_APPROVAL",
+                        "Awaiting Estate Admin Hall Review",
+                        "2026-02-24 11:15 AM",
+                        false
+                ),
+                new SpaceBookingRequest(
+                        "REQ-2026-103",
+                        "prathamesh.bhandare.btech2028@atlasskilltech.university",
+                        "Prathamesh Bhandare",
+                        "B.Tech CS & AI (Batch 2028)",
+                        "101",
+                        "Room 101 (Smart Classroom)",
+                        "2026-02-25",
+                        2,
+                        "09:30 – 10:30",
+                        50,
+                        List.of("Smartboard"),
+                        "Computer Networks Peer Code Review & Lab Prep",
+                        "APPROVED",
+                        "Approved by Prof. Rajesh Verma (Space Admin)",
+                        "2026-02-24 09:00 AM",
+                        false
+                )
+        ));
+
+        // Initial broadcast notifications posted by Admin
+        inMemoryNotifications.addAll(List.of(
+                new CampusNotification(
+                        "NOTIF-1",
+                        "Floor 3 Highflyers Lab Audio System Maintenance",
+                        "Rooms 301 to 305 audio systems are undergoing scheduled maintenance on Friday Slot 7 & 8. Bookings shifted to Floor 2.",
+                        "MAINTENANCE",
+                        "Prof. Rajesh Verma",
+                        "admin@atlasskilltech.university",
+                        "Today, 09:15 AM",
+                        true
+                ),
+                new CampusNotification(
+                        "NOTIF-2",
+                        "Mid-Semester Space Reservations Open for All Cohorts",
+                        "Students can now reserve verified academic classrooms on Floors 1-7 for project presentations through the Smart Allocation portal.",
+                        "ACADEMIC",
+                        "Prof. Rajesh Verma",
+                        "admin@atlasskilltech.university",
+                        "Yesterday, 04:30 PM",
+                        false
+                ),
+                new CampusNotification(
+                        "NOTIF-3",
+                        "Weekend Industry Hackathon & Masterclass in Room 213",
+                        "INC - The Corporate Club and Computer Science AI-ML cohorts will host the weekend masterclass in Auditorium 213 this Saturday.",
+                        "EVENT",
+                        "Prof. Nimesh Bumb",
+                        "nimesh.bumb@atlasskilltech.university",
+                        "2 days ago",
+                        false
+                )
+        ));
+
+        // Initial club proposals
+        inMemoryProposals.addAll(List.of(
+                new ClubProposal(
+                        "PROP-01",
+                        "INC - The corporate club",
+                        "Corporate Mentorship & Resume Roasting Night",
+                        "Interactive session connecting B.Tech 2028 students with corporate executives.",
+                        "2026-03-05",
+                        150,
+                        "rhythm.singhal.btech2028@atlasskilltech.university",
+                        "Rhythm Singhal",
+                        "PENDING_APPROVAL",
+                        "Under Student Affairs review",
+                        "2026-02-24 12:00 PM"
+                )
+        ));
     }
 
     private void initFallbackSchedule() {
@@ -340,5 +458,208 @@ public class CampusSpacesController {
         headers.setContentDispositionFormData("attachment", "campusone_timetable_template.csv");
         headers.setContentType(MediaType.parseMediaType("text/csv"));
         return new ResponseEntity<>(csv, headers, HttpStatus.OK);
+    }
+
+    // =========================================================================
+    // REAL-TIME STUDENT <-> ADMIN COMMUNICATION ENDPOINTS
+    // =========================================================================
+
+    /**
+     * Get space booking requests (filterable by student email).
+     */
+    @GetMapping("/requests")
+    public ResponseEntity<List<SpaceBookingRequest>> getBookingRequests(
+            @RequestParam(value = "studentEmail", required = false) String studentEmail) {
+        List<SpaceBookingRequest> result = new ArrayList<>();
+        synchronized (inMemorySpaceRequests) {
+            for (SpaceBookingRequest req : inMemorySpaceRequests) {
+                if (studentEmail == null || studentEmail.isBlank() || studentEmail.equalsIgnoreCase(req.getStudentEmail())) {
+                    result.add(req);
+                }
+            }
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Student submits a new space booking request in real-time.
+     */
+    @PostMapping("/requests")
+    public ResponseEntity<SpaceBookingRequest> submitBookingRequest(@RequestBody SpaceBookingRequest request) {
+        if (request.getId() == null || request.getId().isBlank()) {
+            request.setId("REQ-2026-" + (100 + inMemorySpaceRequests.size() + 1));
+        }
+        if (request.getStatus() == null || request.getStatus().isBlank()) {
+            request.setStatus("PENDING_APPROVAL");
+        }
+        if (request.getSubmittedAt() == null || request.getSubmittedAt().isBlank()) {
+            request.setSubmittedAt("Just now");
+        }
+        if (request.getAdminNotes() == null || request.getAdminNotes().isBlank()) {
+            request.setAdminNotes("Awaiting Space Admin review in real-time queue");
+        }
+
+        // Check availability against timetable and active bookings
+        boolean hasConflict = false;
+        if (request.getRoomId() != null && request.getDate() != null && request.getSlotId() != null) {
+            try {
+                CentralAvailabilityService.AvailabilityCheckResult check =
+                        availabilityService.checkMultiSlotAvailability(
+                                request.getRoomId(),
+                                request.getDate(),
+                                List.of(request.getSlotId()),
+                                "Monday"
+                        );
+                hasConflict = !check.isAvailable();
+            } catch (Exception ignored) {}
+        }
+        request.setConflict(hasConflict);
+
+        inMemorySpaceRequests.add(0, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(request);
+    }
+
+    /**
+     * Admin approves or rejects a space booking request in real-time.
+     */
+    @PatchMapping("/requests/{id}/status")
+    public ResponseEntity<?> updateBookingRequestStatus(
+            @PathVariable("id") String id,
+            @RequestBody Map<String, String> body) {
+        String newStatus = body.get("status");
+        String notes = body.get("adminNotes");
+
+        SpaceBookingRequest target = null;
+        synchronized (inMemorySpaceRequests) {
+            for (SpaceBookingRequest req : inMemorySpaceRequests) {
+                if (req.getId().equalsIgnoreCase(id)) {
+                    target = req;
+                    if (newStatus != null && !newStatus.isBlank()) {
+                        req.setStatus(newStatus.toUpperCase());
+                    }
+                    if (notes != null && !notes.isBlank()) {
+                        req.setAdminNotes(notes);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (target == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Request not found: " + id));
+        }
+
+        // If approved, commit the room booking slot reservation
+        if ("APPROVED".equalsIgnoreCase(newStatus)) {
+            try {
+                if (target.getRoomId() != null && target.getDate() != null && target.getSlotId() != null) {
+                    availabilityService.commitMultiSlotReservation(
+                            target.getRoomId(),
+                            target.getDate(),
+                            List.of(target.getSlotId()),
+                            target.getId(),
+                            target.getStudentEmail()
+                    );
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return ResponseEntity.ok(target);
+    }
+
+    /**
+     * Get campus broadcast notifications posted by Admin.
+     */
+    @GetMapping("/notifications")
+    public ResponseEntity<List<CampusNotification>> getNotifications() {
+        return ResponseEntity.ok(new ArrayList<>(inMemoryNotifications));
+    }
+
+    /**
+     * Admin broadcasts a new campus announcement in real-time.
+     */
+    @PostMapping("/notifications")
+    public ResponseEntity<CampusNotification> createNotification(@RequestBody CampusNotification notif) {
+        if (notif.getId() == null || notif.getId().isBlank()) {
+            notif.setId("NOTIF-" + System.currentTimeMillis());
+        }
+        if (notif.getCreatedAt() == null || notif.getCreatedAt().isBlank()) {
+            notif.setCreatedAt("Just now");
+        }
+        if (notif.getAuthorName() == null || notif.getAuthorName().isBlank()) {
+            notif.setAuthorName("Prof. Rajesh Verma (Space Admin)");
+        }
+        if (notif.getAuthorEmail() == null || notif.getAuthorEmail().isBlank()) {
+            notif.setAuthorEmail("admin@atlasskilltech.university");
+        }
+        inMemoryNotifications.add(0, notif);
+        return ResponseEntity.status(HttpStatus.CREATED).body(notif);
+    }
+
+    /**
+     * Admin deletes a broadcast announcement.
+     */
+    @DeleteMapping("/notifications/{id}")
+    public ResponseEntity<?> deleteNotification(@PathVariable("id") String id) {
+        inMemoryNotifications.removeIf(n -> n.getId().equalsIgnoreCase(id));
+        return ResponseEntity.ok(Map.of("message", "Notification deleted", "id", id));
+    }
+
+    /**
+     * Get club event proposals.
+     */
+    @GetMapping("/proposals")
+    public ResponseEntity<List<ClubProposal>> getClubProposals() {
+        return ResponseEntity.ok(new ArrayList<>(inMemoryProposals));
+    }
+
+    /**
+     * Student submits a club proposal in real-time.
+     */
+    @PostMapping("/proposals")
+    public ResponseEntity<ClubProposal> submitClubProposal(@RequestBody ClubProposal proposal) {
+        if (proposal.getId() == null || proposal.getId().isBlank()) {
+            proposal.setId("PROP-" + (inMemoryProposals.size() + 1));
+        }
+        if (proposal.getStatus() == null || proposal.getStatus().isBlank()) {
+            proposal.setStatus("PENDING_APPROVAL");
+        }
+        if (proposal.getSubmittedAt() == null || proposal.getSubmittedAt().isBlank()) {
+            proposal.setSubmittedAt("Just now");
+        }
+        inMemoryProposals.add(0, proposal);
+        return ResponseEntity.status(HttpStatus.CREATED).body(proposal);
+    }
+
+    /**
+     * Admin approves/rejects a club proposal in real-time.
+     */
+    @PatchMapping("/proposals/{id}/status")
+    public ResponseEntity<?> updateProposalStatus(
+            @PathVariable("id") String id,
+            @RequestBody Map<String, String> body) {
+        String newStatus = body.get("status");
+        String notes = body.get("adminNotes");
+
+        ClubProposal target = null;
+        synchronized (inMemoryProposals) {
+            for (ClubProposal prop : inMemoryProposals) {
+                if (prop.getId().equalsIgnoreCase(id)) {
+                    target = prop;
+                    if (newStatus != null && !newStatus.isBlank()) {
+                        prop.setStatus(newStatus.toUpperCase());
+                    }
+                    if (notes != null && !notes.isBlank()) {
+                        prop.setAdminNotes(notes);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (target == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Proposal not found: " + id));
+        }
+        return ResponseEntity.ok(target);
     }
 }

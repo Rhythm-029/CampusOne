@@ -27,6 +27,9 @@ import {
   HelpCircle,
   Tag,
   PackageSearch,
+  Bell,
+  Megaphone,
+  RefreshCw,
 } from 'lucide-react';
 import LostFoundBrowsePage from '../lostfound/LostFoundBrowsePage';
 
@@ -80,16 +83,38 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     { id: '31', roomId: '213', dayOfWeek: 'Sunday', slotId: 3, courseCode: 'CLUB-INC', courseName: 'Corporate Leadership Conclave', facultyName: 'INC - The corporate club', section: 'Open Campus', sessionType: 'WEEKEND_SESSION' },
   ]);
 
-  useEffect(() => {
-    fetch('/api/v1/spaces/timetable')
-      .then((res) => (res.ok ? res.json() : null))
+  // Real-time Campus Notifications
+  const [campusNotifications, setCampusNotifications] = useState([
+    {
+      id: 'NOTIF-1',
+      title: 'Mid-Term Examination & Lab Schedule Finalized',
+      content: 'All B.Tech AI & ML batches: Room allocations for mid-term assessments are committed to the central availability matrix.',
+      category: 'ACADEMIC',
+      authorName: 'Academic Directorate',
+      createdAt: '2026-02-24 09:00',
+      pinned: true,
+    },
+    {
+      id: 'NOTIF-2',
+      title: 'Server Room & Lab 205 High-Performance GPU Cluster Maintenance',
+      content: 'Scheduled infrastructure update on Sunday 06:00 AM – 09:00 AM. Cluster access will be paused during this maintenance window.',
+      category: 'MAINTENANCE',
+      authorName: 'Prof. Rajesh Verma',
+      createdAt: '2026-02-23 16:30',
+      pinned: false,
+    },
+  ]);
+
+  const fetchCampusNotifications = () => {
+    fetch('/api/v1/spaces/notifications')
+      .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setStudentTimetableEntries(data);
+          setCampusNotifications(data);
         }
       })
       .catch(() => {});
-  }, []);
+  };
 
   // My Bookings Data
   const [bookings, setBookings] = useState([
@@ -120,6 +145,64 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
       notes: 'Requested dual laser projectors and stage microphones.',
     },
   ]);
+
+  const fetchBookings = () => {
+    const studentEmail = currentUser?.email;
+    const url = studentEmail ? `/api/v1/spaces/requests?studentEmail=${encodeURIComponent(studentEmail)}` : '/api/v1/spaces/requests';
+    fetch(url)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((b) => ({
+            id: b.id,
+            room: b.roomName || `Room ${b.roomId}`,
+            floor: `Floor ${b.roomId ? b.roomId.charAt(0) : '2'}`,
+            date: b.date,
+            slots: b.slotTime || `Slot ${b.slotId}`,
+            purpose: b.purpose,
+            capacity: b.capacity,
+            status: b.status || 'PENDING_APPROVAL',
+            statusColor:
+              b.status === 'APPROVED'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : b.status === 'REJECTED'
+                ? 'bg-red-50 text-red-700 border-red-200'
+                : 'bg-amber-50 text-amber-700 border-amber-200',
+            approver:
+              b.status === 'APPROVED'
+                ? 'Prof. Rajesh Verma (Space Admin)'
+                : b.status === 'REJECTED'
+                ? 'Estate Operations'
+                : 'Pending Estate Admin Review',
+            notes: b.adminNotes || 'Submitted for central reservation review.',
+          }));
+          setBookings(mapped);
+        }
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetch('/api/v1/spaces/timetable')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setStudentTimetableEntries(data);
+        }
+      })
+      .catch(() => {});
+
+    fetchCampusNotifications();
+    fetchBookings();
+
+    // Real-time polling every 5 seconds for live sync with admin actions
+    const interval = setInterval(() => {
+      fetchCampusNotifications();
+      fetchBookings();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [currentUser?.email]);
 
   // Faculty Connect State
   const [selectedCourse, setSelectedCourse] = useState('CS501');
@@ -244,16 +327,57 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     );
   };
 
-  const handleSmartAllocationSubmit = (e) => {
+  const handleSmartAllocationSubmit = async (e) => {
     e.preventDefault();
-    // Simulate algorithmic Bipartite Matching allocation
     const matchedRoom = smartCapacity > 70 ? 'Room 213 (Special Auditorium, Cap 200)' : 'Room 205 (Smart Classroom, Cap 60)';
+    const roomId = smartCapacity > 70 ? '213' : '205';
+    const targetDate = '2026-02-26';
+    const slotTimeStr = timeSlots[smartSlot - 1]?.time || '10:45 – 11:45';
+
+    const reqPayload = {
+      studentEmail: currentUser?.email || 'rhythm.singhal.btech2028@atlasskilltech.university',
+      studentName: currentUser?.fullName || 'Rhythm Singhal',
+      department: currentUser?.department || 'B.Tech CS AI-ML Sem V',
+      roomId: roomId,
+      roomName: matchedRoom,
+      date: targetDate,
+      slotId: smartSlot,
+      slotTime: `Slot ${smartSlot} (${slotTimeStr})`,
+      capacity: smartCapacity,
+      equipment: smartEquipment,
+      purpose: smartPurpose,
+      status: 'PENDING_APPROVAL',
+      adminNotes: `Optimal room matched satisfying capacity (${smartCapacity}) and equipment (${smartEquipment.join(', ')}).`,
+    };
+
+    try {
+      const res = await fetch('/api/v1/spaces/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reqPayload),
+      });
+
+      if (res.ok) {
+        const created = await res.json();
+        fetchBookings();
+        setAllocationSuccess({
+          room: created.roomName || matchedRoom,
+          slot: created.slotTime || `Slot ${smartSlot} (${slotTimeStr})`,
+          bookingId: created.id,
+        });
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to submit booking request to server:', err);
+    }
+
+    // Fallback local update if offline
     const newBooking = {
       id: `BK-2026-${Math.floor(100 + Math.random() * 900)}`,
       room: matchedRoom,
-      floor: 'Floor 2',
-      date: '2026-02-26',
-      slots: `Slot ${smartSlot} (${timeSlots[smartSlot - 1].time})`,
+      floor: `Floor ${roomId.charAt(0)}`,
+      date: targetDate,
+      slots: `Slot ${smartSlot} (${slotTimeStr})`,
       purpose: smartPurpose,
       capacity: smartCapacity,
       status: 'PENDING_APPROVAL',
@@ -265,7 +389,7 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
     setBookings([newBooking, ...bookings]);
     setAllocationSuccess({
       room: matchedRoom,
-      slot: `Slot ${smartSlot} (${timeSlots[smartSlot - 1].time})`,
+      slot: `Slot ${smartSlot} (${slotTimeStr})`,
       bookingId: newBooking.id,
     });
   };
@@ -483,6 +607,74 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>Confirmed with Prof. Nimesh Bumb</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Real-time Campus Broadcast Announcements Feed */}
+            <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#EBEAE5]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EAF2EC] text-[#1E3F30] flex items-center justify-center font-bold">
+                    <Megaphone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-base text-[#111C2D]">
+                      Campus Broadcasts & Official Announcements
+                    </h3>
+                    <p className="text-xs text-gray-500">Live operational updates and estate notices from university administration</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={fetchCampusNotifications}
+                  className="px-2.5 py-1 text-xs rounded-lg text-gray-500 hover:text-gray-800 hover:bg-gray-100 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Sync Alerts</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {campusNotifications.map((notif) => {
+                  const categoryBadgeColor =
+                    notif.category === 'URGENT'
+                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                      : notif.category === 'ACADEMIC'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : notif.category === 'MAINTENANCE'
+                      ? 'bg-amber-50 text-amber-700 border-amber-200'
+                      : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                  return (
+                    <div
+                      key={notif.id}
+                      className="p-4 rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] hover:bg-white hover:shadow-xs transition-all space-y-2.5"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${categoryBadgeColor}`}>
+                          {notif.category}
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-mono">
+                          {notif.createdAt}
+                        </span>
+                      </div>
+                      <h4 className="font-display font-bold text-sm text-[#111C2D]">
+                        {notif.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        {notif.content}
+                      </p>
+                      <div className="text-[11px] text-gray-400 pt-1 border-t border-gray-200/60 flex items-center justify-between">
+                        <span>Issued by: <strong className="text-gray-700">{notif.authorName}</strong></span>
+                        {notif.pinned && (
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#EAF2EC] text-[#1E3F30]">
+                            PINNED
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -1115,16 +1307,26 @@ export default function StudentPortal({ currentUser, onLogout, onNavigateLanding
                   Track room reservation lifecycle: Submitted → Space Admin Review → Approved.
                 </p>
               </div>
-              <button
-                onClick={() => {
-                  setActiveTab('spaces');
-                  setBookingMode('smart');
-                }}
-                className="px-4 py-2 rounded-xl bg-[#1E3F30] text-white text-xs font-semibold flex items-center gap-2 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New Space Request</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={fetchBookings}
+                  className="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-[#111C2D] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Sync Status</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('spaces');
+                    setBookingMode('smart');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-[#1E3F30] text-white text-xs font-semibold flex items-center gap-2 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>New Space Request</span>
+                </button>
+              </div>
             </div>
 
             <div className="space-y-4">

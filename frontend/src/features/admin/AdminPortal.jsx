@@ -31,6 +31,10 @@ import {
   Download,
   FileText,
   CalendarDays,
+  Megaphone,
+  Bell,
+  Trash2,
+  Send,
 } from 'lucide-react';
 
 export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }) {
@@ -97,6 +101,142 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     setTimeout(() => setActionToast(null), 3500);
   };
 
+  // Real-time Space Requests & Announcements Sync
+  const fetchSpaceRequests = () => {
+    fetch('/api/v1/spaces/requests')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const pending = [];
+          const approved = [];
+          data.forEach((r) => {
+            const item = {
+              id: r.id,
+              requester: `${r.studentName || 'Student'} (${r.studentEmail || ''})`,
+              studentEmail: r.studentEmail,
+              department: r.department || 'B.Tech CS AI-ML Sem V',
+              purpose: r.purpose || 'Academic Space Reservation',
+              preferredRoom: r.roomName || `Room ${r.roomId}`,
+              roomId: r.roomId,
+              capacityNeeded: r.capacity || 45,
+              date: r.date || '2026-02-26',
+              slots: [r.slotId || 3],
+              slotLabel: r.slotTime || `Slot ${r.slotId || 3}`,
+              conflictStatus: r.conflict ? 'POTENTIAL_TIMETABLE_CLASS' : 'NONE',
+              status: r.status,
+              adminNotes: r.adminNotes,
+            };
+            if (r.status === 'PENDING_APPROVAL') {
+              pending.push(item);
+            } else if (r.status === 'APPROVED') {
+              approved.push({
+                id: r.id,
+                requester: r.studentName || r.studentEmail || 'Student',
+                room: r.roomName || `Room ${r.roomId}`,
+                date: r.date || '2026-02-26',
+                slotLabel: r.slotTime || `Slot ${r.slotId}`,
+                approvedBy: 'Prof. Rajesh Verma',
+                status: 'COMMITTED',
+              });
+            }
+          });
+          setPendingRequests(pending);
+          if (approved.length > 0) {
+            setApprovedHistory(approved);
+          }
+        }
+      })
+      .catch(() => {});
+  };
+
+  // Broadcast announcements state
+  const [adminNotifications, setAdminNotifications] = useState([
+    {
+      id: 'NOTIF-1',
+      title: 'Mid-Term Examination & Lab Schedule Finalized',
+      content: 'All B.Tech AI & ML batches: Room allocations for mid-term assessments are committed to the central availability matrix.',
+      category: 'ACADEMIC',
+      authorName: 'Academic Directorate',
+      createdAt: '2026-02-24 09:00',
+      pinned: true,
+    },
+    {
+      id: 'NOTIF-2',
+      title: 'Server Room & Lab 205 High-Performance GPU Cluster Maintenance',
+      content: 'Scheduled infrastructure update on Sunday 06:00 AM – 09:00 AM. Cluster access will be paused during this maintenance window.',
+      category: 'MAINTENANCE',
+      authorName: 'Prof. Rajesh Verma',
+      createdAt: '2026-02-23 16:30',
+      pinned: false,
+    },
+  ]);
+  const [newNotifTitle, setNewNotifTitle] = useState('');
+  const [newNotifContent, setNewNotifContent] = useState('');
+  const [newNotifCategory, setNewNotifCategory] = useState('ACADEMIC');
+  const [newNotifPinned, setNewNotifPinned] = useState(false);
+  const [isPostingNotif, setIsPostingNotif] = useState(false);
+
+  const fetchAdminNotifications = () => {
+    fetch('/api/v1/spaces/notifications')
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setAdminNotifications(data);
+        }
+      })
+      .catch(() => {});
+  };
+
+  const handlePostNotification = async (e) => {
+    e.preventDefault();
+    if (!newNotifTitle.trim() || !newNotifContent.trim()) {
+      showToast('Title and announcement content are required.', 'error');
+      return;
+    }
+
+    setIsPostingNotif(true);
+    try {
+      const payload = {
+        title: newNotifTitle.trim(),
+        content: newNotifContent.trim(),
+        category: newNotifCategory,
+        authorName: currentUser?.fullName || 'Prof. Rajesh Verma',
+        authorEmail: currentUser?.email || 'admin@atlasskilltech.university',
+        pinned: newNotifPinned,
+      };
+
+      const res = await fetch('/api/v1/spaces/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        showToast('Campus broadcast announcement published to all student portals!');
+        setNewNotifTitle('');
+        setNewNotifContent('');
+        setNewNotifPinned(false);
+        fetchAdminNotifications();
+      }
+    } catch {
+      showToast('Failed to post announcement.', 'error');
+    } finally {
+      setIsPostingNotif(false);
+    }
+  };
+
+  const handleDeleteNotification = async (notifId) => {
+    try {
+      await fetch(`/api/v1/spaces/notifications/${notifId}`, {
+        method: 'DELETE',
+      });
+      setAdminNotifications((prev) => prev.filter((n) => n.id !== notifId));
+      showToast('Broadcast notice deleted from student feeds.');
+    } catch {
+      showToast('Failed to delete notification.', 'error');
+    }
+  };
+
   useEffect(() => {
     fetch('/api/v1/spaces/timetable')
       .then((res) => (res.ok ? res.json() : null))
@@ -106,6 +246,16 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         }
       })
       .catch(() => {});
+
+    fetchSpaceRequests();
+    fetchAdminNotifications();
+
+    const interval = setInterval(() => {
+      fetchSpaceRequests();
+      fetchAdminNotifications();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleDownloadSampleCsv = () => {
@@ -490,12 +640,25 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     { num: 8, time: '16:45 – 17:45' },
   ];
 
-  // Action: Approve Space Request
-  const handleApprove = (req) => {
+  // Action: Approve Space Request (Real-time backend commitment)
+  const handleApprove = async (req) => {
+    try {
+      await fetch(`/api/v1/spaces/requests/${req.id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'APPROVED',
+          adminNotes: 'Approved by Space & Estate Operations Admin',
+        }),
+      });
+    } catch (e) {
+      console.error('Failed to notify backend of approval:', e);
+    }
+
     // Commit multi-slot reservation
     const currentSlots = roomOccupancy[inspectedRoom] || [0, 0, 0, 0, 0, 0, 0, 0];
     const updatedSlots = [...currentSlots];
-    req.slots.forEach((s) => {
+    (req.slots || [1]).forEach((s) => {
       if (s >= 1 && s <= 8) updatedSlots[s - 1] = 1;
     });
 
@@ -512,12 +675,12 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         room: req.preferredRoom,
         date: req.date,
         slotLabel: req.slotLabel,
-        approvedBy: currentUser?.fullName || 'Estate Administrator',
+        approvedBy: currentUser?.fullName || 'Prof. Rajesh Verma',
         status: 'COMMITTED',
       },
       ...approvedHistory,
     ]);
-    showToast(`Approved ${req.id} (${req.preferredRoom}) — Committed to MongoDB Atlas!`);
+    showToast(`Approved ${req.id} (${req.preferredRoom}) — Real-time notification dispatched to student!`);
   };
 
   const handleApproveAllVerified = () => {
@@ -532,8 +695,20 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
     showToast(`Approved ${clearRequests.length} verified reservation requests!`);
   };
 
-  // Action: Reject Space Request
-  const handleReject = (reqId) => {
+  // Action: Reject Space Request (Real-time backend update)
+  const handleReject = async (reqId) => {
+    try {
+      await fetch(`/api/v1/spaces/requests/${reqId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'REJECTED',
+          adminNotes: 'Rejected due to academic schedule overlap or room unavailable',
+        }),
+      });
+    } catch (e) {
+      console.error('Failed to update rejection on backend:', e);
+    }
     setPendingRequests(pendingRequests.filter((r) => r.id !== reqId));
     showToast(`Reservation request ${reqId} rejected.`, 'info');
   };
@@ -764,11 +939,12 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
         <div className="max-w-7xl mx-auto flex items-center gap-2 sm:gap-6 overflow-x-auto py-2 text-xs sm:text-sm font-semibold">
           {[
             { id: 'approvals', label: 'Space Approvals Queue', icon: Clock, badge: pendingRequests.length },
-            { id: 'lostfound', label: 'Lost & Found Desk (Admin)', icon: Tag, badge: lfClaims.filter((c) => c.status === 'SUBMITTED').length },
+            { id: 'broadcasts', label: 'Campus Broadcasts & Alerts', icon: Megaphone, badge: adminNotifications.length },
+            { id: 'timetable', label: 'Weekly Timetable & CSV Console', icon: FileSpreadsheet },
             { id: 'bipartite', label: 'Automated Allocation Engine', icon: Zap },
             { id: 'segment-tree', label: 'Multi-Slot Availability Inspector', icon: Layers },
             { id: 'inventory', label: 'Campus Room Inventory (90 Rooms)', icon: Building2 },
-            { id: 'timetable', label: 'Timetable Import & Conflicts', icon: FileSpreadsheet },
+            { id: 'lostfound', label: 'Lost & Found Desk (Admin)', icon: Tag, badge: lfClaims.filter((c) => c.status === 'SUBMITTED').length },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -904,6 +1080,14 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={fetchSpaceRequests}
+                  className="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-[#111C2D] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Sync Live Queue</span>
+                </button>
                 {pendingRequests.filter((r) => r.conflictStatus === 'NONE').length > 0 && (
                   <button
                     onClick={handleApproveAllVerified}
@@ -1084,6 +1268,204 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* =====================================================================
+            TAB: CAMPUS BROADCASTS & ANNOUNCEMENTS
+            ===================================================================== */}
+        {activeTab === 'broadcasts' && (
+          <div className="space-y-8 animate-fade-in">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EBEAE5]">
+              <div>
+                <h2 className="font-display font-extrabold text-2xl text-[#111C2D] tracking-tight">
+                  Campus Broadcasts & Live Announcements
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Publish estate notices, exam schedules, and emergency alerts. Dispatches instantaneously to all active student portals.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={fetchAdminNotifications}
+                  className="px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-[#111C2D] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Sync Alerts</span>
+                </button>
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2EC] text-[#1E3F30] border border-[#1E3F30]/20">
+                  {adminNotifications.length} Live Notices
+                </span>
+              </div>
+            </div>
+
+            {/* Top: Broadcast New Announcement Form */}
+            <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-5">
+              <div className="flex items-center gap-2.5 pb-3 border-b border-[#EBEAE5]">
+                <div className="w-8 h-8 rounded-lg bg-[#111C2D] text-white flex items-center justify-center font-bold">
+                  <Megaphone className="w-4 h-4 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base text-[#111C2D]">
+                    Broadcast New Campus Notice
+                  </h3>
+                  <p className="text-xs text-gray-500">Send an official bulletin across all student sessions</p>
+                </div>
+              </div>
+
+              <form onSubmit={handlePostNotification} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2 space-y-1.5">
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Announcement Title
+                    </label>
+                    <input
+                      type="text"
+                      value={newNotifTitle}
+                      onChange={(e) => setNewNotifTitle(e.target.value)}
+                      placeholder="e.g. 5th Floor AI Lab Extended Hours for Capstone Teams"
+                      required
+                      className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#111C2D]/20 focus:border-[#111C2D] font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Notice Category
+                    </label>
+                    <select
+                      value={newNotifCategory}
+                      onChange={(e) => setNewNotifCategory(e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#111C2D]/20 focus:border-[#111C2D] font-medium"
+                    >
+                      <option value="ACADEMIC">ACADEMIC</option>
+                      <option value="MAINTENANCE">MAINTENANCE</option>
+                      <option value="EVENT">EVENT</option>
+                      <option value="URGENT">URGENT</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    Bulletin Message Content
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={newNotifContent}
+                    onChange={(e) => setNewNotifContent(e.target.value)}
+                    placeholder="Provide full operational details, affected floors, timing, or directives for students..."
+                    required
+                    className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#111C2D]/20 focus:border-[#111C2D] font-medium leading-relaxed"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newNotifPinned}
+                      onChange={(e) => setNewNotifPinned(e.target.checked)}
+                      className="rounded border-gray-300 text-[#111C2D] focus:ring-[#111C2D]"
+                    />
+                    <span>Pin Announcement to top of student dashboards</span>
+                  </label>
+
+                  <button
+                    type="submit"
+                    disabled={isPostingNotif}
+                    className="px-6 py-2.5 rounded-xl bg-[#111C2D] hover:bg-black text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isPostingNotif ? (
+                      <span>Broadcasting...</span>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Broadcast Announcement</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Active Campus Broadcasts List */}
+            <div className="p-7 rounded-2xl bg-white border border-[#EBEAE5] shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#EBEAE5]">
+                <h3 className="font-display font-bold text-base text-[#111C2D]">
+                  Currently Active Campus Broadcasts ({adminNotifications.length})
+                </h3>
+                <span className="text-xs text-gray-500">Live MongoDB Atlas sync</span>
+              </div>
+
+              {adminNotifications.length === 0 ? (
+                <div className="p-12 text-center text-gray-400">
+                  <Megaphone className="w-8 h-8 mx-auto text-gray-300 mb-2" />
+                  <p className="text-xs">No active campus notices. Post an announcement above to broadcast.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {adminNotifications.map((n) => {
+                    const badgeColor =
+                      n.category === 'URGENT'
+                        ? 'bg-rose-50 text-rose-700 border-rose-200'
+                        : n.category === 'ACADEMIC'
+                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                        : n.category === 'MAINTENANCE'
+                        ? 'bg-amber-50 text-amber-700 border-amber-200'
+                        : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+
+                    return (
+                      <div
+                        key={n.id}
+                        className="p-5 rounded-xl border border-[#EBEAE5] bg-[#FAF9F6] space-y-3 flex flex-col justify-between"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeColor}`}>
+                                {n.category}
+                              </span>
+                              {n.pinned && (
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#EAF2EC] text-[#1E3F30]">
+                                  PINNED
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-gray-400 font-mono">
+                              {n.createdAt}
+                            </span>
+                          </div>
+
+                          <h4 className="font-display font-bold text-sm text-[#111C2D]">
+                            {n.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 leading-relaxed">
+                            {n.content}
+                          </p>
+                        </div>
+
+                        <div className="pt-3 border-t border-gray-200/60 flex items-center justify-between text-xs">
+                          <span className="text-[11px] text-gray-500">
+                            Author: <strong className="text-gray-800">{n.authorName}</strong>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteNotification(n.id)}
+                            className="px-2.5 py-1 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 border border-red-200 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
