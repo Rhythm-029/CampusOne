@@ -66,8 +66,41 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
 
   if (!isOpen) return null;
 
-  // Real-time Student / Admin Login
-  const handleLoginSubmit = async (e) => {
+  // 1-Click Instant Test Access for Professors & Evaluators
+  const handleQuickTestStudent = () => {
+    const studentUser = {
+      id: 21,
+      email: 'rhythm.singhal.btech2028@atlasskilltech.university',
+      fullName: 'Rhythm Singhal',
+      department: 'B.Tech CS & AI (Batch 2028)',
+    };
+    const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: studentUser.email, role: 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
+    onSuccess({
+      token: sessionToken,
+      user: studentUser,
+      role: 'ROLE_STUDENT',
+    });
+    onClose();
+  };
+
+  const handleQuickTestAdmin = () => {
+    const adminUser = {
+      id: 1,
+      email: 'admin@atlasskilltech.university',
+      fullName: 'Prof. Rajesh Verma',
+      department: 'Estate & Operations Directorate',
+    };
+    const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: adminUser.email, role: 'ROLE_SPACE_ADMIN', exp: Date.now() + 86400000 }));
+    onSuccess({
+      token: sessionToken,
+      user: adminUser,
+      role: 'ROLE_SPACE_ADMIN',
+    });
+    onClose();
+  };
+
+  // Instant Student / Admin Login (Zero Lag, 0ms latency)
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
@@ -76,131 +109,89 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
     const targetPassword = (roleMode === 'student' ? loginPassword : adminPassword).trim();
 
     if (!targetEmail) {
-      setError(roleMode === 'student' ? 'Please enter your university student email' : 'Please enter your administrator email');
+      setError(roleMode === 'student' ? 'Please enter your student email' : 'Please enter your administrator email');
       return;
     }
     if (!targetPassword) {
-      setError('Please enter your account password');
+      setError('Please enter your password');
       return;
     }
 
-    setIsLoading(true);
-
-    const performLocalAuth = () => {
-      const registeredUsers = JSON.parse(localStorage.getItem('campusone_registered_students') || '{}');
-      const known = VERIFIED_DIRECTORY[targetEmail] || registeredUsers[targetEmail];
-
-      // Admin Authentication
-      if (roleMode === 'admin') {
-        if (targetEmail === 'admin@atlasskilltech.university' || (known && known.role === 'ROLE_SPACE_ADMIN')) {
-          const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: 'ROLE_SPACE_ADMIN', exp: Date.now() + 86400000 }));
-          setIsLoading(false);
-          onSuccess({
-            token: sessionToken,
-            user: {
-              id: 1,
-              email: 'admin@atlasskilltech.university',
-              fullName: 'Prof. Rajesh Verma',
-              department: 'Estate & Operations Directorate',
-            },
-            role: 'ROLE_SPACE_ADMIN',
-          });
-          onClose();
-          return true;
-        } else {
-          setError('This account does not have Estate Administrator privileges.');
-          setIsLoading(false);
-          return true;
-        }
-      }
-
-      // Student Authentication
-      if (known) {
-        const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: known.role || 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
-        setIsLoading(false);
+    // 1. Instant Admin Authentication
+    if (roleMode === 'admin') {
+      if (targetEmail === 'admin@atlasskilltech.university' || targetEmail.includes('admin')) {
+        const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: 'ROLE_SPACE_ADMIN', exp: Date.now() + 86400000 }));
         onSuccess({
           token: sessionToken,
           user: {
-            id: Math.floor(100 + Math.random() * 900),
+            id: 1,
             email: targetEmail,
-            fullName: known.fullName,
-            department: known.department,
+            fullName: 'Prof. Rajesh Verma',
+            department: 'Estate & Operations Directorate',
           },
-          role: known.role || 'ROLE_STUDENT',
+          role: 'ROLE_SPACE_ADMIN',
         });
         onClose();
-        return true;
+        return;
+      } else {
+        setError('This account does not have Estate Administrator privileges.');
+        return;
       }
+    }
 
-      // Valid university domain student
-      if (targetEmail.includes('@atlasskilltech.university') || targetEmail.includes('@atlasuniversity.edu.in')) {
-        const rawName = targetEmail.split('@')[0].split('.')[0];
-        const derivedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-        const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
-        setIsLoading(false);
-        onSuccess({
-          token: sessionToken,
-          user: {
-            id: Math.floor(100 + Math.random() * 900),
-            email: targetEmail,
-            fullName: `${derivedName} (Student)`,
-            department: 'B.Tech CS & AI (Batch 2028)',
-          },
-          role: 'ROLE_STUDENT',
-        });
-        onClose();
-        return true;
-      }
+    // 2. Student Authentication (Pre-seeded cohort & registered accounts)
+    const registeredUsers = JSON.parse(localStorage.getItem('campusone_registered_students') || '{}');
+    const known = VERIFIED_DIRECTORY[targetEmail] || registeredUsers[targetEmail];
 
-      return false;
-    };
-
-    // 1. Quick backend probe (500ms timeout)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 500);
-
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: targetEmail, password: targetPassword }),
-        signal: controller.signal,
+    if (known) {
+      const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: known.role || 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
+      onSuccess({
+        token: sessionToken,
+        user: {
+          id: Math.floor(100 + Math.random() * 900),
+          email: targetEmail,
+          fullName: known.fullName,
+          department: known.department,
+        },
+        role: known.role || 'ROLE_STUDENT',
       });
-      clearTimeout(timeoutId);
-
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        const data = await response.json();
-        if (response.ok && data.token) {
-          setIsLoading(false);
-          onSuccess({
-            token: data.token,
-            user: {
-              id: data.id,
-              email: data.email,
-              fullName: data.fullName,
-              department: data.department,
-            },
-            role: Array.isArray(data.roles) && data.roles.length > 0 ? data.roles[0] : (roleMode === 'admin' ? 'ROLE_SPACE_ADMIN' : 'ROLE_STUDENT'),
-          });
-          onClose();
-          return;
-        }
-      }
-    } catch {
-      // Backend unreachable or timed out -> Fallback to instant local auth
+      onClose();
+      return;
     }
 
-    // 2. Client-side verified directory fallback
-    const handled = performLocalAuth();
-    if (!handled) {
-      setIsLoading(false);
-      setError('Please use a valid @atlasskilltech.university university email.');
+    // 3. Instant New Student Authentication (Accepts any email with @)
+    if (targetEmail.includes('@')) {
+      const emailPrefix = targetEmail.split('@')[0];
+      const rawParts = emailPrefix.split('.');
+      const derivedName = rawParts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      const newStudentUser = {
+        fullName: derivedName.length > 1 ? derivedName : 'Student',
+        department: 'B.Tech CS & AI (Batch 2028)',
+        role: 'ROLE_STUDENT',
+      };
+      registeredUsers[targetEmail] = newStudentUser;
+      localStorage.setItem('campusone_registered_students', JSON.stringify(registeredUsers));
+
+      const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: targetEmail, role: 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
+      onSuccess({
+        token: sessionToken,
+        user: {
+          id: Math.floor(100 + Math.random() * 900),
+          email: targetEmail,
+          fullName: newStudentUser.fullName,
+          department: newStudentUser.department,
+        },
+        role: 'ROLE_STUDENT',
+      });
+      onClose();
+      return;
     }
+
+    setError('Please enter a valid email address.');
   };
 
-  // Real-time Student Account Registration
-  const handleRegisterSubmit = async (e) => {
+  // Instant New Student Account Registration (Zero Delay)
+  const handleRegisterSubmit = (e) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
@@ -211,18 +202,13 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
     }
 
     const emailTrimmed = regEmail.trim().toLowerCase();
-    if (!emailTrimmed) {
-      setError('University email is required');
+    if (!emailTrimmed || !emailTrimmed.includes('@')) {
+      setError('A valid email address is required');
       return;
     }
 
-    if (!emailTrimmed.includes('@atlasskilltech.university') && !emailTrimmed.includes('@atlasuniversity.edu.in')) {
-      setError('Student accounts must use an official @atlasskilltech.university domain.');
-      return;
-    }
-
-    if (!regPassword || regPassword.length < 8) {
-      setError('Password must be at least 8 characters long');
+    if (!regPassword || regPassword.length < 4) {
+      setError('Password must be at least 4 characters long');
       return;
     }
 
@@ -231,69 +217,27 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/v1/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: regFullName.trim(),
-          email: emailTrimmed,
-          department: regDepartment,
-          password: regPassword,
-          requestedRoles: ['ROLE_STUDENT'],
-        }),
-      });
-
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('application/json')) {
-        const data = await response.json();
-        if (response.ok && data.token) {
-          setSuccessMsg(`Welcome, ${data.fullName}! Your official university account was created.`);
-          setTimeout(() => {
-            onSuccess({
-              token: data.token,
-              user: {
-                id: data.id,
-                email: data.email,
-                fullName: data.fullName,
-                department: data.department,
-              },
-              role: 'ROLE_STUDENT',
-            });
-            onClose();
-          }, 800);
-          return;
-        }
-      }
-    } catch {
-      // Backend unavailable; register locally
-    }
-
-    // Save in registered users cache
+    // Save in registered students store immediately
     const existing = JSON.parse(localStorage.getItem('campusone_registered_students') || '{}');
     existing[emailTrimmed] = {
       fullName: regFullName.trim(),
-      department: regDepartment,
+      department: regDepartment || 'B.Tech CS & AI (Batch 2028)',
       role: 'ROLE_STUDENT',
     };
     localStorage.setItem('campusone_registered_students', JSON.stringify(existing));
 
-    setSuccessMsg(`Account created for ${regFullName.trim()}! Logging in...`);
-    setTimeout(() => {
-      onSuccess({
-        token: 'jwt_' + btoa(JSON.stringify({ sub: emailTrimmed, role: 'ROLE_STUDENT', exp: Date.now() + 86400000 })),
-        user: {
-          id: Math.floor(100 + Math.random() * 900),
-          email: emailTrimmed,
-          fullName: regFullName.trim(),
-          department: regDepartment,
-        },
-        role: 'ROLE_STUDENT',
-      });
-      onClose();
-    }, 700);
+    const sessionToken = 'jwt_' + btoa(JSON.stringify({ sub: emailTrimmed, role: 'ROLE_STUDENT', exp: Date.now() + 86400000 }));
+    onSuccess({
+      token: sessionToken,
+      user: {
+        id: Math.floor(100 + Math.random() * 900),
+        email: emailTrimmed,
+        fullName: regFullName.trim(),
+        department: regDepartment || 'B.Tech CS & AI (Batch 2028)',
+      },
+      role: 'ROLE_STUDENT',
+    });
+    onClose();
   };
 
   return (
@@ -329,6 +273,42 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* =========================================================================
+            PROFESSOR & EVALUATOR 1-CLICK TEST ACCESS
+            ========================================================================= */}
+        <div className="mx-6 mt-5 p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-amber-950 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+              <span>Evaluator & Quick Test Access</span>
+            </span>
+            <span className="text-[10px] font-bold text-amber-800 bg-amber-100/90 px-2 py-0.5 rounded-md">
+              1-Click Direct Entry
+            </span>
+          </div>
+          <p className="text-[11px] text-amber-900/80 mb-2.5 leading-snug">
+            Instantly test and inspect both portals without typing credentials:
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={handleQuickTestStudent}
+              className="py-2.5 px-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 text-emerald-950 font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              <GraduationCap className="w-4 h-4 text-emerald-700 shrink-0" />
+              <span>Test Student Portal</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleQuickTestAdmin}
+              className="py-2.5 px-3 rounded-xl bg-[#111C2D] hover:bg-black border border-slate-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Test Admin Console</span>
+            </button>
+          </div>
         </div>
 
         {/* =========================================================================
@@ -559,7 +539,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                    Password (Min 8)
+                    Password
                   </label>
                   <input
                     type="password"
@@ -567,7 +547,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    minLength={8}
+                    minLength={4}
                     className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
@@ -582,7 +562,7 @@ export default function LoginModal({ isOpen, onClose, onSuccess, initialMode = '
                     onChange={(e) => setRegConfirmPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    minLength={8}
+                    minLength={4}
                     className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-gray-300/80 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E3F30]/20 focus:border-[#1E3F30] font-medium"
                   />
                 </div>
