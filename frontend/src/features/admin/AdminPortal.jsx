@@ -37,6 +37,211 @@ import {
   Send,
 } from 'lucide-react';
 
+// Lost & Found Master Seed Records
+const INITIAL_LF_REPORTS = [
+  {
+    reportId: 'LF-2026-001',
+    reportType: 'FOUND',
+    itemName: 'Apple 96W USB-C Power Adapter & Braided MagSafe Cable',
+    category: 'Electronics',
+    location: 'Floor 2, Smart Classroom / AI Lab 205',
+    date: '2026-02-24',
+    status: 'OPEN',
+    reportedBy: 'Estate Operations Patrol',
+    custody: 'Security Desk Block A Ground Floor',
+    identifyingDetails: '96W white adapter, 2m braided cable',
+  },
+  {
+    reportId: 'LF-2026-002',
+    reportType: 'FOUND',
+    itemName: 'Sony WH-1000XM4 Noise-Cancelling Headphones (Black)',
+    category: 'Electronics',
+    location: 'Central Library, 2nd Floor',
+    date: '2026-02-23',
+    status: 'CLAIM_PENDING',
+    reportedBy: 'Central Security Officer Block A',
+    custody: 'Security Desk Block A Ground Floor',
+    identifyingDetails: 'Scratch near right hinge, initial AS engraved on inside headband',
+  },
+  {
+    reportId: 'LF-2026-003',
+    reportType: 'LOST',
+    itemName: 'Apple AirPods Pro (2nd Gen) with Gray Silicone Case',
+    category: 'Electronics',
+    location: 'Floor 2, Auditorium 213 (Row 4)',
+    date: '2026-02-24',
+    status: 'OPEN',
+    reportedBy: 'Rhythm Singhal (rhythm.singhal.btech2028@atlasskilltech.university)',
+    identifyingDetails: 'White MagSafe case with gray silicone sleeve and woven wrist lanyard',
+  },
+  {
+    reportId: 'LF-2026-004',
+    reportType: 'FOUND',
+    itemName: 'Casio fx-991CW ClassWiz Scientific Calculator',
+    category: 'Electronics',
+    location: 'Floor 3, Special Auditorium 313',
+    date: '2026-02-24',
+    status: 'OPEN',
+    reportedBy: 'Academic Block Staff Desk',
+    custody: 'Floor 3 Faculty Cabin Staff Desk',
+    identifyingDetails: 'Small blue vinyl dot on the battery door',
+  },
+  {
+    reportId: 'LF-2026-005',
+    reportType: 'FOUND',
+    itemName: 'ATLAS SkillTech University RFID Student ID Card & Lanyard',
+    category: 'ID & Cards',
+    location: 'Student Cafeteria & Dining Hall, Ground Floor',
+    date: '2026-02-24',
+    status: 'CLAIM_APPROVED',
+    reportedBy: 'Cafeteria Manager Desk',
+    custody: 'Cafeteria Manager Desk',
+    identifyingDetails: 'B.Tech CS & AI 2028 batch student identity card',
+  },
+  {
+    reportId: 'LF-2026-006',
+    reportType: 'LOST',
+    itemName: 'Titan Edge Ultra-Slim Wristwatch (Gunmetal Steel)',
+    category: 'Accessories',
+    location: 'Floor 4, Quiet Collaborative Zone',
+    date: '2026-02-23',
+    status: 'OPEN',
+    reportedBy: 'Yashwardhan Singh (yashwardhan.singh.btech2028@atlasskilltech.university)',
+    identifyingDetails: 'Black dial ultra-slim analog watch with mesh stainless steel strap',
+  },
+  {
+    reportId: 'LF-2026-007',
+    reportType: 'FOUND',
+    itemName: 'Hydro Flask 32oz Wide Mouth Insulated Water Bottle',
+    category: 'Accessories',
+    location: 'Floor 5, Seminar Hall 502',
+    date: '2026-02-24',
+    status: 'OPEN',
+    reportedBy: 'Floor 5 Security Station',
+    custody: 'Floor 5 Security Station',
+    identifyingDetails: 'Olive green vacuum flask with "Stay Curious" sticker on base',
+  },
+  {
+    reportId: 'LF-2026-008',
+    reportType: 'LOST',
+    itemName: 'Herschel Pop Quiz Laptop Backpack (Navy / Tan)',
+    category: 'Bags',
+    location: 'Central Library, Ground Floor Baggage Counter',
+    date: '2026-02-23',
+    status: 'OPEN',
+    reportedBy: 'Prathamesh Bhandare (prathamesh.bhandare.btech2028@atlasskilltech.university)',
+    identifyingDetails: 'Navy backpack with tan synthetic leather bottom and red tag',
+  },
+  {
+    reportId: 'LF-2026-009',
+    reportType: 'FOUND',
+    itemName: 'Apple iPad Air 11-inch (M2, Space Gray) in Smart Folio',
+    category: 'Electronics',
+    location: 'Floor 7, Executive Conference Suite 701',
+    date: '2026-02-24',
+    status: 'CLAIM_PENDING',
+    reportedBy: 'Estate & Security Directorate Block A',
+    custody: 'Estate & Security Directorate Block A',
+    identifyingDetails: 'Space Gray with dark charcoal magnetic folio and Apple Pencil',
+  },
+  {
+    reportId: 'LF-2026-010',
+    reportType: 'FOUND',
+    itemName: 'Two-Wheeler Bike Keys with ATLAS Red Rubber Keychain',
+    category: 'Accessories',
+    location: 'Basement Parking Level B1 (Bay 14)',
+    date: '2026-02-24',
+    status: 'HANDED_OVER',
+    reportedBy: 'Basement Security Checkpoint',
+    custody: 'Basement Security Checkpoint',
+    identifyingDetails: 'Two silver door keys, brass key, motorcycle helmet rubber keychain',
+  },
+  {
+    reportId: 'LF-2026-011',
+    reportType: 'FOUND',
+    itemName: 'Dell Premier Rechargeable Wireless Mouse (MS7421W)',
+    category: 'Electronics',
+    location: 'Floor 1, Computer Networks Lab 101',
+    date: '2026-02-23',
+    status: 'OPEN',
+    reportedBy: 'Lab Assistant Cabin Room 101',
+    custody: 'Lab Assistant Cabin Room 101',
+    identifyingDetails: 'Platinum silver mouse with USB-C nano dongle',
+  },
+  {
+    reportId: 'LF-2026-012',
+    reportType: 'LOST',
+    itemName: 'Leather Bi-Fold Wallet with RFID Protection (Brown)',
+    category: 'Bags',
+    location: 'Academic Block, Ground Floor',
+    date: '2026-02-23',
+    status: 'OPEN',
+    reportedBy: 'Kunal Ramchandani (INC - The Corporate Club)',
+    identifyingDetails: 'Brown calfskin wallet containing cafeteria card and student transit pass',
+  },
+];
+
+const INITIAL_LF_CLAIMS = [
+  {
+    claimId: 'CLM-2026-001',
+    reportId: 'LF-2026-002',
+    claimantName: 'Rohan Mehta',
+    claimantEmail: 'rohan.mehta@atlasskilltech.university',
+    proof: 'Original invoice #CR-8821 from Croma, serial number S01-2849201',
+    details: 'Custom EQ named "CampusOneBass" and scratch on right hinge.',
+    status: 'SUBMITTED',
+    date: '2026-02-24',
+  },
+  {
+    claimId: 'CLM-2026-002',
+    reportId: 'LF-2026-009',
+    claimantName: 'Yashwardhan Singh',
+    claimantEmail: 'yashwardhan.singh.btech2028@atlasskilltech.university',
+    proof: 'Apple Store invoice #APL-99218, device named "Yashwardhan iPad", matching passcode unlock',
+    details: 'Charcoal magnetic smart folio with white Apple Pencil (USB-C) engraved initials Y.S.',
+    status: 'SUBMITTED',
+    date: '2026-02-24',
+  },
+  {
+    claimId: 'CLM-2026-003',
+    reportId: 'LF-2026-005',
+    claimantName: 'Rhythm Singhal',
+    claimantEmail: 'rhythm.singhal.btech2028@atlasskilltech.university',
+    proof: 'Student Portal ERP verification and registered phone number SMS OTP match',
+    details: 'Card barcode matches roll B.Tech 2028-CS-041 on navy blue satin lanyard',
+    status: 'APPROVED',
+    date: '2026-02-24',
+  },
+  {
+    claimId: 'CLM-2026-004',
+    reportId: 'LF-2026-010',
+    claimantName: 'Prathamesh Bhandare',
+    claimantEmail: 'prathamesh.bhandare.btech2028@atlasskilltech.university',
+    proof: 'Vehicle parking sticker #B1-042 and duplicate key verification at security desk',
+    details: 'Red helmet keychain with license tag on Honda CB350 parked in Bay 14',
+    status: 'HANDED_OVER',
+    date: '2026-02-24',
+  },
+];
+
+const getCombinedReports = () => {
+  try {
+    const userReports = JSON.parse(localStorage.getItem('campusone_lost_found_reports') || '[]');
+    return [...userReports, ...INITIAL_LF_REPORTS];
+  } catch {
+    return INITIAL_LF_REPORTS;
+  }
+};
+
+const getCombinedClaims = () => {
+  try {
+    const userClaims = JSON.parse(localStorage.getItem('campusone_lost_found_claims') || '[]');
+    return [...userClaims, ...INITIAL_LF_CLAIMS];
+  } catch {
+    return INITIAL_LF_CLAIMS;
+  }
+};
+
 export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }) {
   const [activeTab, setActiveTab] = useState('approvals'); // 'approvals' | 'bipartite' | 'segment-tree' | 'inventory' | 'timetable'
 
@@ -51,6 +256,118 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
 
   const [lfFilter, setLfFilter] = useState('ALL'); // 'ALL' | 'CLAIMS' | 'FOUND' | 'LOST'
   const [lfSearch, setLfSearch] = useState('');
+
+  // Approvals Queue Data
+  const [pendingRequests, setPendingRequests] = useState([
+    {
+      id: 'REQ-802',
+      requester: 'Ananya Sharma (Student)',
+      department: 'Computer Science Sem V',
+      purpose: 'Advanced Algorithms Capstone Presentation',
+      preferredRoom: 'Room 205 (Smart Classroom)',
+      capacityNeeded: 50,
+      date: '2026-02-24',
+      slots: [3, 4], // Slots 3 & 4
+      slotLabel: 'Slot 3 & 4 (10:45 AM – 12:45 PM)',
+      conflictStatus: 'NONE', // 'NONE' | 'TIMETABLE_OVERLAP'
+      status: 'PENDING_APPROVAL',
+    },
+    {
+      id: 'REQ-805',
+      requester: 'Kunal Ramchandani (INC - The corporate club)',
+      department: 'INC - The corporate club',
+      purpose: 'Corporate Leadership Keynote & Conclave',
+      preferredRoom: 'Room 213 (Special Auditorium)',
+      capacityNeeded: 180,
+      date: '2026-02-27',
+      slots: [5, 6], // Slots 5 & 6
+      slotLabel: 'Slot 5 & 6 (01:30 PM – 03:30 PM)',
+      conflictStatus: 'NONE',
+      status: 'PENDING_APPROVAL',
+    },
+    {
+      id: 'REQ-811',
+      requester: 'Aaren (Highflyers)',
+      department: 'Highflyers Club',
+      purpose: 'Highflyers Executive Workshop',
+      preferredRoom: 'Room 105 (Smart Classroom)',
+      capacityNeeded: 45,
+      date: '2026-02-28',
+      slots: [2, 3],
+      slotLabel: 'Slot 2 & 3 (09:30 AM – 11:45 AM)',
+      conflictStatus: 'POTENTIAL_TIMETABLE_CLASS',
+      status: 'PENDING_APPROVAL',
+    },
+  ]);
+
+  const [approvedHistory, setApprovedHistory] = useState([
+    {
+      id: 'REQ-791',
+      requester: 'Prof. Nimesh Bumb',
+      room: 'Room 313 (Auditorium)',
+      date: '2026-02-20',
+      slotLabel: 'Slot 1 & 2 (08:30 AM – 10:30 AM)',
+      approvedBy: 'Space & Estate Admin',
+      status: 'COMMITTED',
+    },
+  ]);
+
+  // Bipartite Matching Simulation State
+  const [bipartiteResults, setBipartiteResults] = useState(null);
+  const [isMatchingRunning, setIsMatchingRunning] = useState(false);
+
+  // Segment Tree Multi-Slot Inspector State
+  const [inspectedRoom, setInspectedRoom] = useState('205');
+  const [rangeStart, setRangeStart] = useState(2);
+  const [rangeEnd, setRangeEnd] = useState(5);
+  const [roomOccupancy, setRoomOccupancy] = useState({
+    '205': [0, 1, 1, 0, 0, 0, 0, 0], // Slot 2 and 3 occupied
+    '213': [1, 1, 0, 0, 0, 0, 0, 0], // Slot 1 and 2 occupied
+    '313': [0, 0, 0, 0, 1, 1, 0, 0], // Slot 5 and 6 occupied
+    '105': [0, 1, 0, 0, 0, 0, 0, 0],
+  });
+
+  // Floor 7 Configurable Inventory
+  const [floor7Rooms, setFloor7Rooms] = useState([
+    { id: '701', name: 'Room 701 (Faculty Executive Seminar)', capacity: 60, type: 'Executive Seminar', status: 'Active' },
+    { id: '702', name: 'Room 702 (Academic Council Room)', capacity: 60, type: 'Council Room', status: 'Active' },
+    { id: '712', name: 'Room 712 (Floor 7 Capstone Room)', capacity: 60, type: 'Capstone Suite', status: 'Active' },
+  ]);
+  const [newRoomNumber, setNewRoomNumber] = useState('');
+  const [newRoomCapacity, setNewRoomCapacity] = useState(60);
+  const [newRoomType, setNewRoomType] = useState('Seminar Hall');
+
+  // Lost & Found Operations State
+  const [lfReports, setLfReports] = useState(getCombinedReports);
+  const [lfClaims, setLfClaims] = useState(getCombinedClaims);
+  const [cacheSyncMessage, setCacheSyncMessage] = useState('');
+
+  // Broadcast announcements state
+  const [adminNotifications, setAdminNotifications] = useState([
+    {
+      id: 'NOTIF-1',
+      title: 'Mid-Term Examination & Lab Schedule Finalized',
+      content: 'All B.Tech AI & ML batches: Room allocations for mid-term assessments are committed to the central availability matrix.',
+      category: 'ACADEMIC',
+      authorName: 'Academic Directorate',
+      createdAt: '2026-02-24 09:00',
+      pinned: true,
+    },
+    {
+      id: 'NOTIF-2',
+      title: 'Server Room & Lab 205 High-Performance GPU Cluster Maintenance',
+      content: 'Scheduled infrastructure update on Sunday 06:00 AM – 09:00 AM. Cluster access will be paused during this maintenance window.',
+      category: 'MAINTENANCE',
+      authorName: 'Prof. Rajesh Verma',
+      createdAt: '2026-02-23 16:30',
+      pinned: false,
+    },
+  ]);
+  const [newNotifTitle, setNewNotifTitle] = useState('');
+  const [newNotifContent, setNewNotifContent] = useState('');
+  const [newNotifCategory, setNewNotifCategory] = useState('ACADEMIC');
+  const [newNotifPinned, setNewNotifPinned] = useState(false);
+  const [isPostingNotif, setIsPostingNotif] = useState(false);
 
   // Timetable & Weekly Schedule State
   const [timetableEntries, setTimetableEntries] = useState([
@@ -163,33 +480,6 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       })
       .catch(() => {});
   };
-
-  // Broadcast announcements state
-  const [adminNotifications, setAdminNotifications] = useState([
-    {
-      id: 'NOTIF-1',
-      title: 'Mid-Term Examination & Lab Schedule Finalized',
-      content: 'All B.Tech AI & ML batches: Room allocations for mid-term assessments are committed to the central availability matrix.',
-      category: 'ACADEMIC',
-      authorName: 'Academic Directorate',
-      createdAt: '2026-02-24 09:00',
-      pinned: true,
-    },
-    {
-      id: 'NOTIF-2',
-      title: 'Server Room & Lab 205 High-Performance GPU Cluster Maintenance',
-      content: 'Scheduled infrastructure update on Sunday 06:00 AM – 09:00 AM. Cluster access will be paused during this maintenance window.',
-      category: 'MAINTENANCE',
-      authorName: 'Prof. Rajesh Verma',
-      createdAt: '2026-02-23 16:30',
-      pinned: false,
-    },
-  ]);
-  const [newNotifTitle, setNewNotifTitle] = useState('');
-  const [newNotifContent, setNewNotifContent] = useState('');
-  const [newNotifCategory, setNewNotifCategory] = useState('ACADEMIC');
-  const [newNotifPinned, setNewNotifPinned] = useState(false);
-  const [isPostingNotif, setIsPostingNotif] = useState(false);
 
   const fetchAdminNotifications = () => {
     fetch('/api/v1/spaces/notifications')
@@ -518,288 +808,6 @@ export default function AdminPortal({ currentUser, onLogout, onNavigateLanding }
       showToast('Cleared timetable entries.');
     }
   };
-
-  // Approvals Queue Data
-  const [pendingRequests, setPendingRequests] = useState([
-    {
-      id: 'REQ-802',
-      requester: 'Ananya Sharma (Student)',
-      department: 'Computer Science Sem V',
-      purpose: 'Advanced Algorithms Capstone Presentation',
-      preferredRoom: 'Room 205 (Smart Classroom)',
-      capacityNeeded: 50,
-      date: '2026-02-24',
-      slots: [3, 4], // Slots 3 & 4
-      slotLabel: 'Slot 3 & 4 (10:45 AM – 12:45 PM)',
-      conflictStatus: 'NONE', // 'NONE' | 'TIMETABLE_OVERLAP'
-      status: 'PENDING_APPROVAL',
-    },
-    {
-      id: 'REQ-805',
-      requester: 'Kunal Ramchandani (INC - The corporate club)',
-      department: 'INC - The corporate club',
-      purpose: 'Corporate Leadership Keynote & Conclave',
-      preferredRoom: 'Room 213 (Special Auditorium)',
-      capacityNeeded: 180,
-      date: '2026-02-27',
-      slots: [5, 6], // Slots 5 & 6
-      slotLabel: 'Slot 5 & 6 (01:30 PM – 03:30 PM)',
-      conflictStatus: 'NONE',
-      status: 'PENDING_APPROVAL',
-    },
-    {
-      id: 'REQ-811',
-      requester: 'Aaren (Highflyers)',
-      department: 'Highflyers Club',
-      purpose: 'Highflyers Executive Workshop',
-      preferredRoom: 'Room 105 (Smart Classroom)',
-      capacityNeeded: 45,
-      date: '2026-02-28',
-      slots: [2, 3],
-      slotLabel: 'Slot 2 & 3 (09:30 AM – 11:45 AM)',
-      conflictStatus: 'POTENTIAL_TIMETABLE_CLASS',
-      status: 'PENDING_APPROVAL',
-    },
-  ]);
-
-  const [approvedHistory, setApprovedHistory] = useState([
-    {
-      id: 'REQ-791',
-      requester: 'Prof. Nimesh Bumb',
-      room: 'Room 313 (Auditorium)',
-      date: '2026-02-20',
-      slotLabel: 'Slot 1 & 2 (08:30 AM – 10:30 AM)',
-      approvedBy: 'Space & Estate Admin',
-      status: 'COMMITTED',
-    },
-  ]);
-
-  // Bipartite Matching Simulation State
-  const [bipartiteResults, setBipartiteResults] = useState(null);
-  const [isMatchingRunning, setIsMatchingRunning] = useState(false);
-
-  // Segment Tree Multi-Slot Inspector State
-  const [inspectedRoom, setInspectedRoom] = useState('205');
-  const [rangeStart, setRangeStart] = useState(2);
-  const [rangeEnd, setRangeEnd] = useState(5);
-  const [roomOccupancy, setRoomOccupancy] = useState({
-    '205': [0, 1, 1, 0, 0, 0, 0, 0], // Slot 2 and 3 occupied
-    '213': [1, 1, 0, 0, 0, 0, 0, 0], // Slot 1 and 2 occupied
-    '313': [0, 0, 0, 0, 1, 1, 0, 0], // Slot 5 and 6 occupied
-    '105': [0, 1, 0, 0, 0, 0, 0, 0],
-  });
-
-  // Floor 7 Configurable Inventory
-  const [floor7Rooms, setFloor7Rooms] = useState([
-    { id: '701', name: 'Room 701 (Faculty Executive Seminar)', capacity: 60, type: 'Executive Seminar', status: 'Active' },
-    { id: '702', name: 'Room 702 (Academic Council Room)', capacity: 60, type: 'Council Room', status: 'Active' },
-    { id: '712', name: 'Room 712 (Floor 7 Capstone Room)', capacity: 60, type: 'Capstone Suite', status: 'Active' },
-  ]);
-  const [newRoomNumber, setNewRoomNumber] = useState('');
-  const [newRoomCapacity, setNewRoomCapacity] = useState(60);
-  const [newRoomType, setNewRoomType] = useState('Seminar Hall');
-
-  // Lost & Found Operations State (ROLE_LOST_FOUND_ADMIN)
-  const INITIAL_LF_REPORTS = [
-    {
-      reportId: 'LF-2026-001',
-      reportType: 'FOUND',
-      itemName: 'Apple 96W USB-C Power Adapter & Braided MagSafe Cable',
-      category: 'Electronics',
-      location: 'Floor 2, Smart Classroom / AI Lab 205',
-      date: '2026-02-24',
-      status: 'OPEN',
-      reportedBy: 'Estate Operations Patrol',
-      custody: 'Security Desk Block A Ground Floor',
-      identifyingDetails: '96W white adapter, 2m braided cable',
-    },
-    {
-      reportId: 'LF-2026-002',
-      reportType: 'FOUND',
-      itemName: 'Sony WH-1000XM4 Noise-Cancelling Headphones (Black)',
-      category: 'Electronics',
-      location: 'Central Library, 2nd Floor',
-      date: '2026-02-23',
-      status: 'CLAIM_PENDING',
-      reportedBy: 'Central Security Officer Block A',
-      custody: 'Security Desk Block A Ground Floor',
-      identifyingDetails: 'Scratch near right hinge, initial AS engraved on inside headband',
-    },
-    {
-      reportId: 'LF-2026-003',
-      reportType: 'LOST',
-      itemName: 'Apple AirPods Pro (2nd Gen) with Gray Silicone Case',
-      category: 'Electronics',
-      location: 'Floor 2, Auditorium 213 (Row 4)',
-      date: '2026-02-24',
-      status: 'OPEN',
-      reportedBy: 'Rhythm Singhal (rhythm.singhal.btech2028@atlasskilltech.university)',
-      identifyingDetails: 'White MagSafe case with gray silicone sleeve and woven wrist lanyard',
-    },
-    {
-      reportId: 'LF-2026-004',
-      reportType: 'FOUND',
-      itemName: 'Casio fx-991CW ClassWiz Scientific Calculator',
-      category: 'Electronics',
-      location: 'Floor 3, Special Auditorium 313',
-      date: '2026-02-24',
-      status: 'OPEN',
-      reportedBy: 'Academic Block Staff Desk',
-      custody: 'Floor 3 Faculty Cabin Staff Desk',
-      identifyingDetails: 'Small blue vinyl dot on the battery door',
-    },
-    {
-      reportId: 'LF-2026-005',
-      reportType: 'FOUND',
-      itemName: 'ATLAS SkillTech University RFID Student ID Card & Lanyard',
-      category: 'ID & Cards',
-      location: 'Student Cafeteria & Dining Hall, Ground Floor',
-      date: '2026-02-24',
-      status: 'CLAIM_APPROVED',
-      reportedBy: 'Cafeteria Manager Desk',
-      custody: 'Cafeteria Manager Desk',
-      identifyingDetails: 'B.Tech CS & AI 2028 batch student identity card',
-    },
-    {
-      reportId: 'LF-2026-006',
-      reportType: 'LOST',
-      itemName: 'Titan Edge Ultra-Slim Wristwatch (Gunmetal Steel)',
-      category: 'Accessories',
-      location: 'Floor 4, Quiet Collaborative Zone',
-      date: '2026-02-23',
-      status: 'OPEN',
-      reportedBy: 'Yashwardhan Singh (yashwardhan.singh.btech2028@atlasskilltech.university)',
-      identifyingDetails: 'Black dial ultra-slim analog watch with mesh stainless steel strap',
-    },
-    {
-      reportId: 'LF-2026-007',
-      reportType: 'FOUND',
-      itemName: 'Hydro Flask 32oz Wide Mouth Insulated Water Bottle',
-      category: 'Accessories',
-      location: 'Floor 5, Seminar Hall 502',
-      date: '2026-02-24',
-      status: 'OPEN',
-      reportedBy: 'Floor 5 Security Station',
-      custody: 'Floor 5 Security Station',
-      identifyingDetails: 'Olive green vacuum flask with "Stay Curious" sticker on base',
-    },
-    {
-      reportId: 'LF-2026-008',
-      reportType: 'LOST',
-      itemName: 'Herschel Pop Quiz Laptop Backpack (Navy / Tan)',
-      category: 'Bags',
-      location: 'Central Library, Ground Floor Baggage Counter',
-      date: '2026-02-23',
-      status: 'OPEN',
-      reportedBy: 'Prathamesh Bhandare (prathamesh.bhandare.btech2028@atlasskilltech.university)',
-      identifyingDetails: 'Navy backpack with tan synthetic leather bottom and red tag',
-    },
-    {
-      reportId: 'LF-2026-009',
-      reportType: 'FOUND',
-      itemName: 'Apple iPad Air 11-inch (M2, Space Gray) in Smart Folio',
-      category: 'Electronics',
-      location: 'Floor 7, Executive Conference Suite 701',
-      date: '2026-02-24',
-      status: 'CLAIM_PENDING',
-      reportedBy: 'Estate & Security Directorate Block A',
-      custody: 'Estate & Security Directorate Block A',
-      identifyingDetails: 'Space Gray with dark charcoal magnetic folio and Apple Pencil',
-    },
-    {
-      reportId: 'LF-2026-010',
-      reportType: 'FOUND',
-      itemName: 'Two-Wheeler Bike Keys with ATLAS Red Rubber Keychain',
-      category: 'Accessories',
-      location: 'Basement Parking Level B1 (Bay 14)',
-      date: '2026-02-24',
-      status: 'HANDED_OVER',
-      reportedBy: 'Basement Security Checkpoint',
-      custody: 'Basement Security Checkpoint',
-      identifyingDetails: 'Two silver door keys, brass key, motorcycle helmet rubber keychain',
-    },
-    {
-      reportId: 'LF-2026-011',
-      reportType: 'FOUND',
-      itemName: 'Dell Premier Rechargeable Wireless Mouse (MS7421W)',
-      category: 'Electronics',
-      location: 'Floor 1, Computer Networks Lab 101',
-      date: '2026-02-23',
-      status: 'OPEN',
-      reportedBy: 'Lab Assistant Cabin Room 101',
-      custody: 'Lab Assistant Cabin Room 101',
-      identifyingDetails: 'Platinum silver mouse with USB-C nano dongle',
-    },
-    {
-      reportId: 'LF-2026-012',
-      reportType: 'LOST',
-      itemName: 'Leather Bi-Fold Wallet with RFID Protection (Brown)',
-      category: 'Bags',
-      location: 'Academic Block, Ground Floor',
-      date: '2026-02-23',
-      status: 'OPEN',
-      reportedBy: 'Kunal Ramchandani (INC - The Corporate Club)',
-      identifyingDetails: 'Brown calfskin wallet containing cafeteria card and student transit pass',
-    },
-  ];
-
-  const INITIAL_LF_CLAIMS = [
-    {
-      claimId: 'CLM-2026-001',
-      reportId: 'LF-2026-002',
-      claimantName: 'Rohan Mehta',
-      claimantEmail: 'rohan.mehta@atlasskilltech.university',
-      proof: 'Original invoice #CR-8821 from Croma, serial number S01-2849201',
-      details: 'Custom EQ named "CampusOneBass" and scratch on right hinge.',
-      status: 'SUBMITTED',
-      date: '2026-02-24',
-    },
-    {
-      claimId: 'CLM-2026-002',
-      reportId: 'LF-2026-009',
-      claimantName: 'Yashwardhan Singh',
-      claimantEmail: 'yashwardhan.singh.btech2028@atlasskilltech.university',
-      proof: 'Apple Store invoice #APL-99218, device named "Yashwardhan iPad", matching passcode unlock',
-      details: 'Charcoal magnetic smart folio with white Apple Pencil (USB-C) engraved initials Y.S.',
-      status: 'SUBMITTED',
-      date: '2026-02-24',
-    },
-    {
-      claimId: 'CLM-2026-003',
-      reportId: 'LF-2026-005',
-      claimantName: 'Rhythm Singhal',
-      claimantEmail: 'rhythm.singhal.btech2028@atlasskilltech.university',
-      proof: 'Student Portal ERP verification and registered phone number SMS OTP match',
-      details: 'Card barcode matches roll B.Tech 2028-CS-041 on navy blue satin lanyard',
-      status: 'APPROVED',
-      date: '2026-02-24',
-    },
-    {
-      claimId: 'CLM-2026-004',
-      reportId: 'LF-2026-010',
-      claimantName: 'Prathamesh Bhandare',
-      claimantEmail: 'prathamesh.bhandare.btech2028@atlasskilltech.university',
-      proof: 'Vehicle parking sticker #B1-042 and duplicate key verification at security desk',
-      details: 'Red helmet keychain with license tag on Honda CB350 parked in Bay 14',
-      status: 'HANDED_OVER',
-      date: '2026-02-24',
-    },
-  ];
-
-  const getCombinedReports = () => {
-    const userReports = JSON.parse(localStorage.getItem('campusone_lost_found_reports') || '[]');
-    return [...userReports, ...INITIAL_LF_REPORTS];
-  };
-
-  const getCombinedClaims = () => {
-    const userClaims = JSON.parse(localStorage.getItem('campusone_lost_found_claims') || '[]');
-    return [...userClaims, ...INITIAL_LF_CLAIMS];
-  };
-
-  const [lfReports, setLfReports] = useState(getCombinedReports);
-  const [lfClaims, setLfClaims] = useState(getCombinedClaims);
-
-  const [cacheSyncMessage, setCacheSyncMessage] = useState('');
 
   const handleApproveClaim = (claimId) => {
     setLfClaims(lfClaims.map((c) => (c.claimId === claimId ? { ...c, status: 'APPROVED' } : c)));
