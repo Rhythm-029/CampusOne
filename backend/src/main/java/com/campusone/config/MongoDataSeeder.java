@@ -46,11 +46,17 @@ public class MongoDataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        seedUsersIfEmpty();
-        seedRoomsIfEmpty();
-        seedItemVocabularyIfEmpty();
-        seedTimetableIfEmpty();
-        autocompleteService.rebuildTrie();
+        new Thread(() -> {
+            try {
+                seedUsersIfEmpty();
+                seedRoomsIfEmpty();
+                seedItemVocabularyIfEmpty();
+                seedTimetableIfEmpty();
+                autocompleteService.rebuildTrie();
+            } catch (Exception ex) {
+                System.err.println("[WARN] MongoDataSeeder initial seed deferred: " + ex.getMessage());
+            }
+        }, "mongo-data-seeder").start();
     }
 
     private void seedUsersIfEmpty() {

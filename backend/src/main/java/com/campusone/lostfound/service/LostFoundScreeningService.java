@@ -22,7 +22,14 @@ public class LostFoundScreeningService {
 
     @PostConstruct
     public void initFilterFromDatabase() {
-        rebuildSync();
+        new Thread(() -> {
+            try {
+                rebuildSync();
+            } catch (Exception ex) {
+                System.err.println("[WARN] Initial Bloom Filter sync deferred due to connectivity: " + ex.getMessage());
+                bloomFilter.setSynchronized(false);
+            }
+        }, "bloom-init-thread").start();
     }
 
     public synchronized void rebuildSync() {

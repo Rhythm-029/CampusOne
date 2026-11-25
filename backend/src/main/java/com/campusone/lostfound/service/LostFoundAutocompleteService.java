@@ -26,7 +26,31 @@ public class LostFoundAutocompleteService {
 
     @PostConstruct
     public void initTrieFromDatabase() {
-        rebuildTrie();
+        // 1. Seed instant in-memory vocabulary so autocomplete is immediately available
+        seedDefaultVocabulary();
+
+        // 2. Sync with database asynchronously in background
+        new Thread(() -> {
+            try {
+                rebuildTrie();
+            } catch (Exception ex) {
+                System.err.println("[WARN] Initial Trie sync deferred due to connectivity: " + ex.getMessage());
+            }
+        }, "trie-init-thread").start();
+    }
+
+    private void seedDefaultVocabulary() {
+        trie.insert("Laptop", 40);
+        trie.insert("Laptop Charger", 30);
+        trie.insert("Laptop Sleeve", 25);
+        trie.insert("Laptop Bag", 20);
+        trie.insert("MacBook Pro", 28);
+        trie.insert("MacBook Air", 26);
+        trie.insert("Apple AirPods", 32);
+        trie.insert("Student ID Card", 50);
+        trie.insert("Scientific Calculator (Casio)", 18);
+        trie.insert("Water Bottle", 21);
+        trie.insert("Wireless Mouse", 15);
     }
 
     public synchronized void rebuildTrie() {
